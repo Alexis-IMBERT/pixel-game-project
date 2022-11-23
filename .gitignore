@@ -104,7 +104,7 @@ latex.out/
 *.alg
 *.loa
 
-#./front-end/assets
+./front-end/assets
 
 # achemso
 acs-*.bib
