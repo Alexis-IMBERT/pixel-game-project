@@ -24,7 +24,8 @@ app.use(session({
 }));
 
 // routers
-
+const users = require('./routers/users');
+app.use('/users', users);
 
 
 
