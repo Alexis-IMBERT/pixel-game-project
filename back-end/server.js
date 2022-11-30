@@ -9,7 +9,7 @@ const port = 3000;
 app.use(express.urlencoded({ extended: true }));
 
 // serve static files
-app.use(express.static('../frontend'));
+app.use(express.static('../front-end'));
 
 // set the view engine to ejs
 app.set('view engine', 'ejs');
@@ -25,10 +25,11 @@ app.use(session({
 
 // routers
 const users = require('./routers/users');
-app.use('/users', users);
+app.use('/', users);
 
 
-
+const router = require('./routers/router');
+app.use('/', router);
 
 
 // run the server

@@ -155,6 +155,6 @@ window.onload = function(){
 		}
 	}
 };
-gkhead.src = './assets/imgs/img.jpg';
+gkhead.src = 'assets/imgs/img.jpg';
 
 
