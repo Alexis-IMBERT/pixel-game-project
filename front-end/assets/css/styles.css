@@ -1,5 +1,7 @@
 :root {
     --background-color: linear-gradient(#3a3a3a, #1e1e1e);
+    --primary-color: rgb(174, 223, 174);
+    --secondary-color: forestgreen;
 }
 
 * {
@@ -51,7 +53,41 @@
     background-color: white;
     height:80px;
     border-top: 1px solid black;
+    padding:20px;  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 80px;
 }
+
+.footer-box {
+    width: 200px;
+    height: 100px;
+}
+
+.valid-btn {
+    color: var(--secondary-color);
+    width:200px;
+    height:90px;
+    border: 1px solid var(--secondary-color);
+    background-color: var(--primary-color);
+    border-radius: 10px;
+    font-family: 'CustomFont', Arial, sans-serif;
+    font-size: 3.6em;
+    transition-duration: 500ms;
+}
+
+.valid-btn:hover {
+    color: var(--primary-color);
+    border: 1px solid grey;
+    background-color: var(--secondary-color);
+}
+
+.color-picker {
+    width:200px;
+    height:90px;
+}
+
 
 .painting {
     height:100%;
