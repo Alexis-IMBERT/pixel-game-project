@@ -7,13 +7,12 @@
     <body>
         <div class="body-container">
             <div class="login-menu">
-                Se connecter
+                <a>Connexion</a>
+                <a>Inscription</a>
             </div>
-            <div class="info">
-                Positionnez un pixel
-            </div>
-            <div class="footer">
+            <div class="footer bg-main">
                 <div class="footer-box">
+                    <p onselectstart="return false" class="info-picker">(0;0)</p>
                     <input type="color" id="head" name="head" class="color-picker" value="#e66465">
                 </div>
                 <div class="footer-box">
@@ -22,7 +21,7 @@
                     </form>
                 </div>
                 <div class="footer-box">
-                    Test
+                    <p class="chrono">10:00<label id="min">min</label></p>
                 </div>
             </div>
             <canvas class="painting"></canvas>
