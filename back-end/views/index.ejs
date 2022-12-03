@@ -1,30 +1,42 @@
 <!DOCTYPE html>
     <head>
         <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>PixelWAR</title>
+        <script src="assets/vendor/jquery-3.6.0.js"></script>
+        <script src="assets/vendor/jquery-ui.js"></script>
         <link rel="stylesheet" href="assets/css/styles.css">
     </head>
     <body>
         <div class="body-container">
+            <div id="painting">
+                <canvas id="canva"></canvas>
+            </div>
             <div class="login-menu">
                 <a>Connexion</a>
                 <a>Inscription</a>
             </div>
             <div class="footer bg-main">
                 <div class="footer-box">
-                    <p onselectstart="return false" class="info-picker">(0;0)</p>
+                    <a target="_blank" href="https://www.makeuseof.com/what-is-rplace-reddit-art-experiment/#:~:text=The%20concept%20behind%20r%2FPlace%20is%20pretty%20simple.,or%20tile%20of%20whichever%20color."><img class="icon" id="rules" src="assets/imgs/book.png"></a>
+                </div>
+                <div class="footer-box">
+                    <p onselectstart="return false" id="info-picker">(0;0)</p>
                     <input type="color" id="head" name="head" class="color-picker" value="#e66465">
                 </div>
                 <div class="footer-box">
                     <form method="GET">
-                        <button class="valid-btn">ENVOYER</button>
+                        <button disabled class="valid-btn">ENVOYER</button>
                     </form>
                 </div>
                 <div class="footer-box">
-                    <p class="chrono">10:00<label id="min">min</label></p>
+                    <p id="chrono"><label id="chronotime">10:00</label><label id="min">min</label></p>
+                </div>
+                
+                <div class="footer-box">
+                    <img class="icon" id="print" src="assets/imgs/printer.png">
                 </div>
             </div>
-            <canvas class="painting"></canvas>
         </div>
         <script src="assets/js/canva.js"></script>
     </body>
