@@ -12,10 +12,11 @@
         <div class="body-container">
             <div class="center-div" style="text-align: center;">
                 <h1 class="titre-form">Connexion</h1>
-                <form class="center-div">
-                    <input type="text" id="input" class="input-text" placeholder="Pseudo">
-                    <input type="password" id="input" class="input-text" placeholder="Mot de passe">
-                    <button class="submit-btn">ENVOYER</button>
+                <form class="center-div" action="/users/login" method="post" role="form" >
+                    <input name="login" type="text" id="input" class="input-text" placeholder="Pseudo">
+                    <input name="password" type="password" id="input" class="input-text" placeholder="Mot de passe">
+                    <button class="btn valid">ENVOYER</button>
+                    <button class="btn error">RETOUR</button>
                 </form>
             </div>
         </div>
