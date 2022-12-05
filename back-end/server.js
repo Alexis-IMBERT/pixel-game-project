@@ -23,9 +23,19 @@ app.use(session({
 }));
 
 // routers
+
+app.use("/404", function(req, res) {
+	res.status(404);
+	res.render('404.ejs', { logged: req.session.loggedin });
+});
+
+
+
 const users = require('./routers/users');
 app.use('/users', users);
-app.use('/users', express.static("../front-end/"));
+
+const canvas = require('./routers/canvas')
+app.use('/canvas', canvas)
 
 
 const router = require('./routers/router');
