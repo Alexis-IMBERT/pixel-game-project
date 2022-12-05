@@ -10,24 +10,20 @@ router.use('/index.html', function (req, res) {
 	res.redirect('/');
 });
 
-/*router.use("/:lien", function (req,res, next) {
-	console.log(req.params.lien);
-	next("injection");
-	if (req.params.lien === "") {
-		//next("/*");
-	} else {
-		//next(Error("File not found"))
-	}	
-});*/
+router.use("/:lien_erreur", function (req,res, next) {
+	console.log(req.params.lien_erreur);
+	console.log(req.params.lien_erreur.length == 0);
+	res.redirect('/404');
+	
+});
 
 router.use('/', function (req, res) {
 	res.redirect('/home');
 });
 
 // 404
-router.use('*', function (err, req, res) {
-	res.status(404);
-	res.render('404.ejs', { logged: req.session.loggedin });
+router.use('*', function (req, res) {
+	res.redirect('/404');
 });
 
 module.exports = router;
