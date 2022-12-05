@@ -6,7 +6,6 @@ const app = express();
 const port = 3000;
 
 // add data to req.body (for POST requests)
-app.use(express.urlencoded({ extended: true }));
 
 // serve static files
 app.use(express.static('../front-end'));
@@ -25,7 +24,8 @@ app.use(session({
 
 // routers
 const users = require('./routers/users');
-app.use('/', users);
+app.use('/users', users);
+app.use('/users', express.static("../front-end/"));
 
 
 const router = require('./routers/router');
