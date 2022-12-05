@@ -3,7 +3,7 @@ const router = express.Router();
 
 // home
 router.use('/home', function (req, res) {
-	res.redirect('/');
+	res.render('index.ejs', { logged: req.session.loggedin });
 });
 
 router.use('/index.html', function (req, res) {
@@ -11,13 +11,7 @@ router.use('/index.html', function (req, res) {
 });
 
 router.use('/', function (req, res) {
-	res.render('index.ejs', {logged: req.session.loggedin});
-});
-
-// 404
-router.use('*', function(req, res){
-    res.status(404);
-	res.render('404.ejs', {logged: req.session.loggedin});
+	res.redirect('/home');
 });
 
 module.exports = router;

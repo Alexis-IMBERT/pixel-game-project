@@ -24,12 +24,21 @@ app.use(session({
 }));
 
 // routers
-const users = require('./routers/users');
-app.use('/', users);
-
 
 const router = require('./routers/router');
 app.use('/', router);
+
+const users = require('./routers/users');
+app.use('/users', users);
+
+
+
+
+// 404
+router.use('*', function (req, res) {
+	res.status(404);
+	res.render('404.ejs', { logged: req.session.loggedin });
+});
 
 
 // run the server
