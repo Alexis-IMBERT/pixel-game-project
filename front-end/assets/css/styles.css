@@ -156,6 +156,27 @@
 #canva {
     image-rendering:pixelated;
 }
+/* INPUTS */
+.input-text {
+    width:80%;
+    height:40px;
+    border-radius: 20px;
+    border: 1px solid var(--secondary-color);
+    padding:10px;
+    margin:10px;
+}
+
+.submit-btn {
+    background-color: var(--valid-primary-color);
+    border: 1px solid var(--valid-secondary-color);
+    width:84%;
+    padding:10px;
+    margin:10px;
+    border-radius: 10px;
+    height:40px;
+}
+
+
 /* COLORS */
 .bg-main {
     background-color: var(--primary-color);
