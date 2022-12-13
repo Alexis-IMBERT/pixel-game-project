@@ -2,6 +2,19 @@
 const express = require('express');
 const app = express();
 
+
+// import  and use express-session module
+const session = require('express-session');
+
+app.use(session({
+	secret: 'login', //used to sign the session ID cookie
+	name: 'pixelwar', // (optional) name of the session cookie
+	resave: true, // forces the session to be saved back to the session store
+	saveUninitialized: true, // forces a session an uninitialized session to be saved to the store	
+	cookie: {secure:false}
+}));
+
+
 // set the server host and port
 const port = 3000;
 
@@ -14,23 +27,18 @@ app.use(express.static('../front-end'));
 // set the view engine to ejs
 app.set('view engine', 'ejs');
 
-// import  and use express-session module
-const session = require('express-session');
-app.use(session({
-	secret: 'login', //used to sign the session ID cookie
-	name: 'login', // (optional) name of the session cookie
-	resave: true, // forces the session to be saved back to the session store
-	saveUninitialized: true, // forces a session an uninitialized session to be saved to the store	
-}));
+
+
+
+
+
 
 // routers
-
 app.use("/404", function(req, res) {
 	res.status(404);
+	console.log(req.session)
 	res.render('404.ejs', { logged: req.session.loggedin });
 });
-
-
 
 const users = require('./routers/users');
 app.use('/users', users);

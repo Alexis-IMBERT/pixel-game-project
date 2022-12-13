@@ -1,0 +1,138 @@
+<head>
+    
+</head>
+
+<body>
+
+    <label> SIGNUP TEST</label>
+    <form method="POST" action="javascript:signup();">
+
+        <label for="username">username</label>
+        <input id="signup-username" type="text" name="username" required>
+
+        <label for="password">password</label>
+        <input id="signup-password" type="text" name="password" required>
+
+        <input type="submit" value="signup" id="smt-signup">
+
+        <label id="signup-answer">t</label>
+
+    </form>
+
+    <label> LOGIN TEST </label>
+    <form method="POST" action="javascript:login()">
+
+        <label for="username" >username</label>
+        <input id="login-username" type="text" name="username" required>
+
+        <label for="password">password</label>
+        <input id="login-password" type="text" name="password" required>
+
+        <input type="submit" value="login" >
+
+        <label id="login-answer">t</label>
+
+    </form>
+
+    <label> LOG OUT </label>
+    <form method="POST" action="javascript:logout();">
+    
+        <input type="submit" value="logout" id="smt-signup">
+    
+        <label id="logout-answer">t</label>
+    
+    </form>
+
+    <script src="assets/js/jquery.min.js"> </script>
+    
+    <script>
+        function signup() {
+
+            console.log("signup entered");
+
+            var dataToPost = {
+                login: $('#signup-username').val(),
+                password: $('#signup-password').val()
+            };
+
+            console.log(dataToPost);
+
+            $.ajax({
+                type: 'POST',
+                url: '/users/signup?tests=true',
+                timeout: 3000,
+                data: dataToPost,
+                success: function (data) {
+                    console.log("OK");
+                    $('#signup-answer').html(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                    console.log("ERROR");
+                    $('#signup-answer').html(err.responseText);
+                }
+            });
+
+        }
+
+        function login() {
+
+            console.log("login entered");
+
+            var dataToPost = {
+                login: $('#login-username').val(),
+                password: $('#login-password').val()
+            };
+
+            console.log(dataToPost);
+
+            $.ajax({
+                type: 'POST',
+                url: '/users/login?tests=true',
+                timeout: 3000,
+                data: dataToPost,
+                success: function (data) {
+                    console.log("OK");
+                    $('#login-answer').html(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                    console.log("ERROR");
+                    $('#login-answer').html(err.responseText);
+                }
+            });
+
+        }
+        
+        function logout() {
+
+            console.log("logout entered");
+
+            var dataToPost = {
+                
+            };
+
+            console.log(dataToPost);
+
+            $.ajax({
+                type: 'POST',
+                url: '/users/logout?tests=true',
+                timeout: 3000,
+                data: dataToPost,
+                success: function (data) {
+                    console.log("OK");
+                    $('#logout-answer').html(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                    console.log("ERROR");
+                    $('#logout-answer').html(err.responseText);
+                }
+            });
+
+        }
+
+
+    </script>
+
+</body>
