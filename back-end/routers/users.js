@@ -61,16 +61,27 @@ router.post("/signup",
         loggedIn(req,res);
         
         let data = req.body;
-        var username = data['login'];
+        let username = data['login'];
 
-        if (!(username != null && username != "" && data['password'] != null && data['password'] != "")) {
+        let password = data['password'];
+        let password2 = data['password_confirmation'];
+
+        if (!(username != null && username != "" && password != null && password != "" && password2 != null && password2 != "")) {
             res.status(400).send('Bad request!');
+            return;
+        }
+
+        if (password != password2) {
+            if (tests)
+                res.status(400).send("PASSWORD NOT EQUALS");
+            else
+                renderSignupPage(req,res,"PASSWORD NOT EQUALS");
             return;
         }
     
         db.serialize(() => {
 
-            db.run("INSERT INTO users VALUES(?,?);", [username,sha256(data['password'])], function(err,result){
+            db.run("INSERT INTO users VALUES(?,?);", [username,sha256(password)], function(err,result){
                 console.log(err);
                 if (!err) {
                     console.log("ACCOUNT CREATED OK");
@@ -82,7 +93,7 @@ router.post("/signup",
                 } else {
                     console.log("ACCOUNT ALREADY IN DB");
                     if (tests)
-                        res.status(400).send("ALREADY IN USE")
+                        res.status(400).send("ALREADY USED")
                     else
                         renderSignupPage(req,res,"USERNAME ALREADY IN USE")
                 }

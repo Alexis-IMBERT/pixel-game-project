@@ -11,7 +11,10 @@
         <input id="signup-username" type="text" name="username" required>
 
         <label for="password">password</label>
-        <input id="signup-password" type="text" name="password" required>
+        <input id="signup-password" type="password" name="password" required>
+
+        <label for="password">password confirmation</label>
+        <input id="signup-password-confirmation" type="password" name="password" required>
 
         <input type="submit" value="signup" id="smt-signup">
 
@@ -52,7 +55,8 @@
 
             var dataToPost = {
                 login: $('#signup-username').val(),
-                password: $('#signup-password').val()
+                password: $('#signup-password').val(),
+                password_confirmation: $('#signup-password-confirmation').val()
             };
 
             console.log(dataToPost);
@@ -74,6 +78,7 @@
             });
 
         }
+
 
         function login() {
 
