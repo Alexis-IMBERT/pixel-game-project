@@ -54,10 +54,12 @@ router.post("/signup",
                     const statement = db.prepare("INSERT INTO users VALUES(?,?);");
                     statement.run(data['login'], sha256(data['password']));
                     statement.finalize();
-                });
 
+                    console.log("ACCOUNT CREATED OK");
+                });
+                
                 // once the user is created, redirect to login
-                res.redirect('/login');
+                res.redirect('users/login');
             } else {
                 res.status(400).send('Bad request!');
             }
@@ -78,6 +80,7 @@ router.post('/login',
      */
     function (req, res, next) {
         let data = req.body;
+        console.log(data);
         if (data['login'] != null && data['login'] != "" && data['password'] != null && data['password'] != "") {
 
             db.serialize(() => {
@@ -90,7 +93,8 @@ router.post('/login',
                         if (result) {
                             req.session.loggedin = true;
                             req.session.login = result['login'];
-                            next();
+                            console.log("LOG IN OK");
+                            res.redirect('/');
                         } else {
                             res.render('login.ejs', { logged: false, login: req.session.login, error: true });
                         }
