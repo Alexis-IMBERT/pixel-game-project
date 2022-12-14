@@ -75,17 +75,16 @@ function envoyerPixel(e) {
     $('#info-picker').text("(0;0)");
     $(".valid-btn").attr("disabled", true);
     temps = 3;
-    var chrono = setInterval(function() {
+    var chrono = setInterval(function () {
         let minutes = parseInt(temps / 60, 10);
         let secondes = parseInt(temps % 60, 10);
-      
+
         minutes = minutes < 10 ? "0" + minutes : minutes;
         secondes = secondes < 10 ? "0" + secondes : secondes;
-      
+
         $('#chronotime').text(`${minutes}:${secondes}`);
         temps -= 1;
-        if (temps<0) 
-        {
+        if (temps < 0) {
             clearInterval(chrono);
             isWaiting = false;
         }
