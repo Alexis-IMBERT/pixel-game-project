@@ -12,3 +12,11 @@ CREATE TABLE canvas (
     length INTEGER NOT NULL,
     FOREIGN KEY(owner) REFERENCES users(login)
 );
+
+CREATE TABLE usersInCanva (
+    idCanva VARCHAR,
+    idUser VARCHAR,
+    FOREIGN KEY(idUser) REFERENCES users(login),
+    FOREIGN KEY(idCanva) REFERENCES canvas(id),
+    CONSTRAINT can_us PRIMARY KEY (idCanva, idUser)
+);
