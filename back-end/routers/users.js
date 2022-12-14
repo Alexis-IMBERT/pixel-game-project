@@ -55,12 +55,17 @@ router.post("/signup",
             
         
         let data = req.body;
+        console.log(data)
+
         let username = data['login'];
 
         let password = data['password'];
         let password2 = data['password_confirmation'];
 
         if (!(username != null && username != "" && password != null && password != "" && password2 != null && password2 != "")) {
+            console.log(username)            
+            console.log(password)            
+            console.log(password2)
             res.status(400).send('Bad request!');
             return;
         }

@@ -12,10 +12,10 @@
         <div class="body-container">
             <div class="center-div" style="text-align: center;">
                 <h1 class="titre-form">Inscription</h1>
-                <form class="center-div" action="javascript:user_signup()" method="post" role="form" >
+                <form class="center-div" action="/users/signup" onsubmit="return user_signup()" method="post" role="form" >
                     <input name="login" type="text" id="signup-username" class="input-text" placeholder="Pseudo">
                     <input name="password" type="password" id="signup-password" class="input-text" placeholder="Mot de passe">
-                    <input name="password2" type="password" id="signup-password-confirmation" class="input-text" placeholder="Répéter le mot de passe">
+                    <input name="password_confirmation" type="password" id="signup-password-confirmation" class="input-text" placeholder="Répéter le mot de passe">
                     <label id="signup-answer">test</label>   
                     <button class="btn valid">ENVOYER</button>
                     <button class="btn error">RETOUR</button>
@@ -24,40 +24,15 @@
         </div>
         <script>
         function user_signup() {
-
-            console.log("signup entered");
-
-            var dataToPost = {
+            let dataToPost = {
                 login: $('#signup-username').val(),
                 password: $('#signup-password').val(),
                 password_confirmation: $('#signup-password-confirmation').val()
-            };
-            
+            };            
             if ( dataToPost.password == dataToPost.password_confirmation)
-            {
                 if ( dataToPost.password.length >= 6 )
-                {
-                    $.ajax({
-                        type: 'POST',
-                        url: '/users/signup?tests=true',
-                        timeout: 3000,
-                        data: dataToPost,
-                        success: function (data) {
-                            console.log("OK");
-                            $('#signup-answer').html(data);
-                        },
-                        error: function (err) {
-                            console.log(err);
-                            console.log("ERROR");
-                            $('#signup-answer').html(err.responseText);
-                        }
-                    });
-                } else {
-                    $('#signup-answer').html("6 caractères minimum pour le mot de passe");
-                }
-            } else {
-                $('#signup-answer').html("Les mots de passe ne correspondent pas !");
-            }
+                    return true;
+            return false
 
         }
     </script>
