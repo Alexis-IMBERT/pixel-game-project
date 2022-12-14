@@ -69,6 +69,23 @@
     </div>
    --> 
    
+<form method="POST" action="javascript:page_view();">
+
+    <label for="page-view-link">page link</label>
+    <input id="page-view-link" type="text" name="page-view-link" required>
+    
+    
+    <input type="submit" value="view page">
+
+    <iframe id="page" title="Inline Frame Example" width="1000" height="800"></iframe>
+
+   
+
+</form>
+
+   
+
+
 
    
 
@@ -105,7 +122,6 @@
             });
 
         }
-
 
         function user_login() {
 
@@ -166,32 +182,62 @@
 
         function canva_generation() {
 
-                console.log("canva_generation entered");
+            console.log("canva_generation entered");
 
-                var dataToPost = {
-                    height: $('#canva-generation-height').val(),
-                    length: $('#canva-generation-length').val()
-                };
+            var dataToPost = {
+                height: $('#canva-generation-height').val(),
+                length: $('#canva-generation-length').val()
+            };
 
-                console.log(dataToPost);
+            console.log(dataToPost);
 
-                $.ajax({
-                    type: 'POST',
-                    url: '/canvas/generate?tests=true',
-                    timeout: 3000,
-                    data: dataToPost,
-                    success: function (data) {
-                        console.log("OK");
-                        $('#canva-generation-answer').html(data);
-                    },
-                    error: function (err) {
-                        console.log(err);
-                        console.log("ERROR");
-                        $('#canva-generation-answer').html(err.responseText);
-                    }
-                });
+            $.ajax({
+                type: 'POST',
+                url: '/canvas/generate?tests=true',
+                timeout: 3000,
+                data: dataToPost,
+                success: function (data) {
+                    console.log("OK");
+                    $('#canva-generation-answer').html(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                    console.log("ERROR");
+                    $('#canva-generation-answer').html(err.responseText);
+                }
+            });
 
-            }
+        }
+
+        function page_view() {
+
+            console.log("page_view entered");
+
+            var dataToPost = {
+
+            };
+
+            console.log(dataToPost);
+
+            $('#page').attr('src', $("#page-view-link").val());
+
+           /* $.ajax({
+                type: 'GET',
+                url: $("#page-view-link").val(),
+                timeout: 3000,
+                data: dataToPost,
+                success: function (data) {
+                    console.log("OK");
+                    $('#page').replaceWith(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                    console.log("ERROR");
+                    $('#page').replaceWith(data);
+                }
+            });*/
+
+        }
 
 
     </script>
