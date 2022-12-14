@@ -55,6 +55,9 @@ router.post("/signup",
             
         
         let data = req.body;
+
+        console.log(data);
+
         let username = data['login'];
 
         let password = data['password'];
