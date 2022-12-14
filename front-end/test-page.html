@@ -5,7 +5,7 @@
 <body>
 
     <label> SIGNUP TEST</label>
-    <form method="POST" action="javascript:signup();">
+    <form method="POST" action="javascript:user_signup();">
 
         <label for="username">username</label>
         <input id="signup-username" type="text" name="username" required>
@@ -16,14 +16,14 @@
         <label for="password">password confirmation</label>
         <input id="signup-password-confirmation" type="password" name="password" required>
 
-        <input type="submit" value="signup" id="smt-signup">
+        <input type="submit" value="signup" >
 
-        <label id="signup-answer">t</label>
+        <label id="signup-answer"></label>
 
     </form>
 
     <label> LOGIN TEST </label>
-    <form method="POST" action="javascript:login()">
+    <form method="POST" action="javascript:user_login()">
 
         <label for="username" >username</label>
         <input id="login-username" type="text" name="username" required>
@@ -33,23 +33,39 @@
 
         <input type="submit" value="login" >
 
-        <label id="login-answer">t</label>
+        <label id="login-answer"></label>
 
     </form>
 
     <label> LOG OUT </label>
-    <form method="POST" action="javascript:logout();">
+    <form method="POST" action="javascript:user_logout();">
     
-        <input type="submit" value="logout" id="smt-signup">
+        <input type="submit" value="logout">
     
-        <label id="logout-answer">t</label>
+        <label id="logout-answer"></label>
+    
+    </form>
+
+
+    <label> CANVA CREATION </label>
+    <form method="POST" action="javascript:canva_generation();">
+        <label for="height">height</label>
+        <input id="canva-generation-height" type="number" name="height" required>
+       
+        <label for="length">length</label>
+        <input id="canva-generation-length" type="number" name="length" required>
+
+
+        <input type="submit" value="generation">
+    
+        <label id="canva-generation-answer"></label>
     
     </form>
 
     <script src="assets/js/jquery.min.js"> </script>
     
     <script>
-        function signup() {
+        function user_signup() {
 
             console.log("signup entered");
 
@@ -80,7 +96,7 @@
         }
 
 
-        function login() {
+        function user_login() {
 
             console.log("login entered");
 
@@ -109,7 +125,7 @@
 
         }
         
-        function logout() {
+        function user_logout() {
 
             console.log("logout entered");
 
@@ -136,6 +152,35 @@
             });
 
         }
+
+        function canva_generation() {
+
+                console.log("canva_generation entered");
+
+                var dataToPost = {
+                    height: $('#canva-generation-height').val(),
+                    length: $('#canva-generation-length').val()
+                };
+
+                console.log(dataToPost);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/canvas/generate?tests=true',
+                    timeout: 3000,
+                    data: dataToPost,
+                    success: function (data) {
+                        console.log("OK");
+                        $('#canva-generation-answer').html(data);
+                    },
+                    error: function (err) {
+                        console.log(err);
+                        console.log("ERROR");
+                        $('#canva-generation-answer').html(err.responseText);
+                    }
+                });
+
+            }
 
 
     </script>
