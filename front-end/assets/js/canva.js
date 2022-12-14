@@ -1,160 +1,124 @@
 
 
 
-var gkhead = new Image;
-window.onload = function(){	
-    var canvas = document.getElementsByClassName("painting")[0];
-	canvas.width = 800; canvas.height = 600;
-    bordersSize = 50;
-    var ctx = canvas.getContext("2d");
-    trackTransforms(ctx);
-    function redraw(){
-        // Clear the entire canvas
-        var p1 = ctx.transformedPoint(0,0);
-        var p2 = ctx.transformedPoint(canvas.width,canvas.height);
-        ctx.clearRect(p1.x,p1.y,p2.x-p1.x,p2.y-p1.y);
-        ctx.drawImage(gkhead,bordersSize,bordersSize,canvas.width-bordersSize*2,canvas.height-bordersSize*2);
-        // Alternatively:
-        // ctx.save();
-        // ctx.setTransform(1,0,0,1,0,0);
-        // ctx.clearRect(0,0,canvas.width,canvas.height);
-        // ctx.restore();
+const canvas = document.getElementById("canva");
+const painting = $("#painting");
+const ctx = canvas.getContext("2d", { willReadFrequently: true });
+ctx.webkitImageSmoothingEnabled = false;
+ctx.mozImageSmoothingEnabled = false;
+ctx.imageSmoothingEnabled = false;
+
+const image = new Image(100, 100); // Using optional size for image
+image.onload = drawImageActualSize; // Draw when image has loaded
+
+// Load an image of intrinsic size 300x227 in CSS pixels
+image.src = "/assets/imgs/img.jpg";
+
+function drawImageActualSize() {
+    // Use the intrinsic size of image in CSS pixels for the canvas element
+    canvas.width = this.naturalWidth;
+    canvas.height = this.naturalHeight;
+
+    // Will draw the image as 300x227, ignoring the custom size of 60x45
+    // given in the constructor
+    ctx.drawImage(this, 0, 0);
+
+    // To use the custom size we'll have to specify the scale parameters
+    // using the element's width and height properties - lets draw one
+    // on top in the corner:
+    ctx.drawImage(this, 0, 0, this.width, this.height);
+}
 
 
-        ctx.beginPath();
-        ctx.lineWidth = 6;
-        ctx.moveTo(399,250);
-        ctx.lineTo(474,256);
-        ctx.stroke();
+const canvaJQ = $("#canva")
+let drag = false;
+let zoomFactor = 0.15
+var zoomValue = 4;
+var lastPixelChangedX, lastPixelChangedY;
+var lastPixelData, r, g, b;
+var isWaiting = false;
+var temps = 0;
 
-        ctx.save();
-        ctx.translate(4,2);
-        ctx.beginPath();
-        ctx.lineWidth = 1;
-        ctx.moveTo(436,253);
-        ctx.lineTo(437.5,233);
-        ctx.stroke();
+$('#canva').css('transform', 'scale(' + zoomValue * zoomFactor + ')');
 
-        ctx.save();
-        ctx.translate(438.5,223);
-        ctx.strokeStyle = '#06c';
-        ctx.beginPath();
-        ctx.lineWidth = 0.05;
-        for (var i=0;i<60;++i){
-            ctx.rotate(6*i*Math.PI/180);
-            ctx.moveTo(9,0);
-            ctx.lineTo(10,0);
-            ctx.rotate(-6*i*Math.PI/180);
-        }
-        ctx.stroke();
-        ctx.restore();
-
-        ctx.beginPath();
-        ctx.lineWidth = 0.2;
-        ctx.arc(438.5,223,10,0,Math.PI*2);
-        ctx.stroke();
-        ctx.restore();  
+function getCursorPosition(canvas, event) {
+    const rect = canvas.getBoundingClientRect()
+    const x = Math.ceil((event.clientX - rect.left) / (zoomValue * zoomFactor))
+    const y = Math.ceil((event.clientY - rect.top) / (zoomValue * zoomFactor))
+    if (!isWaiting) {
+        $('#info-picker').text("(" + y + ";" + x + ")");
+        changerCouleurPixelLocal(canvas, x, y);
     }
-    redraw();
-    var lastX=canvas.width/2, lastY=canvas.height/2;
-    var dragStart,dragged;
-    canvas.addEventListener('mousedown',function(evt){
-        document.body.style.mozUserSelect = document.body.style.webkitUserSelect = document.body.style.userSelect = 'none';
-        lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
-        lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
-        dragStart = ctx.transformedPoint(lastX,lastY);
-        dragged = false;
-    },false);
-    canvas.addEventListener('mousemove',function(evt){
-        lastX = evt.offsetX || (evt.pageX - canvas.offsetLeft);
-        lastY = evt.offsetY || (evt.pageY - canvas.offsetTop);
-        dragged = true;
-        if (dragStart){
-            var pt = ctx.transformedPoint(lastX,lastY);
-            ctx.translate(pt.x-dragStart.x,pt.y-dragStart.y);
-            redraw();
+}
+
+function changerCouleurPixelLocal(canvas, x, y) {
+    if (lastPixelData)
+        ctx.putImageData(lastPixelData, lastPixelChangedX - 1, lastPixelChangedY - 1);
+    lastPixelData = ctx.getImageData(x - 1, y - 1, 1, 1);
+    lastPixelChangedX = x;
+    lastPixelChangedY = y;
+    let data = ctx.getImageData(x - 1, y - 1, 1, 1);
+    color = $(".color-picker").val();
+    r = parseInt(color.substr(1, 2), 16)
+    g = parseInt(color.substr(3, 2), 16)
+    b = parseInt(color.substr(5, 2), 16)
+    data.data[0] = r
+    data.data[1] = g
+    data.data[2] = b
+    ctx.putImageData(data, x - 1, y - 1);
+    $(".valid-btn").removeAttr("disabled");
+}
+
+
+function envoyerPixel(e) {
+    e.preventDefault();
+    lastPixelData = undefined;
+    isWaiting = true;
+    $('#info-picker').text("(0;0)");
+    $(".valid-btn").attr("disabled", true);
+    temps = 3;
+    var chrono = setInterval(function () {
+        let minutes = parseInt(temps / 60, 10);
+        let secondes = parseInt(temps % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        secondes = secondes < 10 ? "0" + secondes : secondes;
+
+        $('#chronotime').text(`${minutes}:${secondes}`);
+        temps -= 1;
+        if (temps < 0) {
+            clearInterval(chrono);
+            isWaiting = false;
         }
-    },false);
-    canvas.addEventListener('mouseup',function(evt){
-        dragStart = null;
-        //if (!dragged) zoom(evt.shiftKey ? -1 : 1 );
-    },false);
+    }, 1000);
+}
 
-    var scaleFactor = 1.1;
-    var zoom = function(clicks){
-        var pt = ctx.transformedPoint(lastX,lastY);
-        ctx.translate(pt.x,pt.y);
-        var factor = Math.pow(scaleFactor,clicks);
-        ctx.scale(factor,factor);
-        ctx.translate(-pt.x,-pt.y);
-        redraw();
-    }
+document.addEventListener('mousedown', () => drag = false);
+document.addEventListener('mousemove', () => drag = true);
+$("form").on('submit', function (e) { envoyerPixel(e) });
+$("#print").on("click", function (e) { print('#canva', 'html') }); //to fix
+canvaJQ.on('mouseup', function (e) { if (!drag) getCursorPosition(canvas, e) });
 
-    var handleScroll = function(evt){
-        var delta = evt.wheelDelta ? evt.wheelDelta/40 : evt.detail ? -evt.detail : 0;
-        if (delta) zoom(delta);
-        return evt.preventDefault() && false;
-    };
-    canvas.addEventListener('DOMMouseScroll',handleScroll,false);
-    canvas.addEventListener('mousewheel',handleScroll,false);
-    	// Adds ctx.getTransform() - returns an SVGMatrix
-	// Adds ctx.transformedPoint(x,y) - returns an SVGPoint
-	function trackTransforms(ctx){
-		var svg = document.createElementNS("http://www.w3.org/2000/svg",'svg');
-		var xform = svg.createSVGMatrix();
-		ctx.getTransform = function(){ return xform; };
-		
-		var savedTransforms = [];
-		var save = ctx.save;
-		ctx.save = function(){
-			savedTransforms.push(xform.translate(0,0));
-			return save.call(ctx);
-		};
-		var restore = ctx.restore;
-		ctx.restore = function(){
-			xform = savedTransforms.pop();
-			return restore.call(ctx);
-		};
+/* ZOOM AND DRAG */
+$(function () {
+    $("#canva").draggable();
+});
 
-		var scale = ctx.scale;
-		ctx.scale = function(sx,sy){
-			xform = xform.scaleNonUniform(sx,sy);
-			return scale.call(ctx,sx,sy);
-		};
-		var rotate = ctx.rotate;
-		ctx.rotate = function(radians){
-			xform = xform.rotate(radians*180/Math.PI);
-			return rotate.call(ctx,radians);
-		};
-		var translate = ctx.translate;
-		ctx.translate = function(dx,dy){
-			xform = xform.translate(dx,dy);
-			return translate.call(ctx,dx,dy);
-		};
-		var transform = ctx.transform;
-		ctx.transform = function(a,b,c,d,e,f){
-			var m2 = svg.createSVGMatrix();
-			m2.a=a; m2.b=b; m2.c=c; m2.d=d; m2.e=e; m2.f=f;
-			xform = xform.multiply(m2);
-			return transform.call(ctx,a,b,c,d,e,f);
-		};
-		var setTransform = ctx.setTransform;
-		ctx.setTransform = function(a,b,c,d,e,f){
-			xform.a = a;
-			xform.b = b;
-			xform.c = c;
-			xform.d = d;
-			xform.e = e;
-			xform.f = f;
-			return setTransform.call(ctx,a,b,c,d,e,f);
-		};
-		var pt  = svg.createSVGPoint();
-		ctx.transformedPoint = function(x,y){
-			pt.x=x; pt.y=y;
-			return pt.matrixTransform(xform.inverse());
-		}
-	}
+var zoom = function (clicks) {
+    if (clicks > 0)
+        zoomValue++;
+    else if ((zoomValue - 1) * zoomFactor > 0)
+        zoomValue--;
+
+    $('#canva').css('transform', 'scale(' + zoomValue * zoomFactor + ')');
+}
+
+var handleScroll = function (evt) {
+    var delta = evt.wheelDelta ? evt.wheelDelta / 40 : evt.detail ? -evt.detail : 0;
+    if (delta) zoom(delta);
+    return evt.preventDefault() && false;
 };
-gkhead.src = 'assets/imgs/img.jpg';
 
-
+painting.on('wheel', function (evt) {
+    handleScroll(evt.originalEvent);
+});
