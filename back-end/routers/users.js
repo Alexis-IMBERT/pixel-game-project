@@ -87,7 +87,7 @@ router.post("/signup",
                     if (tests)
                         res.send("ACCOUNT CREATED")
                     else
-                        res.redirect('users/login');
+                        res.redirect('/users/login');
 
                 } else {
                     console.log("ACCOUNT ALREADY IN DB");
