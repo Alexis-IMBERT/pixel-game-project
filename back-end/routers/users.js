@@ -5,6 +5,9 @@ var crypto = require('crypto');
 const { render } = require('ejs');
 //var shasum = crypto.createHash('sha256');
 
+var usersUtil = require('./usersUtilitaries');
+const { exit } = require('process');
+
 /**
  * hash sha256 of input
  * @param {*} input 
@@ -20,25 +23,15 @@ var sha256 = function(input) {
 // add data to req.body (for POST requests)
 router.use(express.urlencoded({ extended: true }));
 
-const sqlite3 = require('sqlite3').verbose();
 
-/**
- * connecting an existing database (handling errors)
- * @author Jean-Bernard Cavelier
- */
-const db = new sqlite3.Database('./db/pixelwar.sqlite', (err) => {
-    if (err) {
-        console.error(err.message);
-    }
-    console.log('Connected to the database! via users router');
-});
+const db = require("./database");
 
 
-function loggedIn(req,res) {
-    console.log(req.session);
-    if (req.session.loggedin) {
+function redirectLoggedUsers(req,res) {
+    if (usersUtil.isLoggedIn(req)) {
         console.log("already logged in");
         res.redirect('/');
+        exit()
     }
 }
 
@@ -58,7 +51,8 @@ router.post("/signup",
 
         console.log("signup method accessed");
 
-        loggedIn(req,res);
+        redirectLoggedUsers(req, res);
+            
         
         let data = req.body;
         let username = data['login'];
@@ -81,7 +75,7 @@ router.post("/signup",
     
         db.serialize(() => {
 
-            db.run("INSERT INTO users VALUES(?,?);", [username,sha256(password)], function(err,result){
+            db.run("INSERT INTO users(login,password) VALUES(?,?);", [username,sha256(password)], function(err,result){
                 console.log(err);
                 if (!err) {
                     console.log("ACCOUNT CREATED OK");
@@ -107,12 +101,14 @@ router.post("/signup",
 
 router.use('/signup', function (req, res, err) {
     console.log("signup page accessed");
-    loggedIn(req,res);
+    
+    redirectLoggedUsers(req, res);
+        
     renderSignupPage(req,res,null);
 });
 
 function renderSignupPage(req,res,err) {
-    loggedIn(req,res);
+    redirectLoggedUsers(req,res);
     res.render('signup.ejs', { logged: false, login: false, error: err?err:false });
 }
 
@@ -144,7 +140,7 @@ router.post('/login',
 
                 if (result) {
                     req.session.loggedin = true;
-                    req.session.login = result['login'];
+                    req.session.login = result['LOGIN'];
                     console.log("LOG IN OK");
 
                     if (tests)
