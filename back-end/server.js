@@ -19,7 +19,6 @@ app.use(session({
 const port = 3000;
 
 // add data to req.body (for POST requests)
-app.use(express.urlencoded({ extended: true }));
 
 // serve static files
 app.use(express.static('../front-end'));
