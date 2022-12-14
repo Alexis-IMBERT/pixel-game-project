@@ -55,7 +55,8 @@ router.post("/signup",
             
         
         let data = req.body;
-        console.log(data)
+
+        console.log(data);
 
         let username = data['login'];
 
