@@ -14,6 +14,13 @@ form {
     text-align: center;
 }
 
+label {
+    width:80%;
+    color:red;
+    display: block;
+    text-align: center;
+    margin-left:10px;
+}
 .titre-form {
     margin-top:30px;
     color: var(--secondary-color);
@@ -24,6 +31,7 @@ form {
 .center-div:not(form) {
     box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
 }
+
 
 @media (max-width: 481px) {
     .center-div {
