@@ -30,8 +30,15 @@
                 password_confirmation: $('#signup-password-confirmation').val()
             };            
             if ( dataToPost.password == dataToPost.password_confirmation)
+            {
                 if ( dataToPost.password.length >= 6 )
                     return true;
+                else
+                    $('#signup-answer').html("Le mot de passe est trop court");
+            } else {
+                $('#signup-answer').html("Les mots de passe sont différents");
+
+            }                
             return false
 
         }
