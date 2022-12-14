@@ -1,0 +1,249 @@
+<head>
+    <script src="assets/js/jquery.min.js"> </script>
+    
+</head>
+
+<body>
+
+    <label> SIGNUP TEST</label>
+    <form method="POST" action="javascript:user_signup();">
+
+        <label for="username">username</label>
+        <input id="signup-username" type="text" name="username" required>
+
+        <label for="password">password</label>
+        <input id="signup-password" type="password" name="password" required>
+
+        <label for="password">password confirmation</label>
+        <input id="signup-password-confirmation" type="password" name="password" required>
+
+        <input type="submit" value="signup" >
+
+        <label id="signup-answer"></label>
+
+    </form>
+
+    <label> LOGIN TEST </label>
+    <form method="POST" action="javascript:user_login()">
+
+        <label for="username" >username</label>
+        <input id="login-username" type="text" name="username" required>
+
+        <label for="password">password</label>
+        <input id="login-password" type="text" name="password" required>
+
+        <input type="submit" value="login" >
+
+        <label id="login-answer"></label>
+
+    </form>
+
+    <label> LOG OUT </label>
+    <form method="POST" action="javascript:user_logout();">
+    
+        <input type="submit" value="logout">
+    
+        <label id="logout-answer"></label>
+    
+    </form>
+
+
+    <label> CANVA CREATION </label>
+    <form method="POST" action="javascript:canva_generation();">
+        <label for="height">height</label>
+        <input id="canva-generation-height" type="number" name="height" required>
+       
+        <label for="length">length</label>
+        <input id="canva-generation-length" type="number" name="length" required>
+
+
+        <input type="submit" value="generation">
+    
+        <label id="canva-generation-answer"></label>
+    
+    </form>
+
+   <!--
+ <div id="painting">
+        <canvas id="canva"></canvas>
+    </div>
+   --> 
+   
+<form method="POST" action="javascript:page_view();">
+
+    <label for="page-view-link">page link</label>
+    <input id="page-view-link" type="text" name="page-view-link" required>
+    
+    
+    <input type="submit" value="view page">
+
+    <iframe id="page" title="Inline Frame Example" width="1000" height="800"></iframe>
+
+   
+
+</form>
+
+   
+
+
+
+   
+
+
+   
+    
+    <script>
+        function user_signup() {
+
+            console.log("signup entered");
+
+            var dataToPost = {
+                login: $('#signup-username').val(),
+                password: $('#signup-password').val(),
+                password_confirmation: $('#signup-password-confirmation').val()
+            };
+
+            console.log(dataToPost);
+
+            $.ajax({
+                type: 'POST',
+                url: '/users/signup?tests=true',
+                timeout: 3000,
+                data: dataToPost,
+                success: function (data) {
+                    console.log("OK");
+                    $('#signup-answer').html(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                    console.log("ERROR");
+                    $('#signup-answer').html(err.responseText);
+                }
+            });
+
+        }
+
+        function user_login() {
+
+            console.log("login entered");
+
+            var dataToPost = {
+                login: $('#login-username').val(),
+                password: $('#login-password').val()
+            };
+
+            console.log(dataToPost);
+
+            $.ajax({
+                type: 'POST',
+                url: '/users/login?tests=true',
+                timeout: 3000,
+                data: dataToPost,
+                success: function (data) {
+                    console.log("OK");
+                    $('#login-answer').html(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                    console.log("ERROR");
+                    $('#login-answer').html(err.responseText);
+                }
+            });
+
+        }
+        
+        function user_logout() {
+
+            console.log("logout entered");
+
+            var dataToPost = {
+                
+            };
+
+            console.log(dataToPost);
+
+            $.ajax({
+                type: 'POST',
+                url: '/users/logout?tests=true',
+                timeout: 3000,
+                data: dataToPost,
+                success: function (data) {
+                    console.log("OK");
+                    $('#logout-answer').html(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                    console.log("ERROR");
+                    $('#logout-answer').html(err.responseText);
+                }
+            });
+
+        }
+
+        function canva_generation() {
+
+            console.log("canva_generation entered");
+
+            var dataToPost = {
+                height: $('#canva-generation-height').val(),
+                length: $('#canva-generation-length').val()
+            };
+
+            console.log(dataToPost);
+
+            $.ajax({
+                type: 'POST',
+                url: '/canvas/generate?tests=true',
+                timeout: 3000,
+                data: dataToPost,
+                success: function (data) {
+                    console.log("OK");
+                    $('#canva-generation-answer').html(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                    console.log("ERROR");
+                    $('#canva-generation-answer').html(err.responseText);
+                }
+            });
+
+        }
+
+        function page_view() {
+
+            console.log("page_view entered");
+
+            var dataToPost = {
+
+            };
+
+            console.log(dataToPost);
+
+            $('#page').attr('src', $("#page-view-link").val());
+
+           /* $.ajax({
+                type: 'GET',
+                url: $("#page-view-link").val(),
+                timeout: 3000,
+                data: dataToPost,
+                success: function (data) {
+                    console.log("OK");
+                    $('#page').replaceWith(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                    console.log("ERROR");
+                    $('#page').replaceWith(data);
+                }
+            });*/
+
+        }
+
+
+    </script>
+
+</body>
+
+<footer>
+    <script src="assets/js/canva.js" defer></script>
+</footer>
