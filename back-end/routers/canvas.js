@@ -4,7 +4,9 @@ const router = express.Router();
 
 
 const usersUtil = require('./usersUtilitaries')
-
+router.use("/", function (req, res) {
+    res.render("canvas.ejs", { logged: req.session.loggedin, login: req.session.login, error: false })
+});
 router.post("/generate", function (req,res) {
     console.log("generate canva method accessed");
 

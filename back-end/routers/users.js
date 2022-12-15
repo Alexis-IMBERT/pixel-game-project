@@ -171,6 +171,7 @@ router.use('/login', function (req, res) {
     renderLoginPage(req,res,false);
 });
 
+
 function renderLoginPage(req,res,err) {
     res.render('login.ejs', { logged: req.session.loggedin, login: req.session.login, error: err });
 }

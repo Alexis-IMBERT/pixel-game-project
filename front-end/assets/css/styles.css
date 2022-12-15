@@ -7,6 +7,7 @@
     --primary-color: rgb(180, 199, 225);
     --secondary-color: rgb(25, 63, 135);
     --clear-bg: white;
+    --gray-bg: lightgray;
 }
 
 * {
@@ -17,6 +18,73 @@
     font-family: "CustomFont";
     src: url("./BebasNeue-Regular.otf");
 }
+
+.bg-color { background-color: var(--primary-color);}
+.color-sc { background-color: var(--secondary-color);}
+.color-gc { background-color: var(--gray-bg);}
+.text-white { font-family: 'CustomFont', Arial, sans-serif; color:lightgray; font-size:1.4em; }
+
+.center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width:50%;
+    height:50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    border-radius: 20px;
+    text-align: center;
+    padding-bottom:10px;
+}
+
+.top:is(.center) {
+    -webkit-transform: translate(-50%, -65%);
+    transform: translate(-50%, -65%);
+    bottom: 30%;
+}
+
+.column-section {
+    display:flex;
+    flex-flow: row wrap !important;
+    border-radius: 10px;
+}
+
+.row-section {
+    display:flex;
+    flex-flow: column wrap !important;
+    border-radius: 10px;
+}
+.scrollable {
+    overflow-y: scroll;
+}
+.scrollable::-webkit-scrollbar {
+    display: none;
+  }
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollable {
+-ms-overflow-style: none;  /* IE and Edge */
+scrollbar-width: none;  /* Firefox */
+}
+.list-games {
+    height:358px;
+}
+.border-bottom {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+.flex-4 { flex: 4; }
+.flex-3 { flex: 3; }
+.flex-2 { flex: 2; }
+.flex-1 { flex: 1; }
+.h-80   { height:80%; }
+.mg-10  { margin:10px;}
+.flex-gap-10        { column-gap: 10px; row-gap: 10px; }
+.top-rounded-box    { padding: 10px; border-radius: 10px 10px 0px 0px }
+.mid-box            { padding: 10px; border-top: 1px solid gray; }
+.bottom-rounded-box { padding: 10px; border-radius: 0px 0px 10px 10px }
+.no-pad { padding:0 !important;}
+
 
 .body-container {
     position: absolute;
@@ -71,10 +139,18 @@
 }
 
 .footer-box:not(:has(.icon)) {
-    width: 200px;
+    min-width: 200px;
     background-color: white;    
     border-radius: 10px;
     box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+
+.titre-form {
+    margin-top:30px;
+    color: var(--secondary-color);
+
+    font-family: 'CustomFont', Arial, sans-serif;
+    font-size:3em;
 }
 
 .icon {
@@ -101,34 +177,6 @@
     
 }
 
-.valid-btn {
-    color: var(--valid-secondary-color);
-    width:100%;
-    border: 1px solid var(--valid-secondary-color);
-    background-color: var(--valid-primary-color);
-    border-radius: 10px;
-    font-family: 'CustomFont', Arial, sans-serif;
-    font-size: 3.6em;
-    transition-duration: 500ms;
-    cursor: pointer;
-}
-
-.valid-btn:disabled {
-    color: lightgrey;
-    width:100%;
-    border: 1px solid white;
-    background-color: grey;
-    border-radius: 10px;
-    font-family: 'CustomFont', Arial, sans-serif;
-    font-size: 3.6em;
-    transition-duration: 500ms;
-}
-
-.valid-btn:hover:enabled {
-    color: var(--valid-primary-color);
-    border: 1px solid grey;
-    background-color: var(--valid-secondary-color);
-}
 
 .color-picker {
     width:200px;
@@ -167,12 +215,13 @@
 }
 
 .btn {
-    width:84%;
+    min-width:200px;
     padding:10px;
-    margin:10px;
     border-radius: 10px;
-    height:40px;
     display: inline-block;
+    font-family: 'CustomFont', Arial, sans-serif;
+    font-size: 2em;
+    transition-duration: 300ms;
 }
 
 .valid {
@@ -181,11 +230,25 @@
     color:var(--valid-secondary-color);
 }
 
+.valid:hover {
+    background-color: var(--valid-secondary-color);
+    border: 1px solid var(--valid-primary-color);
+    color:var(--valid-primary-color);
+}
+
+.valid:disabled {
+    background-color: grey;
+    border: 1px solid var(--clear-bg);
+    color:white;
+}
+
+
 .error {
     background-color: var(--bad-primary-color);
     border: 1px solid var(--bad-secondary-color);
     color:var(--bad-secondary-color);
 }
+
 
 
 /* COLORS */

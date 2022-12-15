@@ -18,7 +18,7 @@
                     <a href="/users/signup">Inscription</a>
                 <% } else { %>
                     <a href="/users/perfil">Profil</a>
-                    <a href="/users/canvas">Canvas</a>
+                    <a href="/canvas">Canvas</a>
                     <a href="/users/logout">Se déconnecter</a>
                 <% } %>
             </div>
@@ -30,11 +30,7 @@
                     <p onselectstart="return false" id="info-picker">(0;0)</p>
                     <input type="color" id="head" name="head" class="color-picker" value="#e66465">
                 </div>
-                <div class="footer-box">
-                    <form method="GET">
-                        <button disabled class="valid-btn">ENVOYER</button>
-                    </form>
-                </div>
+                <button disabled class="valid btn" id="send-btn">ENVOYER</button>
                 <div class="footer-box">
                     <p id="chrono"><label id="chronotime">10:00</label><label id="min">min</label></p>
                 </div>
