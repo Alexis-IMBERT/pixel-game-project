@@ -69,11 +69,47 @@ router.post("/generate", function (req,res) {
 
     });
 
-
     //res.send("IT IS OK");
-
-
     
+});
+
+router.get("/accessible", function(req,res) {
+
+    if (!usersUtil.isLoggedIn(req)) {
+        res.status(400).send("YOU ARE NOT LOGGED IN");
+        return;
+    }
+
+    console.log(req.session.login)
+
+    db.serialize( () => {
+
+        const statement = db.prepare("SELECT idCanva FROM usersInCanva WHERE idUser=?;");
+        statement.get([req.session.login], function (err, result) {
+            console.log(err);
+            if (err) {
+                console.log(err);
+                res.status(400).end("Bad request");
+                return;
+            } 
+
+            console.log(result);
+
+            if (result) {
+
+                console.log(result)
+
+                res.setHeader('Content-Type', 'application/json')
+                res.end(JSON.stringify(result));
+
+            } else {
+                res.status(400).end("USERNAME NOT FOUND / USER NOT IN A CANVA");
+                return;
+            }
+
+        });
+        statement.finalize();
+    });
 });
 
 

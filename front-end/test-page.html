@@ -47,7 +47,6 @@
     
     </form>
 
-
     <label> CANVA CREATION </label>
     <form method="POST" action="javascript:canva_generation();">
         <label for="height">height</label>
@@ -60,6 +59,15 @@
         <input type="submit" value="generation">
     
         <label id="canva-generation-answer"></label>
+    
+    </form>
+
+    <label> GET MY CANVAS </label>
+    <form method="GET" action="javascript:canva_getusercanvas();">
+    
+        <input type="submit" value="canva-usercanvas">
+    
+        <label id="canva-usercanvas-answer"></label>
     
     </form>
 
@@ -207,6 +215,31 @@
                 }
             });
 
+        }
+
+        function canva_getusercanvas() {
+            console.log("canva_usercanvas entered");
+
+            var dataToPost = {};
+
+            console.log(dataToPost);
+
+            $.ajax({
+                type: 'GET',
+                url: '/canvas/accessible?tests=true',
+                timeout: 3000,
+                data: dataToPost,
+                success: function (data) {
+                    console.log("OK");
+                    console.log(data)
+                    $('#canva-usercanvas-answer').html(JSON.stringify(data));
+                },
+                error: function (err) {
+                    console.log(err);
+                    console.log("ERROR");
+                    $('#canva-usercanvas-answer').html(err.responseText);
+                }
+            });
         }
 
         function page_view() {
