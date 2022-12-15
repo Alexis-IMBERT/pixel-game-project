@@ -142,6 +142,7 @@ router.post('/login',
                     console.log(err);
                     res.status(400).send("Bad request");
                     //next(err);
+                    return;
                 } 
 
                 if (result) {
