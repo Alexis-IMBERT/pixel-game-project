@@ -230,8 +230,8 @@
             console.log(dataToPost);
 
             $.ajax({
-                type: 'GET',
-                url: '/canvas/accessible?tests=true',
+                type: 'POST',
+                url: '/canvas/accessible',
                 timeout: 3000,
                 data: dataToPost,
                 success: function (data) {

@@ -78,7 +78,7 @@ router.post("/generate", function (req,res) {
     
 });
 
-router.get("/accessible", function(req,res) {
+router.post("/accessible", function(req,res) {
 
     if (!usersUtil.isLoggedIn(req)) {
         res.status(400).send("YOU ARE NOT LOGGED IN");
