@@ -51,8 +51,14 @@ const router = require('./routers/router');
 app.use('/', router);
 
 
+
+const init = require("./routers/init")
+
 // run the server
 app.listen(port, () => {
 	// callback executed when the server is launched
 	console.log(`Express app listening on port ${port}`);
+
+	init.initDatabase();
+	
 });

@@ -49,6 +49,10 @@
 
     <label> CANVA CREATION </label>
     <form method="POST" action="javascript:canva_generation();">
+
+        <label for="name">name</label>
+        <input id="canva-generation-name" type="text" name="name" required>
+
         <label for="height">height</label>
         <input id="canva-generation-height" type="number" name="height" required>
        
@@ -193,6 +197,7 @@
             console.log("canva_generation entered");
 
             var dataToPost = {
+                name: $('#canva-generation-name').val(),
                 height: $('#canva-generation-height').val(),
                 length: $('#canva-generation-length').val()
             };

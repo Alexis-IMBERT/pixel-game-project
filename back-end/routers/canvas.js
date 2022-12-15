@@ -4,6 +4,10 @@ const router = express.Router();
 
 const usersUtil = require('./usersUtilitaries')
 
+const crypto = require('crypto');
+const uuid = crypto.randomUUID;
+
+
 // add data to req.body (for POST requests)
 router.use(express.urlencoded({ extended: true }));
 
@@ -26,10 +30,11 @@ router.post("/generate", function (req,res) {
 
     console.log(data)
 
+    let name = data['name']
     let height = data['height']
     let length = data['length']
     let owner  = req.session.login
-    let idcanva = owner;
+    let idcanva = uuid();
 
     if (height == null || length == null) {
         res.status(400).send("MISSING DATA");
@@ -38,13 +43,13 @@ router.post("/generate", function (req,res) {
 
     db.serialize(() => {
 
-        db.run("INSERT INTO canvas(id,owner,height,length) VALUES(?,?,?,?);", [idcanva,owner, height,length], function (err, result) {
+        db.run("INSERT INTO canvas(id,name,owner,height,length) VALUES(?,?,?,?,?);", [idcanva,name,owner, height,length], function (err, result) {
             console.log(err);
             if (!err) {
                 console.log("CANVA CREATED OK id="+owner);
 
                 db.serialize(() => {
-                    db.run("INSERT INTO usersInCanva(idCanva,idUser) VALUES(?,?);", [idcanva, owner], function (err, result) {
+                    db.run("INSERT INTO usersInCanva(idCanva,idUser) VALUES (?,?)", [idcanva,owner], function (err, result) {
                         console.log(err);
                     
                         if (!err) {
@@ -84,16 +89,14 @@ router.get("/accessible", function(req,res) {
 
     db.serialize( () => {
 
-        const statement = db.prepare("SELECT idCanva FROM usersInCanva WHERE idUser=?;");
-        statement.get([req.session.login], function (err, result) {
+        const statement = db.prepare("SELECT u.idCanva, c.owner, c.name FROM usersInCanva u, canvas c WHERE u.idCanva =c.id AND u.idUser=?;");
+        statement.all([req.session.login], function (err, result) {
             console.log(err);
             if (err) {
                 console.log(err);
                 res.status(400).end("Bad request");
                 return;
             } 
-
-            console.log(result);
 
             if (result) {
 
