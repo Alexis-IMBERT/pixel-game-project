@@ -16,9 +16,9 @@
                     <input name="login" type="text" id="signup-username" class="input-text" placeholder="Pseudo">
                     <input name="password" type="password" id="signup-password" class="input-text" placeholder="Mot de passe">
                     <input name="password_confirmation" type="password" id="signup-password-confirmation" class="input-text" placeholder="Répéter le mot de passe">
-                    <label id="signup-answer">test</label>   
-                    <button class="btn valid">ENVOYER</button>
-                    <button class="btn error">RETOUR</button>
+                    <label id="signup-answer"></label>   
+                    <button type="submit" class="btn valid">ENVOYER</button>
+                    <button type="button" onclick="window.location.href='/home'" class="btn error">RETOUR</button>
                 </form>
             </div>
         </div>
@@ -30,8 +30,15 @@
                 password_confirmation: $('#signup-password-confirmation').val()
             };            
             if ( dataToPost.password == dataToPost.password_confirmation)
+            {
                 if ( dataToPost.password.length >= 6 )
                     return true;
+                else
+                    $('#signup-answer').html("Le mot de passe est trop court");
+            } else {
+                $('#signup-answer').html("Les mots de passe sont différents");
+
+            }                
             return false
 
         }
