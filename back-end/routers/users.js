@@ -81,14 +81,20 @@ router.post("/signup",
     
         db.serialize(() => {
 
+            // CREATE USER
             db.run("INSERT INTO users(login,password) VALUES(?,?);", [username,sha256(password)], function(err,result){
                 console.log(err);
                 if (!err) {
-                    console.log("ACCOUNT CREATED OK");
-                    if (tests)
-                        res.send("ACCOUNT CREATED")
-                    else
-                        res.redirect('users/login');
+
+                    // ADD USER TO DEFAULT CANVA
+                    db.run("INSERT INTO usersInCanva(idCanva, idUser) VALUES(?,?);", ["general",username], function(err,result) {
+                        console.log("ACCOUNT CREATED OK");
+                        if (tests)
+                            res.send("ACCOUNT CREATED")
+                        else
+                            res.redirect('users/login');
+                    })
+                    
 
                 } else {
                     console.log("ACCOUNT ALREADY IN DB");
