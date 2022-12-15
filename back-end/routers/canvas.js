@@ -65,7 +65,7 @@ router.post("/generate", function (req,res) {
 
 
 router.use("/:id", function(req,res) {
-
+    res.render("canvas.ejs", { logged: req.session.loggedin, login: req.session.login, error: false })
 });
 
 
