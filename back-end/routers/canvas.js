@@ -64,6 +64,51 @@ router.post("/generate", function (req,res) {
     
 });
 
+
+function getCanvasUtilisateurs(login) {
+    let res = null;
+
+    db.serialize(() => {
+
+        const statement = db.prepare("SELECT u.idCanva, c.owner, c.name FROM usersInCanva u, canvas c WHERE u.idCanva =c.id AND u.idUser=?;");
+        statement.all([login], function (err, result) {
+            console.log(err);
+            if (err) {
+                console.log(err);
+                res = false;
+                return;
+            }
+
+            if (result) {
+
+                console.log(result)
+
+                res = result;
+
+            } else {
+                res = false;
+                return;
+            }
+
+        });
+        statement.finalize();
+    });
+
+    while (res==null)
+        deasync.runLoopOnce();
+
+
+    return res;
+}
+
+function userCanAccessCanva(idUser,idCanva){
+    let canvas = getCanvasUtilisateurs(idUser)
+    for (canva_itm in canvas) {
+        if (canvas[canva_itm].idCanva == idCanva) return true;
+    }
+    return false;
+}
+
 router.post("/accessible", function(req,res) {
 
     if (!usersUtil.isLoggedIn(req)) {
@@ -73,32 +118,17 @@ router.post("/accessible", function(req,res) {
 
     console.log(req.session.login)
 
-    db.serialize( () => {
+    let canvas = getCanvasUtilisateurs(req.session.login) ;
 
-        const statement = db.prepare("SELECT u.idCanva, c.owner, c.name FROM usersInCanva u, canvas c WHERE u.idCanva =c.id AND u.idUser=?;");
-        statement.all([req.session.login], function (err, result) {
-            console.log(err);
-            if (err) {
-                console.log(err);
-                res.status(400).end("Bad request");
-                return;
-            } 
+    if (!canvas) {
+        res.status(400).end("Bad request");
+        return;
+    }
 
-            if (result) {
+    res.setHeader('Content-Type', 'application/json')
+    res.end(JSON.stringify(canvas));
 
-                console.log(result)
-
-                res.setHeader('Content-Type', 'application/json')
-                res.end(JSON.stringify(result));
-
-            } else {
-                res.status(400).end("USERNAME NOT FOUND / USER NOT IN A CANVA");
-                return;
-            }
-
-        });
-        statement.finalize();
-    });
+    
 });
 
 /*
@@ -106,13 +136,65 @@ router.use("/:id", function(req,res) {
     res.render("canvas.ejs", { logged: req.session.loggedin, login: req.session.login, error: false })
 });*/
 
+function sendCanva(idCanva,res) {
+    console.log("OK GENERAL");
+    res.send("OK GENERAL")
+}
+
+router.post("/getImage", function(req,res) {
+
+    console.log("get entered")
+
+    let data = req.body
+
+    let id = data['idCanva'];
+
+    let tests = req.query["tests"];
+
+    let idUser = req.session.login;
+
+    if (id=="general") {
+        sendCanva(id,res);
+        return;
+    }
+
+    if (!usersUtil.isLoggedIn(req)) {
+        res.end('YOU ARE NOT LOGGED IN');
+        return;
+    }
+
+    let canvasUser = getCanvasUtilisateurs(idUser);
+    console.log(id)
+    console.log(canvasUser[id])
+
+
+
+    if (! userCanAccessCanva(idUser,id)) {
+        res.end("YOU CANNOT ACCESS THIS CANVA")
+        return;
+    }
+
+    res.end("OK");
+    
+    
+})
+
+router.post("/", function(req,res) {
+    let data = req.body
+
+    let id = data['idCanva'];
+
+    res.render('canvas.ejs', { logged: req.session.loggedin, login: req.session.login, error: false, idCanva: id });
+
+});
+
 router.use("/", function (req, res) {
     if (!usersUtil.isLoggedIn(req)) {
         res.redirect('/');
         return;
     }
        
-    res.render("canvas.ejs", { logged: req.session.loggedin, login: req.session.login, error: false })
+    res.redirect("/");
 });
 
 

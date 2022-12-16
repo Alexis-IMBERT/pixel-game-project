@@ -95,6 +95,26 @@
 
 </form>
 
+<form method="POST" action="javascript:canva_get();">
+
+    <label for="canva-get-id">canva id</label>
+    <input id="canva-get-id" type="text" name="canva-get-id" required>
+
+    <label id="canva-get-answer"></label>
+
+
+    <input type="submit" value="get canva">
+
+    <iframe id="page" title="Inline Frame Example" width="200" height="40">
+        <div id="painting">
+            <canvas id="canva"></canvas>
+        </div>
+    </iframe>
+    
+
+
+</form>
+
    
 
 
@@ -168,9 +188,7 @@
 
             console.log("logout entered");
 
-            var dataToPost = {
-                
-            };
+            var dataToPost = {};
 
             console.log(dataToPost);
 
@@ -259,6 +277,35 @@
 
             $('#page').attr('src', $("#page-view-link").val());
 
+        }
+
+
+        function canva_get() {
+
+            console.log("canva_get entered");
+
+            var dataToPost = {
+                idCanva: $('#canva-get-id').val()
+            };
+
+            console.log(dataToPost);
+
+            $.ajax({
+                type: 'POST',
+                url: '/canvas/getImage',
+                timeout: 3000,
+                data: dataToPost,
+                success: function (data) {
+                    console.log("OK");
+                    console.log(data)
+                    $('#canva-get-answer').html(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                    console.log("ERROR");
+                    $('#canva-get-answer').html(err.responseText);
+                }
+            });
         }
 
 
