@@ -3,18 +3,19 @@ const express = require('express');
 const db = require('./database');
 
 const crypto = require('crypto');
-const uuid = crypto.randomUUID;
+
+const createCanva  = require("./canvas").createCanva;
+
+
 
 function initDatabase() {
-    db.run("INSERT INTO canvas(id,name,owner,height,length) VALUES(?,?,?,?,?);", ["general","general" ,"serveur", 1000, 1000], function (err, result) {
-        if (err) {
-            console.log("canva general already exists, skipping initialisation");
-            return;
-        }
 
-        console.log("canva general created");
+    if (!createCanva("general","general","serveur",1000,1000,false)) {
+        console.log("general canva already in db, skipping initialisation");
+    } else {
+        console.log("canva general created")
+    }
 
-    })
 }
 
 

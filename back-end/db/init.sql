@@ -17,6 +17,8 @@ CREATE TABLE canvas (
 CREATE TABLE usersInCanva (
     idCanva VARCHAR,
     idUser VARCHAR,
+    dernierePose TIMESTAMP,
+    derniereDemande TIMESTAMP,
     FOREIGN KEY(idUser) REFERENCES users(login),
     FOREIGN KEY(idCanva) REFERENCES canvas(id),
     CONSTRAINT can_us PRIMARY KEY (idCanva, idUser)
