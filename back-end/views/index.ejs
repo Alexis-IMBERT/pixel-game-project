@@ -18,29 +18,25 @@
                     <a href="/users/signup">Inscription</a>
                 <% } else { %>
                     <a href="/users/perfil">Profil</a>
-                    <a href="/users/canvas">Canvas</a>
+                    <a href="/canvas">Canvas</a>
                     <a href="/users/logout">Se déconnecter</a>
                 <% } %>
             </div>
             <div class="footer bg-main">
                 <div class="footer-box">
-                    <a target="_blank" href="https://www.makeuseof.com/what-is-rplace-reddit-art-experiment/#:~:text=The%20concept%20behind%20r%2FPlace%20is%20pretty%20simple.,or%20tile%20of%20whichever%20color."><img class="icon" id="rules" src="assets/imgs/book.png"></a>
+                    <a target="_blank" href="https://www.makeuseof.com/what-is-rplace-reddit-art-experiment/#:~:text=The%20concept%20behind%20r%2FPlace%20is%20pretty%20simple.,or%20tile%20of%20whichever%20color."><img class="imgbtn" id="rules" src="assets/imgs/book.png"></a>
                 </div>
                 <div class="footer-box">
                     <p onselectstart="return false" id="info-picker">(0;0)</p>
                     <input type="color" id="head" name="head" class="color-picker" value="#e66465">
                 </div>
-                <div class="footer-box">
-                    <form method="GET">
-                        <button disabled class="valid-btn">ENVOYER</button>
-                    </form>
-                </div>
+                <button disabled class="valid btn" id="send-btn">ENVOYER <div class="icon locked"></div></button>
                 <div class="footer-box">
                     <p id="chrono"><label id="chronotime">10:00</label><label id="min">min</label></p>
                 </div>
                 
                 <div class="footer-box">
-                    <img class="icon" id="print" src="assets/imgs/printer.png">
+                    <img class="imgbtn" id="print" src="assets/imgs/printer.png">
                 </div>
             </div>
         </div>
