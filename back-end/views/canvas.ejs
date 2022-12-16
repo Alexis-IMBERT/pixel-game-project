@@ -24,35 +24,15 @@
                     </div>
                     <div class="scrollable list-games border-bottom">
                         <div v-if="isLoading"class="lds-ellipsis"><div></div><div></div><div></div><div></div></div></div>
-                        <div v-if="!isLoading" v-for="canva in canvas" class="mid-box color-gc" style="cursor:pointer">
-                            <div class="column-section " >
+                        <div v-if="!isLoading" v-for="canva in canvas" class="mid-box color-gc">
+                            <div v-on-click="joinCanva(canva)" class="column-section" >
                                 <div class="flex-3 ">{{canva.name}}</div>
                                 <div class="flex-2 ">{{canva.owner}}</div>
                                 <div class="flex-1 text-center">3 joueurs</div>
                             </div>
                         </div>
                     </div>
-                    <script>
-                        const app = new Vue({
-                            el:"#app",
-                            data: {
-                                isLoading: false,
-                                canvas:[],
-                            },
-                            methods: {
-                                getCanvas() {
-                                    this.isLoading = true;
-                                    $.getJSON("/canvas/accessible", function(data) {
-                                        app.canvas = data;
-                                        app.isLoading = false;
-                                    });
-                                }  
-                            },
-                            mounted() {
-                                this.getCanvas();
-                            }
-                        })
-                    </script>
+                    
                 </div>
             </div>
             <div class="login-menu">
@@ -66,8 +46,36 @@
                 <% } %>
             </div>
             <div class="footer bg-main">
-                <button class="btn error">NOUVEAU DESSIN <div class="icon locked"></div></button>
+                <button onclick="newCanva()" class="btn error">NOUVEAU DESSIN <div class="icon locked"></div></button>
             </div>
         </div>
+        <script>
+
+            function newCanva() {
+                //todo
+            }
+            const app = new Vue({
+                el:"#app",
+                data: {
+                    isLoading: false,
+                    canvas:[],
+                },
+                methods: {
+                    joinCanva: function(event,canva) {
+                        window.location.href = '../'+canva.idCanva;
+                    },
+                    getCanvas() {
+                        this.isLoading = true;
+                        $.getJSON("/canvas/accessible", function(data) {
+                            app.canvas = data;
+                            app.isLoading = false;
+                        });
+                    }
+                },
+                mounted() {
+                    this.getCanvas();
+                }
+            })
+        </script>
     </body>
 </html>
