@@ -24,6 +24,18 @@
 .color-gc { background-color: var(--gray-bg);}
 .text-white { font-family: 'CustomFont', Arial, sans-serif; color:lightgray; font-size:1.4em; }
 
+.locked:is(.icon) { background-image:url(../imgs/icons/lock.gif);}
+.unlocked:is(.icon) { background-image:url(../imgs/icons//valid.gif);}
+.join:is(.icon) { background-image:url(../imgs/icons/join.gif);}
+.icon {
+    background-size: cover;
+    width:20px;
+    height:20px;
+    float:right;
+    background-repeat: no-repeat;
+    margin:5px;
+    margin-top:8px;
+}
 .center {
     position: absolute;
     left: 50%;
@@ -82,6 +94,7 @@ scrollbar-width: none;  /* Firefox */
 .flex-gap-10        { column-gap: 10px; row-gap: 10px; }
 .top-rounded-box    { padding: 10px; border-radius: 10px 10px 0px 0px }
 .mid-box            { padding: 10px; border-top: 1px solid gray; }
+.mid-box:hover { background-color: white;}
 .bottom-rounded-box { padding: 10px; border-radius: 0px 0px 10px 10px }
 .no-pad { padding:0 !important;}
 
@@ -153,7 +166,7 @@ scrollbar-width: none;  /* Firefox */
     font-size:3em;
 }
 
-.icon {
+.imgbtn {
     width:70px;
     height:100%;
     filter: invert(100%);
@@ -161,7 +174,7 @@ scrollbar-width: none;  /* Firefox */
     cursor: pointer;
 }
 
-.icon:hover {
+.imgbtn:hover {
     filter: invert(50%);
 }
 
