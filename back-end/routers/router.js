@@ -3,7 +3,7 @@ const router = express.Router();
 
 // home
 router.use('/home', function (req, res) {
-	res.render('canvas.ejs', { logged: req.session.loggedin, login: req.session.login, error: false, idCanva: "general"  });
+	res.render('index.ejs', { logged: req.session.loggedin, login: req.session.login, error: false, idCanva: "general"  });
 });
 
 router.use('/index.html', function (req, res) {
