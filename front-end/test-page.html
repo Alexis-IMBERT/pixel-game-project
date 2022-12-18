@@ -47,9 +47,12 @@
     
     </form>
 
-
     <label> CANVA CREATION </label>
     <form method="POST" action="javascript:canva_generation();">
+
+        <label for="name">name</label>
+        <input id="canva-generation-name" type="text" name="name" required>
+
         <label for="height">height</label>
         <input id="canva-generation-height" type="number" name="height" required>
        
@@ -60,6 +63,15 @@
         <input type="submit" value="generation">
     
         <label id="canva-generation-answer"></label>
+    
+    </form>
+
+    <label> GET MY CANVAS </label>
+    <form method="GET" action="javascript:canva_getusercanvas();">
+    
+        <input type="submit" value="canva-usercanvas">
+    
+        <label id="canva-usercanvas-answer"></label>
     
     </form>
 
@@ -80,6 +92,31 @@
     <iframe id="page" title="Inline Frame Example" width="1000" height="800"></iframe>
 
    
+
+</form>
+
+<form method="POST" action="javascript:canva_get();">
+
+    <label for="canva-get-id">canva id</label>
+    <input id="canva-get-id" type="text" name="canva-get-id" required>
+
+    <label id="canva-get-answer"></label>
+
+
+    <input type="submit" value="get canva">
+
+
+
+    <canvas id="canva-get-canva"></canvas>
+
+
+    <iframe id="page" title="Inline Frame Example" width="200" height="40">
+        <div id="painting">
+            
+        </div>
+    </iframe>
+    
+
 
 </form>
 
@@ -156,9 +193,7 @@
 
             console.log("logout entered");
 
-            var dataToPost = {
-                
-            };
+            var dataToPost = {};
 
             console.log(dataToPost);
 
@@ -185,6 +220,7 @@
             console.log("canva_generation entered");
 
             var dataToPost = {
+                name: $('#canva-generation-name').val(),
                 height: $('#canva-generation-height').val(),
                 length: $('#canva-generation-length').val()
             };
@@ -209,6 +245,31 @@
 
         }
 
+        function canva_getusercanvas() {
+            console.log("canva_usercanvas entered");
+
+            var dataToPost = {};
+
+            console.log(dataToPost);
+
+            $.ajax({
+                type: 'POST',
+                url: '/canvas/accessible',
+                timeout: 3000,
+                data: dataToPost,
+                success: function (data) {
+                    console.log("OK");
+                    console.log(data)
+                    $('#canva-usercanvas-answer').html(JSON.stringify(data));
+                },
+                error: function (err) {
+                    console.log(err);
+                    console.log("ERROR");
+                    $('#canva-usercanvas-answer').html(err.responseText);
+                }
+            });
+        }
+
         function page_view() {
 
             console.log("page_view entered");
@@ -221,22 +282,70 @@
 
             $('#page').attr('src', $("#page-view-link").val());
 
-           /* $.ajax({
-                type: 'GET',
-                url: $("#page-view-link").val(),
-                timeout: 3000,
+        }
+
+
+        function canva_get() {
+
+            console.log("canva_get entered");
+
+            var dataToPost = {
+                idCanva: $('#canva-get-id').val()
+            };
+
+            console.log(dataToPost);
+
+            $.ajax({
+                type: 'POST',
+                url: '/canvas/getImage',
+                //timeout: 3000,
                 data: dataToPost,
+                //dataType: 'binary',
+                responseType: 'arraybuffer',
+                //processData: false,
+                //cache:false,
+                mimeType: 'image/png',
                 success: function (data) {
                     console.log("OK");
-                    $('#page').replaceWith(data);
+                    console.log(data)
+                    // Create an image object from the response data
+                    var image = new Image();
+                    console.log(new Uint8Array(data))
+                    console.log(String.fromCharCode.apply(null, new Uint8Array(data)))
+                    image.src = "data:image/png;base64," + btoa(String.fromCharCode.apply(null, new Uint8Array(data)));
+
+                    console.log(image.src)
+                    // Draw the image on the canvas
+                    image.onload = function () {
+                        var canvas = document.getElementById('canva-get-canva');
+                        var ctx = canvas.getContext('2d');
+                        ctx.drawImage(image, 0, 0);
+
+                        console.log("ok")
+                    }
+
                 },
                 error: function (err) {
                     console.log(err);
                     console.log("ERROR");
-                    $('#page').replaceWith(data);
-                }
-            });*/
+                    $('#canva-get-answer').html(err.responseText);
 
+                    var image = new Image();
+                    //console.log(new Uint8Array(data))
+                    console.log(String.fromCharCode.apply(null, new Uint8Array(err.responseText)))
+                    image.src = "data:image/png;base64," + btoa(err.responseText);
+
+                    console.log(image.src)
+                    // Draw the image on the canvas
+                    image.onload = function () {
+                        var canvas = document.getElementById('canva-get-canva');
+                        var ctx = canvas.getContext('2d');
+                        ctx.drawImage(image, 0, 0);
+
+                        console.log("ok")
+                    }
+                }
+            });
         }
 
 

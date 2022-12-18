@@ -8,6 +8,7 @@ const deasync = require('deasync');
 
 function isLoggedIn(req) {
     //console.log(req.session)
+    //if (req.session == undefined) return false;
     return req.session.loggedin;
 }
 

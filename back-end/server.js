@@ -28,10 +28,6 @@ app.set('view engine', 'ejs');
 
 
 
-
-
-
-
 // routers
 app.use("/404", function(req, res) {
 	res.status(404);
@@ -43,7 +39,7 @@ const users = require('./routers/users');
 app.use('/users', users);
 app.use('/users', express.static('../front-end'));
 
-const canvas = require('./routers/canvas')
+const canvas = require('./routers/canvas').router
 app.use('/canvas', canvas)
 
 
@@ -51,8 +47,14 @@ const router = require('./routers/router');
 app.use('/', router);
 
 
+
+const init = require("./routers/init")
+
 // run the server
 app.listen(port, () => {
 	// callback executed when the server is launched
 	console.log(`Express app listening on port ${port}`);
+
+	init.initDatabase();
+	
 });
