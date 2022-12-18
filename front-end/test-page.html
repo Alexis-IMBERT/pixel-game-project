@@ -295,31 +295,24 @@
                 cache:false,
                 mimeType: 'image/png',
                 success: function (data,status,xhr) {
-
                     console.log("OK");
-
                     // Create an image object from the response data
                     var image = new Image();
                     image.src = "data:image/png;base64,"+data;
-                    console.log(image.src)
 
                     // Draw the image on the canvas
                     image.onload = function () {
-                        console.log("enter")
                         var canvas = document.getElementById('canva-get-canva');
                         canvas.width = image.width;
                         canvas.height = image.height;
                         var ctx = canvas.getContext('2d');
                         ctx.drawImage(image, 0, 0);
-                        
-                        console.log("ok")
                     }
 
                 },
                 error: function (err) {
-
-                    console.log(err);
                     console.log("ERROR");
+                    console.log(err);
                     $('#canva-get-answer').html(err.responseText);
 
                 }
