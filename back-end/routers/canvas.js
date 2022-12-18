@@ -13,8 +13,6 @@ const { exit } = require('process');
 
 const jimp = require("jimp")
 
-//const canvas = require('canvas')
-
 
 // add data to req.body (for POST requests)
 router.use(express.urlencoded({ extended: true }));
@@ -66,6 +64,20 @@ router.post("/generate", function (req,res) {
     }
 
     
+});
+
+router.use("/generate", function(req,res) {
+    if (!usersUtil.isLoggedIn(req)) { 
+        res.redirect("/users/login")
+        return;
+    }
+
+    if (!usersUtil.isVip(req)) {  
+        res.redirect('/');
+        return;
+    }
+
+    res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false})
 });
 
 
@@ -143,36 +155,7 @@ router.use("/:id", function(req,res) {
 function sendCanva(idCanva,res) {
     console.log("OK GENERAL");
 
-   /* let height = 20;
-    let width = 20;
-
-    let color = 0x123456;
-
-    const canva = canvas.createCanvas(width,height)
-    const ctx = canva.getContext('2d');
-
-    for (let y=0; y < width; y++) {
-        for (let x=0; x < height; x++){
-            ctx.fillStyle = color;
-            ctx.fillRect(x,y,1,1);
-        }
-    }
-
-    //let c = canva.toBuffer();
-
-    //console.log(c);
-
-    res.setHeader('Content-Type','image/png');
-    res.send(canva.toBuffer());*/
-
-    //res.send("OK GENERAL")
-
-    /*const pixels = [[0xff0000ff, 0x00ff00ff, 0x0000ffff],
-    [0xffff00ff, 0x00ffffff, 0xff00ffff],
-    [0xffffff00, 0xff00ff00, 0x00ffff00]
-    ];*/
-
-    const color = 0xff0000ff;
+    let color = 0x000000ff;
 
     const width = 1000;
     const height = 1000;
@@ -184,6 +167,7 @@ function sendCanva(idCanva,res) {
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
             image.setPixelColor(color, x, y);
+            color += 0x00000100;
         }
     }
 
@@ -192,14 +176,14 @@ function sendCanva(idCanva,res) {
         if (error) {
             res.status(500).send(error);
         } else {
-            console.log(buffer);
             res.status(200);
             res.set('Content-Type', jimp.MIME_PNG);
             res.set('Content-Length', buffer.length);
             //res.set('Access-Control-Allow-Origin', '*');
-            res.send(buffer);
+            res.send(buffer.toString('base64'));
         }
     });
+
 }
 
 router.post("/getImage", function(req,res) {
@@ -223,7 +207,7 @@ router.post("/getImage", function(req,res) {
     }
 
     if (!usersUtil.isLoggedIn(req)) {
-        res.end('YOU ARE NOT LOGGED IN');
+        res.status(400).end('YOU ARE NOT LOGGED IN');
         return;
     }
 
@@ -234,7 +218,7 @@ router.post("/getImage", function(req,res) {
 
 
     if (! userCanAccessCanva(idUser,id)) {
-        res.end("YOU CANNOT ACCESS THIS CANVA")
+        res.status(400).end("YOU CANNOT ACCESS THIS CANVA")
         return;
     }
 
@@ -243,22 +227,36 @@ router.post("/getImage", function(req,res) {
     
 })
 
-router.post("/", function(req,res) {
-    let data = req.body
+/**
+ * Acceder à un canva particulier en fournissant l'ID 
+ */
+router.use("/:id", function(req,res) {
 
-    let id = data['idCanva'];
+    let id = req.params.id;
 
-    res.render('canvas.ejs', { logged: req.session.loggedin, login: req.session.login, error: false, idCanva: id });
+    let accessible = userCanAccessCanva(req.session.login,id);
 
+    if (!accessible) {
+        res.redirect("/canvas")
+        return;
+    }
+
+    res.render('index.ejs', { logged: req.session.loggedin, login: req.session.login, error: false, idCanva: id });
 });
 
+
+/**
+ * acceder à la liste complete de ses canvas
+ */
 router.use("/", function (req, res) {
+
     if (!usersUtil.isLoggedIn(req)) {
         res.redirect('/');
         return;
     }
        
-    res.redirect("/");
+    res.render('canvas.ejs', { logged: req.session.loggedin, login: req.session.login, isVip: usersUtil.isVip(req), error: false });
+
 });
 
 
