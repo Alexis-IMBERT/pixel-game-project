@@ -11,6 +11,10 @@ const uuid = crypto.randomUUID;
 const deasync = require('deasync');
 const { exit } = require('process');
 
+const jimp = require("jimp")
+
+//const canvas = require('canvas')
+
 
 // add data to req.body (for POST requests)
 router.use(express.urlencoded({ extended: true }));
@@ -138,7 +142,64 @@ router.use("/:id", function(req,res) {
 
 function sendCanva(idCanva,res) {
     console.log("OK GENERAL");
-    res.send("OK GENERAL")
+
+   /* let height = 20;
+    let width = 20;
+
+    let color = 0x123456;
+
+    const canva = canvas.createCanvas(width,height)
+    const ctx = canva.getContext('2d');
+
+    for (let y=0; y < width; y++) {
+        for (let x=0; x < height; x++){
+            ctx.fillStyle = color;
+            ctx.fillRect(x,y,1,1);
+        }
+    }
+
+    //let c = canva.toBuffer();
+
+    //console.log(c);
+
+    res.setHeader('Content-Type','image/png');
+    res.send(canva.toBuffer());*/
+
+    //res.send("OK GENERAL")
+
+    /*const pixels = [[0xff0000ff, 0x00ff00ff, 0x0000ffff],
+    [0xffff00ff, 0x00ffffff, 0xff00ffff],
+    [0xffffff00, 0xff00ff00, 0x00ffff00]
+    ];*/
+
+    const color = 0xff0000ff;
+
+    const width = 1000;
+    const height = 1000;
+
+    // Create a new image with the specified width and height
+    const image = new jimp(width, height);
+
+    // Set the pixel colors for each pixel in the image
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            image.setPixelColor(color, x, y);
+        }
+    }
+
+    // Generate the image and send it as a response
+    image.getBuffer(jimp.MIME_PNG, (error, buffer) => {
+        if (error) {
+            res.status(500).send(error);
+        } else {
+            console.log(buffer);
+            res.status(200);
+            res.set('Content-Type', jimp.MIME_PNG);
+            res.set('Content-Length', buffer.length);
+            //res.set('Access-Control-Allow-Origin', '*');
+            res.send(buffer);
+        }
+    });
 }
 
 router.post("/getImage", function(req,res) {
@@ -152,6 +213,9 @@ router.post("/getImage", function(req,res) {
     let tests = req.query["tests"];
 
     let idUser = req.session.login;
+
+    console.log(id);
+    console.log(id=="general")
 
     if (id=="general") {
         sendCanva(id,res);
