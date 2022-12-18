@@ -40,9 +40,9 @@
                     <a href="/users/login">Connexion</a>
                     <a href="/users/signup">Inscription</a>
                 <% } else { %>
-                    <a href="/users/perfil">Profil</a>
-                    <a href="/users/canvas">Canvas</a>
-                    <a href="/users/logout">Se déconnecter</a>
+                    <a href="/perfil">Profil</a>
+                    <a href="/canvas">Canvas</a>
+                    <a href="/logout">Se déconnecter</a>
                 <% } %>
             </div>
             <div class="footer bg-main">
@@ -57,7 +57,7 @@
             
             console.log("lien : " + window.location.href);
             function newCanva() {
-                window.location.href += '/generate';
+                window.location.href += 'generate';
             }
 
             const app = new Vue({
@@ -68,7 +68,7 @@
                 },
                 methods: {
                     joinCanva: function(canva) {
-                        window.location.href += '/'+canva.idCanva;
+                        window.location.href += canva.idCanva;
                     },
                     getCanvas() {
                         this.isLoading = true;

@@ -23,7 +23,7 @@ router.post("/generate", function (req,res) {
     console.log("generate canva method accessed");
 
     let tests = req.query['tests'];
-
+    
     if (!usersUtil.isLoggedIn(req)) {
         if (tests)
             res.status(400).send("YOU ARE NOT LOGGED IN");
@@ -53,7 +53,6 @@ router.post("/generate", function (req,res) {
         res.status(400).send("MISSING DATA");
         return;
     }
-
     // ADD CANVA in CANVAS table + CREATE TABLE CANVA_IDCANVA to store all the pixels
     if (!createCanva(idcanva,name,idOwner,height,length, true))
         res.status(400).end("Bad request");
@@ -313,7 +312,6 @@ router.use("/", function (req, res) {
  */
 function createCanva(idcanva, name, idOwner, height, length, linkOwnerToCanva) {
     var ok = null;
-
     // create callbacks
 
     let rollback = () => {

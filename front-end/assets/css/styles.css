@@ -24,9 +24,20 @@
 .color-gc { background-color: var(--gray-bg);}
 .text-white { font-family: 'CustomFont', Arial, sans-serif; color:lightgray; font-size:1.4em; }
 
+label:not(is(#chrono)) {
+    width:80%;
+    color:red;
+    display: block;
+    margin-left:10px;
+    margin-top:30px;
+    font-family: 'CustomFont', Arial, sans-serif;
+    font-size: 2em;
+}
+
 .locked:is(.icon) { background-image:url(../imgs/icons/lock.gif);}
-.unlocked:is(.icon) { background-image:url(../imgs/icons//valid.gif);}
+.unlocked:is(.icon) { background-image:url(../imgs/icons/valid.gif);}
 .join:is(.icon) { background-image:url(../imgs/icons/join.gif);}
+.cross:is(.icon) { background-image:url(../imgs/icons/cross.gif);}
 .icon {
     background-size: cover;
     width:20px;
@@ -63,8 +74,9 @@
 
 .row-section {
     display:flex;
-    flex-flow: column wrap !important;
+    /*flex-flow: column wrap !important;*/
     border-radius: 10px;
+    width:100%;
 }
 .scrollable {
     overflow-y: scroll;
@@ -79,7 +91,7 @@
 scrollbar-width: none;  /* Firefox */
 }
 .list-games {
-    height:358px;
+    /*height:358px;*/
 }
 .border-bottom {
     border-bottom-left-radius: 10px;
@@ -89,8 +101,14 @@ scrollbar-width: none;  /* Firefox */
 .flex-3 { flex: 3; }
 .flex-2 { flex: 2; }
 .flex-1 { flex: 1; }
+.gap-20 { gap:20px; }
+.no-wrap { flex-flow: nowrap !important;}
 .h-80   { height:80%; }
 .mg-10  { margin:10px;}
+.w-100 { width:100%; }
+.h-100 { height: 100%; }
+.h-95 { height: 95%; }
+.border-rad-20 { border-radius: 20px;}
 .flex-gap-10        { column-gap: 10px; row-gap: 10px; }
 .top-rounded-box    { padding: 10px; border-radius: 10px 10px 0px 0px }
 .mid-box            { padding: 10px; border-top: 1px solid gray; }
@@ -186,6 +204,14 @@ scrollbar-width: none;  /* Firefox */
     font-size:3em;
 }
 
+.soustitre-form {
+    margin-top:20px;
+    color: var(--secondary-color);
+    text-decoration:underline;
+    font-family: 'CustomFont', Arial, sans-serif;
+    font-size:2em;
+}
+
 .imgbtn {
     width:70px;
     height:100%;
@@ -255,6 +281,7 @@ scrollbar-width: none;  /* Firefox */
     font-family: 'CustomFont', Arial, sans-serif;
     font-size: 2em;
     transition-duration: 300ms;
+    cursor: pointer;
 }
 
 .valid {
@@ -282,7 +309,11 @@ scrollbar-width: none;  /* Firefox */
     color:var(--bad-secondary-color);
 }
 
-
+.error:hover {    
+    background-color: var(--bad-secondary-color);
+    border: 1px solid var(--bad-primary-color);
+    color:var(--bad-primary-color);
+}
 
 /* COLORS */
 .bg-main {
