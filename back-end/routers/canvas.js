@@ -186,7 +186,7 @@ function sendCanva(idCanva,res) {
     [0xffffff00, 0xff00ff00, 0x00ffff00]
     ];*/
 
-    const color = 0xff0000ff;
+    let color = 0x000000ff;
 
     const width = 1000;
     const height = 1000;
@@ -198,6 +198,7 @@ function sendCanva(idCanva,res) {
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
             image.setPixelColor(color, x, y);
+            color += 0x00000100;
         }
     }
 
@@ -206,14 +207,14 @@ function sendCanva(idCanva,res) {
         if (error) {
             res.status(500).send(error);
         } else {
-            console.log(buffer);
             res.status(200);
             res.set('Content-Type', jimp.MIME_PNG);
             res.set('Content-Length', buffer.length);
             //res.set('Access-Control-Allow-Origin', '*');
-            res.send(buffer);
+            res.send(buffer.toString('base64'));
         }
     });
+
 }
 
 router.post("/getImage", function(req,res) {
@@ -237,7 +238,7 @@ router.post("/getImage", function(req,res) {
     }
 
     if (!usersUtil.isLoggedIn(req)) {
-        res.end('YOU ARE NOT LOGGED IN');
+        res.status(400).end('YOU ARE NOT LOGGED IN');
         return;
     }
 
@@ -248,7 +249,7 @@ router.post("/getImage", function(req,res) {
 
 
     if (! userCanAccessCanva(idUser,id)) {
-        res.end("YOU CANNOT ACCESS THIS CANVA")
+        res.status(400).end("YOU CANNOT ACCESS THIS CANVA")
         return;
     }
 

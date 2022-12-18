@@ -102,19 +102,11 @@
 
     <label id="canva-get-answer"></label>
 
-
     <input type="submit" value="get canva">
-
 
 
     <canvas id="canva-get-canva"></canvas>
 
-
-    <iframe id="page" title="Inline Frame Example" width="200" height="40">
-        <div id="painting">
-            
-        </div>
-    </iframe>
     
 
 
@@ -298,56 +290,43 @@
             $.ajax({
                 type: 'POST',
                 url: '/canvas/getImage',
-                //timeout: 3000,
                 data: dataToPost,
-                //dataType: 'binary',
                 responseType: 'arraybuffer',
-                //processData: false,
-                //cache:false,
+                cache:false,
                 mimeType: 'image/png',
-                success: function (data) {
+                success: function (data,status,xhr) {
+
                     console.log("OK");
-                    console.log(data)
+
                     // Create an image object from the response data
                     var image = new Image();
-                    console.log(new Uint8Array(data))
-                    console.log(String.fromCharCode.apply(null, new Uint8Array(data)))
-                    image.src = "data:image/png;base64," + btoa(String.fromCharCode.apply(null, new Uint8Array(data)));
-
+                    image.src = "data:image/png;base64,"+data;
                     console.log(image.src)
+
                     // Draw the image on the canvas
                     image.onload = function () {
+                        console.log("enter")
                         var canvas = document.getElementById('canva-get-canva');
+                        canvas.width = image.width;
+                        canvas.height = image.height;
                         var ctx = canvas.getContext('2d');
                         ctx.drawImage(image, 0, 0);
-
+                        
                         console.log("ok")
                     }
 
                 },
                 error: function (err) {
+
                     console.log(err);
                     console.log("ERROR");
                     $('#canva-get-answer').html(err.responseText);
 
-                    var image = new Image();
-                    //console.log(new Uint8Array(data))
-                    console.log(String.fromCharCode.apply(null, new Uint8Array(err.responseText)))
-                    image.src = "data:image/png;base64," + btoa(err.responseText);
-
-                    console.log(image.src)
-                    // Draw the image on the canvas
-                    image.onload = function () {
-                        var canvas = document.getElementById('canva-get-canva');
-                        var ctx = canvas.getContext('2d');
-                        ctx.drawImage(image, 0, 0);
-
-                        console.log("ok")
-                    }
                 }
             });
-        }
 
+            
+        }
 
     </script>
 
