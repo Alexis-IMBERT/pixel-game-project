@@ -68,6 +68,20 @@ router.post("/generate", function (req,res) {
     
 });
 
+router.use("/generate", function(req,res) {
+    if (!usersUtil.isLoggedIn(req)) { 
+        res.redirect("/users/login")
+        return;
+    }
+
+    if (!usersUtil.isVip(req)) {  
+        res.redirect('/');
+        return;
+    }
+
+    res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false})
+});
+
 
 function getCanvasUtilisateurs(login) {
     let res = null;
@@ -244,14 +258,18 @@ router.post("/getImage", function(req,res) {
 })
 
 /**
- * Acceder à un canva particulier en fournissant l'ID en post
+ * Acceder à un canva particulier en fournissant l'ID 
  */
 router.use("/:id", function(req,res) {
 
-    console.log();
-    let data = req.body
+    let id = req.params.id;
 
-    let id = data['idCanva'];
+    let accessible = userCanAccessCanva(req.session.login,id);
+
+    if (!accessible) {
+        res.redirect("/canvas")
+        return;
+    }
 
     res.render('index.ejs', { logged: req.session.loggedin, login: req.session.login, error: false, idCanva: id });
 });
@@ -261,6 +279,7 @@ router.use("/:id", function(req,res) {
  * acceder à la liste complete de ses canvas
  */
 router.use("/", function (req, res) {
+
     if (!usersUtil.isLoggedIn(req)) {
         res.redirect('/');
         return;
