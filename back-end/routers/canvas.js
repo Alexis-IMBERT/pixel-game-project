@@ -17,54 +17,67 @@ const jimp = require("jimp")
 // add data to req.body (for POST requests)
 router.use(express.urlencoded({ extended: true }));
 
-router.post("/generate", function (req,res) {
-    console.log("generate canva method accessed");
 
-    let tests = req.query['tests'];
 
-    if (!usersUtil.isLoggedIn(req)) {
-        if (tests)
-            res.status(400).send("YOU ARE NOT LOGGED IN");
-        else
-            res.redirect("/users/login")
-        return;
-    }
+router.post("/generate", 
+    /**
+     * Generate a canvas 
+     * 
+     * @param {*} req (req.body["name"] ; req.body['height'] ; req.body['length'])
+     * @param {*} res 
+     * 
+     * @author Jean-Bernard CAVELIER
+     */    
+    function (req,res) {
+
+        console.log("generate canva method accessed");
+
+        let tests = req.query['tests'];
+
+        if (!usersUtil.isLoggedIn(req)) {
+            if (tests)
+                res.status(400).send("YOU ARE NOT LOGGED IN");
+            else
+                res.redirect("/users/login")
+            return;
+        }
+            
+        if (!usersUtil.isVip(req)) {
+            if (tests)
+                res.status(400).send("YOU ARE NOT A VIP");
+            else
+                res.redirect('/');
+            return;
+        }
         
-    if (!usersUtil.isVip(req)) {
-        if (tests)
-            res.status(400).send("YOU ARE NOT A VIP");
-        else
-            res.redirect('/');
-        return;
+
+        let data = req.body
+
+        let name = data['name']
+        let height = data['height']
+        let length = data['length']
+        let idOwner  = req.session.login
+        let idcanva = uuid();
+
+        if (height == null || length == null) {
+            res.status(400).send("MISSING DATA");
+            return;
+        }
+
+        // ADD CANVA in CANVAS table + CREATE TABLE CANVA_IDCANVA to store all the pixels + link owner to the table
+        if (!createCanva(idcanva,name,idOwner,height,length, true)){
+            res.status(400).end("Bad request");
+            return;
+        }
+
+        if (tests) {
+            res.send("CANVA CREATED id=" + idcanva);
+        } else {
+            res.redirect('/canvas/' + idcanva);
+        }
+
     }
-    
-
-    let data = req.body
-
-    let name = data['name']
-    let height = data['height']
-    let length = data['length']
-    let idOwner  = req.session.login
-    let idcanva = uuid();
-
-    if (height == null || length == null) {
-        res.status(400).send("MISSING DATA");
-        return;
-    }
-
-    // ADD CANVA in CANVAS table + CREATE TABLE CANVA_IDCANVA to store all the pixels
-    if (!createCanva(idcanva,name,idOwner,height,length, true))
-        res.status(400).end("Bad request");
-
-
-    if (tests) {
-        res.send("CANVA CREATED id=" + idcanva);
-    } else {
-        res.redirect('/canvas/' + idcanva);
-    }
-
-    
-});
+);
 
 router.use("/generate", function(req,res) {
     if (!usersUtil.isLoggedIn(req)) { 
@@ -81,49 +94,6 @@ router.use("/generate", function(req,res) {
 });
 
 
-function getCanvasUtilisateurs(login) {
-    let res = null;
-
-    db.serialize(() => {
-
-        const statement = db.prepare("SELECT u.idCanva, c.owner, c.name FROM usersInCanva u, canvas c WHERE u.idCanva =c.id AND u.idUser=?;");
-        statement.all([login], function (err, result) {
-            console.log(err);
-            if (err) {
-                console.log(err);
-                res = false;
-                return;
-            }
-
-            if (result) {
-
-                console.log(result)
-
-                res = result;
-
-            } else {
-                res = false;
-                return;
-            }
-
-        });
-        statement.finalize();
-    });
-
-    while (res==null)
-        deasync.runLoopOnce();
-
-
-    return res;
-}
-
-function userCanAccessCanva(idUser,idCanva){
-    let canvas = getCanvasUtilisateurs(idUser)
-    for (canva_itm in canvas) {
-        if (canvas[canva_itm].idCanva == idCanva) return true;
-    }
-    return false;
-}
 
 router.post("/accessible", function(req,res) {
 
@@ -266,6 +236,7 @@ router.use("/", function (req, res) {
 
 
 
+isHexColor = (hex) => typeof hex === 'string' && hex.length === 6 && !isNaN(Number('0x' + hex))
 
 
 /**
@@ -328,7 +299,7 @@ function createCanva(idcanva, name, idOwner, height, length, linkOwnerToCanva) {
     }
 
     let createTableCanva = () => {
-        db.run("CREATE TABLE '" + idcanva + "' ( pxl_x integer, pxl_y integer, pose TIMESTAMP,CONSTRAINT pxl_key PRIMARY KEY (pxl_x,pxl_y));", function (err, result) {
+        db.run("CREATE TABLE '" + idcanva + "' ( pxl_x integer, pxl_y integer, couleur VARCHAR, pose TIMESTAMP,CONSTRAINT pxl_key PRIMARY KEY (pxl_x,pxl_y));", function (err, result) {
             if (!err) {
                 console.log("CANVA PXL TABLE CREATED " + idcanva);
                 if (linkOwnerToCanva)
@@ -384,6 +355,51 @@ function createCanva(idcanva, name, idOwner, height, length, linkOwnerToCanva) {
     console.log('finished');
     return ok;
 
+}
+
+
+function getCanvasUtilisateurs(login) {
+    let res = null;
+
+    db.serialize(() => {
+
+        const statement = db.prepare("SELECT u.idCanva, c.owner, c.name FROM usersInCanva u, canvas c WHERE u.idCanva =c.id AND u.idUser=?;");
+        statement.all([login], function (err, result) {
+            console.log(err);
+            if (err) {
+                console.log(err);
+                res = false;
+                return;
+            }
+
+            if (result) {
+
+                console.log(result)
+
+                res = result;
+
+            } else {
+                res = false;
+                return;
+            }
+
+        });
+        statement.finalize();
+    });
+
+    while (res == null)
+        deasync.runLoopOnce();
+
+
+    return res;
+}
+
+function userCanAccessCanva(idUser, idCanva) {
+    let canvas = getCanvasUtilisateurs(idUser)
+    for (canva_itm in canvas) {
+        if (canvas[canva_itm].idCanva == idCanva) return true;
+    }
+    return false;
 }
 
 
