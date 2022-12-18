@@ -23,7 +23,7 @@ router.post("/generate",
     /**
      * Generate a canvas 
      * 
-     * @param {*} req (req.body["name"] ; req.body['height'] ; req.body['length'])
+     * @param {*} req (req.body["name"] ; req.body['height'] ; req.body['width'])
      * @param {*} res 
      * 
      * @author Jean-Bernard CAVELIER
@@ -55,17 +55,17 @@ router.post("/generate",
 
         let name = data['name']
         let height = data['height']
-        let length = data['length']
+        let width = data['width']
         let idOwner  = req.session.login
         let idcanva = uuid();
 
-        if (height == null || length == null) {
+        if (height == null || width == null) {
             res.status(400).send("MISSING DATA");
             return;
         }
 
         // ADD CANVA in CANVAS table + CREATE TABLE CANVA_IDCANVA to store all the pixels + link owner to the table
-        if (!createCanva(idcanva,name,idOwner,height,length, true)){
+        if (!createCanva(idcanva,name,idOwner,height,width, true)){
             res.status(400).end("Bad request");
             return;
         }
@@ -246,13 +246,13 @@ isHexColor = (hex) => typeof hex === 'string' && hex.length === 6 && !isNaN(Numb
  * @param {*} name 
  * @param {*} idOwner 
  * @param {*} height 
- * @param {*} length 
+ * @param {*} width 
  * @param {*} linkOwnerToCanva
  * 
  * @returns true if creation was completed
  * @returns false if an error occured (Bad request)
  */
-function createCanva(idcanva, name, idOwner, height, length, linkOwnerToCanva) {
+function createCanva(idcanva, name, idOwner, height, width, linkOwnerToCanva) {
     var ok = null;
 
     // create callbacks
@@ -318,7 +318,7 @@ function createCanva(idcanva, name, idOwner, height, length, linkOwnerToCanva) {
     }
 
     let insertCanvaTable = () => {
-        db.run("INSERT INTO canvas(id,name,owner,height,length) VALUES(?,?,?,?,?);", [idcanva, name, idOwner, height, length], function (err, result) {
+        db.run("INSERT INTO canvas(id,name,owner,height,width) VALUES(?,?,?,?,?);", [idcanva, name, idOwner, height, width], function (err, result) {
             if (!err) {
                 console.log("CANVA CREATED OK id=" + idcanva);
                 createTableCanva();
