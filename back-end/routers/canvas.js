@@ -243,22 +243,31 @@ router.post("/getImage", function(req,res) {
     
 })
 
-router.post("/", function(req,res) {
+/**
+ * Acceder à un canva particulier en fournissant l'ID en post
+ */
+router.use("/:id", function(req,res) {
+
+    console.log();
     let data = req.body
 
     let id = data['idCanva'];
 
-    res.render('canvas.ejs', { logged: req.session.loggedin, login: req.session.login, error: false, idCanva: id });
-
+    res.render('index.ejs', { logged: req.session.loggedin, login: req.session.login, error: false, idCanva: id });
 });
 
+
+/**
+ * acceder à la liste complete de ses canvas
+ */
 router.use("/", function (req, res) {
     if (!usersUtil.isLoggedIn(req)) {
         res.redirect('/');
         return;
     }
        
-    res.redirect("/");
+    res.render('canvas.ejs', { logged: req.session.loggedin, login: req.session.login, isVip: usersUtil.isVip(req), error: false });
+
 });
 
 
