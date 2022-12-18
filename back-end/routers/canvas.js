@@ -13,8 +13,6 @@ const { exit } = require('process');
 
 const jimp = require("jimp")
 
-//const canvas = require('canvas')
-
 
 // add data to req.body (for POST requests)
 router.use(express.urlencoded({ extended: true }));
@@ -156,35 +154,6 @@ router.use("/:id", function(req,res) {
 
 function sendCanva(idCanva,res) {
     console.log("OK GENERAL");
-
-   /* let height = 20;
-    let width = 20;
-
-    let color = 0x123456;
-
-    const canva = canvas.createCanvas(width,height)
-    const ctx = canva.getContext('2d');
-
-    for (let y=0; y < width; y++) {
-        for (let x=0; x < height; x++){
-            ctx.fillStyle = color;
-            ctx.fillRect(x,y,1,1);
-        }
-    }
-
-    //let c = canva.toBuffer();
-
-    //console.log(c);
-
-    res.setHeader('Content-Type','image/png');
-    res.send(canva.toBuffer());*/
-
-    //res.send("OK GENERAL")
-
-    /*const pixels = [[0xff0000ff, 0x00ff00ff, 0x0000ffff],
-    [0xffff00ff, 0x00ffffff, 0xff00ffff],
-    [0xffffff00, 0xff00ff00, 0x00ffff00]
-    ];*/
 
     let color = 0x000000ff;
 
