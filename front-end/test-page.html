@@ -56,8 +56,8 @@
         <label for="height">height</label>
         <input id="canva-generation-height" type="number" name="height" required>
        
-        <label for="length">length</label>
-        <input id="canva-generation-length" type="number" name="length" required>
+        <label for="width">width</label>
+        <input id="canva-generation-width" type="number" name="width" required>
 
 
         <input type="submit" value="generation">
@@ -214,7 +214,7 @@
             var dataToPost = {
                 name: $('#canva-generation-name').val(),
                 height: $('#canva-generation-height').val(),
-                length: $('#canva-generation-length').val()
+                width: $('#canva-generation-width').val()
             };
 
             console.log(dataToPost);
