@@ -219,9 +219,16 @@ router.use("/:id",
      * 
      * @author Jean-Bernard CAVELIER
      */
-    function(req,res) {
+    function(req,res, next) {
+
+        console.log("here")
 
         let id = req.params.id;
+
+        console.log(id);
+
+        if (id === "")
+            next();
 
         let accessible = userCanAccessCanva(req.session.login,id);
 
@@ -249,7 +256,10 @@ router.use("/",
      */
     function (req, res) {
 
+        console.log("no here")
+
         if (!usersUtil.isLoggedIn(req)) {
+            console.log("not logged")
             res.redirect('/');
             return;
         }
