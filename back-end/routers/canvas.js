@@ -506,7 +506,7 @@ function sendCanva(idCanva, res) {
             else {
                 // Easy access to row-Entries using row.NAME
                 console.log(row.pxl_x + " | " + row.pxl_y + " | " + row.couleur);
-                image.setPixelColor(row.couleur,row.pxl_x,row.pxl_y)
+                image.setPixelColor(parseInt(row.couleur),row.pxl_x,row.pxl_y)
             }
                 
         });
