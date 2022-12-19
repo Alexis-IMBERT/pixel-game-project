@@ -123,6 +123,16 @@ router.post("/:id/update",
 
         let idCanva = encodeURIComponent(req.params.id);
 
+        if (!usersUtil.isLoggedIn(req)) {
+            res.redirect("/users/login")
+            return;
+        }
+
+        if (!usersUtil.isOwner(req, idCanva)) {
+            res.redirect('/canvas');
+            return;
+        }
+
         let height;
         let width;
 
@@ -183,7 +193,7 @@ router.post("/:id/update",
             for (key2 in usersIn) {
                 inlist = false;
                 for (key in users) {
-                    if (users[key] == usersIn[key2]) {
+                    if (users[key] == usersIn[key2] || usersIn[key2] == req.session.login ) {
                         inlist = true;
                     }
                 }
@@ -202,7 +212,7 @@ router.post("/:id/update",
         })
 
         res.redirect("/canvas");
-        
+
     }
 );
 
