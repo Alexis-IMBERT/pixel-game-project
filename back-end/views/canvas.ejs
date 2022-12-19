@@ -26,7 +26,10 @@
                         <div v-if="!isLoading" class="mid-box" >
                             <div v-for="canva in canvas">
                                 <div class="column-section canva-row" v-on:click="joinCanva(canva)">
-                                    <div class="flex-3 ">{{canva.name}}</div>
+                                    <div class="flex-3 ">{{canva.name}} 
+                                        <div v-on:click="editCanva(canva)" v-if="owner == canva.owner" class="icon pencil"></div>
+                                        <div v-else class="icon" style="width:30px"></div>
+                                    </div>
                                     <div class="flex-2 ">{{canva.owner}}</div>
                                 </div>
                             </div>
@@ -54,8 +57,6 @@
             </div>
         </div>
         <script>
-            
-            console.log("lien : " + window.location.href);
             function newCanva() {
                 window.location.href += 'generate';
             }
@@ -65,10 +66,14 @@
                 data: {
                     isLoading: false,
                     canvas:[],
+                    owner:"",
                 },
                 methods: {
+                    editCanva: function(canva) {
+                        window.location.href += canva.idCanva + "/edit";
+                    },
                     joinCanva: function(canva) {
-                        window.location.href += canva.idCanva;
+                       // window.location.href += canva.idCanva;
                     },
                     getCanvas() {
                         this.isLoading = true;
@@ -83,6 +88,7 @@
                     this.getCanvas();
                 }
             })
+            app.owner = '<%= login %>';
         </script>
     </body>
 </html>

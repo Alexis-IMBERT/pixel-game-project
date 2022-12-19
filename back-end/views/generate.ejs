@@ -8,6 +8,8 @@
         <link rel="stylesheet" href="assets/css/styles.css">
         <link rel="stylesheet" href="assets/css/loader.css">
         <script type="text/javascript" src="assets/js/vue.js"></script>
+        <link rel="stylesheet" href="assets/js/cute-alert-master/style.css" />
+        <script src="assets/js/cute-alert-master/cute-alert.js"></script>
     </head>
     <body>
         <div class="body-container" id="app">
@@ -38,8 +40,9 @@
                             <h1 class="titre-form" style="margin-bottom: 30px;">MEMBRES</h1>
                             <div class="column-section bg-main" style="margin:10px; max-height:80%; overflow: auto;">
                                     <div class="row-section">
-                                        <h1 class="soustitre-form flex-1">PSEUDO</h1>
+                                        <h1 class="soustitre-form flex-2">PSEUDO</h1>
                                         <input name="name" type="text" id="name" class="input-text flex-3" placeholder="Krusty Krab's Palace">
+                                        <button type="button" v-on:click="addMember()" class="btn valid flex-1" style="min-width:20px !important;">+</button>
                                     </div>
                                     <label class="flex-1" id="generate-answer"></label>   
                                     
@@ -50,13 +53,10 @@
                                         </div>
                                         <div class="scrollable list-games border-bottom" style="max-height: 200px; overflow: auto";>
                                             <div class="mid-box">
-                                                <div class="canva-row">Sneawy</div>
-                                                <div class="canva-row">Sneawy </div>
-                                                <div class="canva-row">Sneawy</div>
-                                                <div class="canva-row">Sneawy</div>
-                                                <div class="canva-row">Sneawy</div>
-                                                <div class="canva-row">Sneawy</div>
-                                                <div class="canva-row">Sneawy</div>
+                                                <div class="canva-row blue"><%= login %> (moi)</div>
+                                                <% users.forEach(function(item,index){ %>
+                                                    <div onclick="app.deleteMember('<%=item %>')" class="canva-row redhover"><%= item %>></div>
+                                                <% }); %>
                                             </div>
                                         </div>
                                     </div>
@@ -82,6 +82,8 @@
             </form>
         </div>
         <script>
+            
+
             function generate() {
                 let dataToPost = {
                     name: $('#name').val(),
@@ -101,14 +103,31 @@
                 }
             }
 
+
             const app = new Vue({
                 el:"#app",
                 data: {
+                    users: [],
+                    isLoading: false,
                 },
                 methods: {
                     retour: function() {
                         window.location.href += "../";
                     },
+                    deleteMember: function(member) {
+                        cuteAlert({
+                            type: "question",
+                            title: "Supprimer " + member.name,
+                            message: "Etes-vous sûr(e) ?",
+                            confirmText: "Oui",
+                            cancelText: "Annuler",
+                            img:"question.svg"
+                        }).then((e)=>{
+                             if ( e == ("Oui")){} else {
+                                alert(":-(");
+                            }
+                        })
+                    }
                     
                 },
                 mounted() {
