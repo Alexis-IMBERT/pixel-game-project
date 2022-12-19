@@ -99,7 +99,7 @@ router.use("/generate",
             return;
         }
 
-        res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false})
+        res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, users: []})
     }
 );
 
@@ -125,7 +125,7 @@ router.post("/:id/edit",
 
 
 
-router.post("/accessible", 
+router.get("/accessible", 
     /**
      * Pour récupérer la liste de tous les canvas accessible par l'utilisateur connecté
      * 
@@ -505,7 +505,7 @@ function sendCanva(idCanva, res) {
             else {
                 // Easy access to row-Entries using row.NAME
                 console.log(row.pxl_x + " | " + row.pxl_y + " | " + row.couleur);
-                image.setPixelColor(row.couleur,row.pxl_x,row.pxl_y)
+                image.setPixelColor(parseInt(row.couleur),row.pxl_x,row.pxl_y)
             }
                 
         });
