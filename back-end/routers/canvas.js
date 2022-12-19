@@ -99,11 +99,11 @@ router.use("/generate",
             return;
         }
 
-        res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, users: []})
+        res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, users: [{idUser: req.session.login}]})
     }
 );
 
-router.post("/:id/edit", 
+router.use("/:id/edit", 
     function(req,res) {
 
         let idCanva = req.params.id;
@@ -288,23 +288,20 @@ function isHexColor(hex) {
 function usersInCanva(idCanva) {
 
     let res = null; 
-
+    console.log("here");
     db.serialize(()=>{
         const statement = db.prepare("SELECT idUser FROM usersInCanva WHERE idCanva =?;");
         statement.all([idCanva], function (err, result) {
             console.log(err);
             if (err) {
-                console.log(err);
                 res = false;
                 return;
             }
 
             if (result) {
-
                 console.log(result)
 
                 res = result;
-
             } else {
                 res = false;
                 return;

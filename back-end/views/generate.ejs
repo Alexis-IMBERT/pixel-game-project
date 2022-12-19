@@ -3,13 +3,13 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>PixelWAR</title>
-        <script src="assets/vendor/jquery-3.6.0.js"></script>
-        <script src="assets/vendor/jquery-ui.js"></script>
-        <link rel="stylesheet" href="assets/css/styles.css">
-        <link rel="stylesheet" href="assets/css/loader.css">
-        <script type="text/javascript" src="assets/js/vue.js"></script>
-        <link rel="stylesheet" href="assets/js/cute-alert-master/style.css" />
-        <script src="assets/js/cute-alert-master/cute-alert.js"></script>
+        <script src="/assets/vendor/jquery-3.6.0.js"></script>
+        <script src="/assets/vendor/jquery-ui.js"></script>
+        <link rel="stylesheet" href="/assets/css/styles.css">
+        <link rel="stylesheet" href="/assets/css/loader.css">
+        <script type="text/javascript" src="/assets/js/vue.js"></script>
+        <link rel="stylesheet" href="/assets/js/cute-alert-master/style.css"/>
+        <script src="/assets/js/cute-alert-master/cute-alert.js"></script>
     </head>
     <body>
         <div class="body-container" id="app">
@@ -29,7 +29,7 @@
                                     </div>
                                     <div class="row-section">
                                         <h1 class="soustitre-form flex-1">LONGUEUR</h1>
-                                        <input name="length" type="number" id="length" min="10" max="5000" class="input-text flex-2" placeholder="2000">
+                                        <input name="width" type="number" id="width" min="10" max="5000" class="input-text flex-2" placeholder="2000">
                                     </div>
                                     <label class="flex-1" id="generate-answer"></label>   
                             </div>
@@ -51,12 +51,14 @@
                                         <div class="top-rounded-box color-sc bottom-border">
                                             <div class="title-form text-white">Pseudo</div>
                                         </div>
-                                        <div class="scrollable list-games border-bottom" style="max-height: 200px; overflow: auto";>
+                                        <div class="scrollable list-games border-bottom" style="max-height: 200px; overflow: auto">
                                             <div class="mid-box">
-                                                <div class="canva-row blue"><%= login %> (moi)</div>
-                                                <% users.forEach(function(item,index){ %>
-                                                    <div onclick="app.deleteMember('<%=item %>')" class="canva-row redhover"><%= item %>></div>
-                                                <% }); %>
+                                                <% users.forEach(function(item,index){ 
+                                                    if (login == item.idUser) { %>
+                                                        <div class="canva-row blue"><%= login %> (moi)</div>
+                                                    <%} else {%>
+                                                        <div onclick="app.deleteMember('<%=item %>')" class="canva-row redhover"><%= item.idUser %></div>
+                                                <%} }) %>
                                             </div>
                                         </div>
                                     </div>
@@ -77,7 +79,7 @@
                 </div>
                 <div class="footer bg-main">
                     <button type="submit" class="btn valid">CREER<div class="icon unlocked"></div></button>
-                    <button type="button" v-on:click="retour()" class="btn error">RETOUR<div class="icon join"></div></button>
+                    <!--<button type="button" v-on:click="retour()" class="btn error">RETOUR<div class="icon join"></div></button>-->
                 </div>
             </form>
         </div>
@@ -88,10 +90,9 @@
                 let dataToPost = {
                     name: $('#name').val(),
                     height: $('#height').val(),
-                    length: $('#length').val()
+                    width: $('#width').val()
                 };            
-                console.log(dataToPost);
-                if ( dataToPost.name==""|| dataToPost.height=="" || dataToPost.length == "" || (dataToPost.height > 5000 || dataToPost.height < 10 || dataToPost.length > 5000 || dataToPost.length < 10))
+                if ( dataToPost.name==""|| dataToPost.height=="" || dataToPost.width == "" || (dataToPost.height > 5000 || dataToPost.height < 10 || dataToPost.width > 5000 || dataToPost.width < 10))
                 {
                     $('#generate-answer').html("Le formulaire n'est pas valide.");
                     return false
@@ -107,8 +108,7 @@
             const app = new Vue({
                 el:"#app",
                 data: {
-                    users: [],
-                    isLoading: false,
+                    isLoading: false
                 },
                 methods: {
                     retour: function() {
@@ -131,6 +131,7 @@
                     
                 },
                 mounted() {
+                    console.log("chargé");
                 }
             })
         </script>
