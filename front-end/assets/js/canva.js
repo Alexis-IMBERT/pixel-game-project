@@ -64,7 +64,7 @@ function changerCouleurPixelLocal(canvas,x,y) {
     data.data[1] = g
     data.data[2] = b 
     ctx.putImageData(data, x-1, y-1);
-    $(".valid-btn").removeAttr("disabled");
+    $("#send-btn").removeAttr("disabled");
 }
 
 
@@ -73,7 +73,7 @@ function envoyerPixel(e) {
     lastPixelData = undefined;
     isWaiting = true;
     $('#info-picker').text("(0;0)");
-    $(".valid-btn").attr("disabled", true);
+    $("#send-btn").attr("disabled", true);
     temps = 3;
     var chrono = setInterval(function () {
         let minutes = parseInt(temps / 60, 10);
@@ -93,7 +93,7 @@ function envoyerPixel(e) {
 
 document.addEventListener('mousedown', () => drag = false);
 document.addEventListener('mousemove', () => drag = true);
-$("form")  .on('submit', function(e)  {envoyerPixel(e)});
+$("#send-btn").on('click', function(e)  {envoyerPixel(e)});
 $("#print").on("click",  function(e)  { print('#canva', 'html') } ); //to fix
 canvaJQ.on('mouseup', function(e) { if (!drag) getCursorPosition(canvas, e) });
 
