@@ -65,7 +65,7 @@ function isOwner(req,idCanva) {
     db.serialize(() => {
 
         const statement = db.prepare("SELECT owner FROM canvas WHERE id=?;");
-        statement.get([idCanva], (err, result) => {
+        statement.get([encodeURIComponent(idCanva)], (err, result) => {
             if (err) {
                 console.log(err);
                 isowner = false;

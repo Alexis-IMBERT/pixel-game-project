@@ -103,10 +103,10 @@ router.use("/generate",
     }
 );
 
-router.post("/edit", 
+router.post("/:id/edit", 
     function(req,res) {
 
-        let idCanva = req.body['idCanva'];
+        let idCanva = req.params.id;
 
         if (!usersUtil.isLoggedIn(req)) {
             res.redirect("/users/login")
@@ -373,7 +373,7 @@ function createCanva(idcanva, name, idOwner, height, width, linkOwnerToCanva) {
                     console.log("USER " + idOwner + " LINKED to " + idcanva);
                     commit();
                 } else {
-                    console.log(err);
+                    //console.log(err);
                     console.log("linkage failed");
                     rollback();
                 }
@@ -393,7 +393,7 @@ function createCanva(idcanva, name, idOwner, height, width, linkOwnerToCanva) {
                 }
                     
             } else {
-                console.log(err);
+                //console.log(err);
                 console.log("CANVA ALREADY IN DB");
                 rollback();
             }
@@ -407,7 +407,7 @@ function createCanva(idcanva, name, idOwner, height, width, linkOwnerToCanva) {
                 console.log("CANVA CREATED OK id=" + idcanva);
                 createTableCanva();
             } else {
-                console.log(err);
+                //console.log(err);
                 console.log("CANVA ALREADY IN DB");
                 rollback()
             }
@@ -455,10 +455,38 @@ function sendCanva(idCanva, res) {
 
     let reslt = null;
 
-    let color = 0x000000ff;
+    let color = 0xffffffff;
 
-    const width = 1000;
-    const height = 1000;
+    let width = null;
+    let height = null;
+
+    db.serialize( ()=>{
+        const statement = db.prepare("SELECT height, width FROM canvas WHERE id = ?;");
+        statement.all([idCanva], function (err, result) {
+            console.log(err);
+            if (err) {
+                res.status(400).send("bad request");
+                exit();
+            }
+
+            if (result) {
+
+                height = result[0].height
+                width  = result[0].width
+
+            } else {
+                res.status(400).send("bad request");
+                exit();
+            }
+
+        });
+        statement.finalize();
+    });
+
+
+    while (height == null || width == null)
+        deasync.runLoopOnce();
+
 
     // Create a new image with the specified width and height
     const image = new jimp(width, height);
@@ -466,7 +494,6 @@ function sendCanva(idCanva, res) {
     // Set the pixel colors for each pixel to white in the image
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
-            color = 0x000000ff;
             image.setPixelColor(color, x, y);
         }
     }
@@ -476,17 +503,20 @@ function sendCanva(idCanva, res) {
         db.each("SELECT pxl_x,pxl_y,couleur from '"+encodeURIComponent(idCanva)+"';", (err, row) => {
             if (err)
                 console.log(err.message);
-            else
+            else {
                 // Easy access to row-Entries using row.NAME
                 console.log(row.pxl_x + " | " + row.pxl_y + " | " + row.couleur);
+                image.setPixelColor(row.couleur,row.pxl_x,row.pxl_y)
+            }
+                
         });
+        db.run('',(err)=>{
+            reslt = true;
+        })
     });
-
 
     while (reslt == null)
         deasync.runLoopOnce();
-
-
 
 
     // Generate the image and send it as a response
@@ -495,6 +525,7 @@ function sendCanva(idCanva, res) {
             res.status(500).send(error);
         } else {
             res.status(200);
+            console.log(buffer)
             res.set('Content-Type', jimp.MIME_PNG);
             res.set('Content-Length', buffer.length);
             //res.set('Access-Control-Allow-Origin', '*');
