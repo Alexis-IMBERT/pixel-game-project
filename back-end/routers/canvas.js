@@ -125,7 +125,7 @@ router.post("/:id/edit",
 
 
 
-router.post("/accessible", 
+router.get("/accessible", 
     /**
      * Pour récupérer la liste de tous les canvas accessible par l'utilisateur connecté
      * 
