@@ -103,7 +103,7 @@ router.use("/generate",
     }
 );
 
-router.post("/:id/edit", 
+router.use("/:id/edit", 
     function(req,res) {
 
         let idCanva = req.params.id;
