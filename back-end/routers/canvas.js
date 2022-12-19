@@ -53,9 +53,16 @@ router.post("/generate",
 
         let data = req.body
 
-        let name = data['name']
-        let height = data['height']
-        let width = data['width']
+        let name = encodeURIComponent(data['name'])
+        let height,width;
+        try {
+            height = data['height']
+            width = data['width']
+        } catch (e) {
+            res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
+            return;
+        }
+        
         let idOwner  = req.session.login
         let idcanva = uuid();
 
@@ -138,7 +145,7 @@ router.post("/:id/update",
             }
         }
 
-        
+
 
 
     }
