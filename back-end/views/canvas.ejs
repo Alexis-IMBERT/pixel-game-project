@@ -6,11 +6,33 @@
         <script src="assets/vendor/jquery-3.6.0.js"></script>
         <script src="assets/vendor/jquery-ui.js"></script>
         <link rel="stylesheet" href="assets/css/styles.css">
+        <link rel="stylesheet" href="assets/css/loader.css">
+        <script type="text/javascript" src="assets/js/vue.js"></script>
+
     </head>
     <body>
-        <div class="body-container">
-            <div id="painting">
-                <canvas id="canva"></canvas>
+        <div class="body-container"  id="app">
+            <div class="center top bg-color" style="padding-bottom:40px;">
+                <h1 class="titre-form">GESTIONNAIRE DES CANVAS</h1>
+                <div class=" mg-10" style="overflow:hidden; max-height:80%; border-radius:10px"  >
+                    <div class="top-rounded-box color-sc bottom-border">
+                        <div class="column-section ">
+                            <div class="flex-3 title-form text-white">Nom du salon</div>
+                            <div class="flex-2 title-form text-white">Créateur</div>
+                        </div>
+                    </div>
+                    <div class="scrollable list-games border-bottom">
+                        <div v-if="isLoading" class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+                        
+                        <div v-if="!isLoading" class="mid-box color-gc" >
+                            <div v-for="canva in canvas" class="column-section" >
+                                <div class="flex-3 ">{{canva.name}}</div>
+                                <div class="flex-2 ">{{canva.owner}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
             </div>
             <div class="login-menu">
                 <% if (!logged) { %>
@@ -23,27 +45,37 @@
                 <% } %>
             </div>
             <div class="footer bg-main">
-                <div class="footer-box">
-                    <a target="_blank" href="https://www.makeuseof.com/what-is-rplace-reddit-art-experiment/#:~:text=The%20concept%20behind%20r%2FPlace%20is%20pretty%20simple.,or%20tile%20of%20whichever%20color."><img class="icon" id="rules" src="assets/imgs/book.png"></a>
-                </div>
-                <div class="footer-box">
-                    <p onselectstart="return false" id="info-picker">(0;0)</p>
-                    <input type="color" id="head" name="head" class="color-picker" value="#e66465">
-                </div>
-                <div class="footer-box">
-                    <form method="GET">
-                        <button disabled class="valid-btn">ENVOYER</button>
-                    </form>
-                </div>
-                <div class="footer-box">
-                    <p id="chrono"><label id="chronotime">10:00</label><label id="min">min</label></p>
-                </div>
-                
-                <div class="footer-box">
-                    <img class="icon" id="print" src="assets/imgs/printer.png">
-                </div>
+                <button onclick="newCanva()" class="btn error">NOUVEAU DESSIN <div class="icon locked"></div></button>
             </div>
         </div>
-        <script src="assets/js/canva.js"></script>
+        <script>
+
+            function newCanva() {
+                //todo
+            }
+            const app = new Vue({
+                el:"#app",
+                data: {
+                    isLoading: false,
+                    canvas:[],
+                },
+                methods: {
+                    /*joinCanva: function(event,canva) {
+                        window.location.href = '../'+canva.idCanva;
+                    },*/
+                    getCanvas() {
+                        this.isLoading = true;
+                        $.getJSON("/canvas/accessible", function(data) {
+                            console.log(data);
+                            app.canvas = data;
+                            app.isLoading = false;
+                        });
+                    }
+                },
+                mounted() {
+                    this.getCanvas();
+                }
+            })
+        </script>
     </body>
 </html>

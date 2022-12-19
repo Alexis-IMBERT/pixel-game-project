@@ -103,6 +103,26 @@ router.use("/generate",
     }
 );
 
+router.post("/edit", 
+    function(req,res) {
+
+        let idCanva = req.body['idCanva'];
+
+        if (!usersUtil.isLoggedIn(req)) {
+            res.redirect("/users/login")
+            return;
+        }
+
+        if (!usersUtil.isOwner(req,idCanva)) {
+            res.redirect('/canvas');
+            return;
+        }
+
+        res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, users: usersInCanva(idCanva) })
+
+    }
+)
+
 
 
 router.post("/accessible", 
@@ -257,6 +277,49 @@ function isHexColor(hex) {
     return typeof hex === 'string' && hex.length === 6 && !isNaN(Number('0x' + hex)) 
 }
 
+/**
+ * Obtenir tous les utilisateurs d'un canva
+ * 
+ * @param {*} idCanva
+ * @returns array of users
+ * 
+ * @author Jean-Bernard CAVELIER
+ */
+function usersInCanva(idCanva) {
+
+    let res = null; 
+
+    db.serialize(()=>{
+        const statement = db.prepare("SELECT idUser FROM usersInCanva WHERE idCanva =?;");
+        statement.all([idCanva], function (err, result) {
+            console.log(err);
+            if (err) {
+                console.log(err);
+                res = false;
+                return;
+            }
+
+            if (result) {
+
+                console.log(result)
+
+                res = result;
+
+            } else {
+                res = false;
+                return;
+            }
+
+        });
+        statement.finalize();
+    });
+
+    while (res == null)
+        deasync.runLoopOnce();
+
+    return res;
+}
+
 
 /**
  * Create a canva with its table in the db
@@ -344,6 +407,7 @@ function createCanva(idcanva, name, idOwner, height, width, linkOwnerToCanva) {
                 console.log("CANVA CREATED OK id=" + idcanva);
                 createTableCanva();
             } else {
+                console.log(err);
                 console.log("CANVA ALREADY IN DB");
                 rollback()
             }
@@ -389,6 +453,8 @@ function createCanva(idcanva, name, idOwner, height, width, linkOwnerToCanva) {
 function sendCanva(idCanva, res) {
     console.log("OK GENERAL");
 
+    let reslt = null;
+
     let color = 0x000000ff;
 
     const width = 1000;
@@ -397,13 +463,31 @@ function sendCanva(idCanva, res) {
     // Create a new image with the specified width and height
     const image = new jimp(width, height);
 
-    // Set the pixel colors for each pixel in the image
+    // Set the pixel colors for each pixel to white in the image
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
+            color = 0x000000ff;
             image.setPixelColor(color, x, y);
-            color += 0x00000100;
         }
     }
+
+
+    db.serialize(()=>{
+        db.each("SELECT pxl_x,pxl_y,couleur from '"+encodeURIComponent(idCanva)+"';", (err, row) => {
+            if (err)
+                console.log(err.message);
+            else
+                // Easy access to row-Entries using row.NAME
+                console.log(row.pxl_x + " | " + row.pxl_y + " | " + row.couleur);
+        });
+    });
+
+
+    while (reslt == null)
+        deasync.runLoopOnce();
+
+
+
 
     // Generate the image and send it as a response
     image.getBuffer(jimp.MIME_PNG, (error, buffer) => {
@@ -421,11 +505,11 @@ function sendCanva(idCanva, res) {
 }
 
 /**
- * Obtenir la liste JSON des canvas accessible par l'utilisateur
+ * Obtenir la liste des canvas accessible par l'utilisateur
  * 
  * @param {*} login 
  * 
- * @returns JSON
+ * @returns  array of canvas
  * 
  * @author Jean-Bernard CAVELIER
  */
