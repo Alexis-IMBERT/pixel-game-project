@@ -121,6 +121,8 @@ router.post("/:id/update",
      */
     function(req,res) {
 
+        let idCanva = encodeURIComponent(req.params.id);
+
         let height;
         let width;
 
@@ -145,7 +147,21 @@ router.post("/:id/update",
             }
         }
 
+        let usersIn = usersInCanva(idCanva);
 
+        db.serialize(()=>{
+            db.run("UPDATE canvas SET height=? AND width=? WHERE id=?", [height,width,idCanva], function(err){
+                if (err) {
+                    // canva doesn't exist
+                    res.redirect("/canvas");
+                    exit(0);
+                }
+            });
+
+
+
+            db.run("")
+        })
 
 
     }
@@ -164,7 +180,7 @@ router.use("/:id/edit",
      */
     function(req,res) {
 
-        let idCanva = req.params.id;
+        let idCanva = encodeURIComponent(req.params.id);
 
 
         if (!usersUtil.isLoggedIn(req)) {
@@ -177,7 +193,9 @@ router.use("/:id/edit",
             return;
         }
 
-        res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, users: usersInCanva(idCanva) })
+        let info = canvaHeightWidth(idCanva);
+
+        res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, canva_infos: {height: info['height'], width: info['width'],users: usersInCanva(idCanva)} })
 
     }
 )
@@ -282,7 +300,7 @@ router.use("/:id",
      */
     function(req,res, next) {
 
-        let id = req.params.id;
+        let id = encodeURIComponent(req.params.id);
 
         let accessible = userCanAccessCanva(req.session.login,id);
 
@@ -343,6 +361,40 @@ function isHexColor(hex) {
 
 
 
+
+function canvaHeightWidth(idCanva) {
+    let res = null;
+
+    db.serialize(() => {
+        const statement = db.prepare("SELECT height,width FROM canvas WHERE id=?;");
+        statement.all([idCanva], function (err, result) {
+            console.log(err);
+            if (err) {
+                console.log(err);
+                res = false;
+                return;
+            }
+
+            if (result) {
+
+                console.log(result[0])
+
+                res = result[0];
+
+            } else {
+                res = false;
+                return;
+            }
+
+        });
+        statement.finalize();
+    });
+
+    while (res == null)
+        deasync.runLoopOnce();
+
+    return res;
+}
 
 /**
  * Obtenir tous les utilisateurs d'un canva
