@@ -103,10 +103,62 @@ router.use("/generate",
     }
 );
 
+router.post("/:id/update", 
+    /**
+     * Update a canva
+     * 
+     * @param {*} req (req.body['height'], req.body['width'], req.body['users'])
+     * @param {*} res 
+     * 
+     * @author Jean-Bernard CAVELIER
+     */
+    function(req,res) {
+
+        let height;
+        let width;
+
+        try {
+            height = parseInt(req.body['height'])
+            width  = parseInt(req.body['width'])
+        } catch (e) {
+            res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
+            return;
+        }
+        
+        
+        let users  = req.body['users']
+
+        for (key in users) {
+            users[key] = encodeURIComponent(users[key])
+        }
+
+        for (key in users) {
+            if (!usersUtil.exists(users[key])) {
+                res.status(400).send("USER "+users[key]+"DO NOT EXIST")
+            }
+        }
+
+        
+
+
+    }
+);
+
 router.use("/:id/edit", 
+
+    /**
+     * Envoyer la page /edit d'un canva
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     * 
+     * @author Jean-Bernard CAVELIER
+     */
     function(req,res) {
 
         let idCanva = req.params.id;
+
 
         if (!usersUtil.isLoggedIn(req)) {
             res.redirect("/users/login")
@@ -122,6 +174,8 @@ router.use("/:id/edit",
 
     }
 )
+
+
 
 
 
@@ -278,6 +332,10 @@ router.use("/",
 function isHexColor(hex) { 
     return typeof hex === 'string' && hex.length === 6 && !isNaN(Number('0x' + hex)) 
 }
+
+
+
+
 
 /**
  * Obtenir tous les utilisateurs d'un canva
