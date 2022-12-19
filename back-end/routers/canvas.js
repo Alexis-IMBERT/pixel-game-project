@@ -151,10 +151,18 @@ router.post("/:id/update",
             users[key] = encodeURIComponent(users[key])
         }
 
+        let ownerInList = false;
         for (key in users) {
             if (!usersUtil.exists(users[key])) {
                 res.status(400).send("USER "+users[key]+"DO NOT EXIST")
             }
+            if (users[key] == req.session.login) {
+                ownerInList = true;
+            }
+        }
+
+        if (!ownerInList) {
+            res.status(400).send("OWNER CANNOT BE REMOVED")   ;
         }
 
         let usersIn = usersInCanva(idCanva);
@@ -193,7 +201,7 @@ router.post("/:id/update",
             for (key2 in usersIn) {
                 inlist = false;
                 for (key in users) {
-                    if (users[key] == usersIn[key2] || usersIn[key2] == req.session.login ) {
+                    if (users[key] == usersIn[key2] ) {
                         inlist = true;
                     }
                 }
