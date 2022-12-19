@@ -158,12 +158,51 @@ router.post("/:id/update",
                 }
             });
 
+            let incanva = false;
+            // on ajoute les nouveaux users
+            for (key in users){
+                incanva = false;
+                for (key2 in usersIn){
+                    if (users[key]==usersIn[key2]) {
+                        incanva = true;
+                    }
+                }
+                if (!incanva) {
+                    db.run("INSERT INTO usersInCanva (idCanva,idUser) VALUES (?,?)", [idCanva,users[key]], function (err) {
+                        if (err) {
+                            // ne devrait pas arriver
+                            res.redirect("/canvas/" + idCanva + "/edit");
+                            exit(0)
+                        }
+                    })
+                }
+            }
 
+            let inlist = false;
+            // on supprime ceux qui ne sont plus dans la liste
+            for (key2 in usersIn) {
+                inlist = false;
+                for (key in users) {
+                    if (users[key] == usersIn[key2]) {
+                        inlist = true;
+                    }
+                }
+                if (!inlist) {
+                    db.run("DELETE FROM usersInCanva WHERE idCanva=? AND idUser=?", [idCanva, users[key]], function (err) {
+                        if (err) {
+                            // ne devrait pas arriver
+                            res.redirect("/canvas/" + idCanva + "/edit");
+                            exit(0)
+                        }
+                    })
+                }
+            }
 
-            db.run("")
+            
         })
 
-
+        res.redirect("/canvas");
+        
     }
 );
 
@@ -181,7 +220,6 @@ router.use("/:id/edit",
     function(req,res) {
 
         let idCanva = encodeURIComponent(req.params.id);
-
 
         if (!usersUtil.isLoggedIn(req)) {
             res.redirect("/users/login")
