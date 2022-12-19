@@ -9,8 +9,8 @@ CREATE TABLE canvas (
     id VARCHAR PRIMARY KEY,
     name VARCHAR NOT NULL,
     owner VARCHAR NOT NULL,
+    height INTEGER NOT NULL,
     width INTEGER NOT NULL,
-    length INTEGER NOT NULL,
     FOREIGN KEY(owner) REFERENCES users(login)
 );
 
