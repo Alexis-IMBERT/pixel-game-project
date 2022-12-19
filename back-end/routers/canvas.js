@@ -99,7 +99,7 @@ router.use("/generate",
             return;
         }
 
-        res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, users: []})
+        res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, users: [{idUser: req.session.login}]})
     }
 );
 
@@ -221,14 +221,7 @@ router.use("/:id",
      */
     function(req,res, next) {
 
-        console.log("here")
-
         let id = req.params.id;
-
-        console.log(id);
-
-        if (id === "")
-            next();
 
         let accessible = userCanAccessCanva(req.session.login,id);
 
@@ -256,7 +249,6 @@ router.use("/",
      */
     function (req, res) {
 
-        console.log("no here")
 
         if (!usersUtil.isLoggedIn(req)) {
             console.log("not logged")
