@@ -163,12 +163,7 @@ router.post("/getImage",
 
         let id = data['idCanva'];
 
-        let tests = req.query["tests"];
-
         let idUser = req.session.login;
-
-        console.log(id);
-        console.log(id=="general")
 
         if (id=="general") {
             sendCanva(id,res);
@@ -180,18 +175,13 @@ router.post("/getImage",
             return;
         }
 
-        let canvasUser = getCanvasUtilisateurs(idUser);
-        console.log(id)
-        console.log(canvasUser[id])
-
-
 
         if (! userCanAccessCanva(idUser,id)) {
             res.status(400).end("YOU CANNOT ACCESS THIS CANVA")
             return;
         }
 
-        res.end("OK");
+        sendCanva(id,res);
         
     }
 )
