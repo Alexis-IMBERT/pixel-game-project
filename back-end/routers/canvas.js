@@ -99,7 +99,7 @@ router.use("/generate",
             return;
         }
 
-        res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false})
+        res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, users: []})
     }
 );
 
