@@ -31,7 +31,7 @@ label:not(is(#chrono)) {
     margin-left:10px;
     margin-top:30px;
     font-family: 'CustomFont', Arial, sans-serif;
-    font-size: 2em;
+    font-size: 1.5vw;
 }
 
 .locked:is(.icon) { background-image:url(../imgs/icons/lock.gif);}
@@ -273,7 +273,7 @@ scrollbar-width: none;  /* Firefox */
     color:var(--bad-secondary-color);
     border: 1px solid var(--bad-secondary-color);
     text-align: center;
-    font-size: 3.6em;
+    font-size: 3vw;
     border-radius: 10px;
 }
 
