@@ -105,7 +105,7 @@ router.use("/generate",
             return;
         }
 
-        res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, type: {edit: false, action: "/canvas/generate"}, canva_infos: { height: 0, width: 0, name: "", users:[{idUser:req.session.login}], id: idCanva }})
+        res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, type: {edit: false, action: "/canvas/generate"}, canva_infos: { height: 0, width: 0, name: "", users:[{idUser:req.session.login}], id: "" }})
     }
 
 );

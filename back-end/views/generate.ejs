@@ -24,9 +24,9 @@
         </script>
         <% } %>
         <div class="body-container" id="app">
-            <form action="/canvas/generate" onsubmit="return generate()" method="post" role="form" class="flex-1">
+            <form action="<%= type.action %>" onsubmit="return generate()" method="post" role="form" class="flex-1">
                 <input name="id" type="hidden" v-model="id">
-                <input name="allusers" type="hidden" v-model="allusers">
+                <input name="users" type="hidden" v-model="allusers">
                 <div class="column-section center top gap-20 scrollable">
                     <div class="flex-3">
                         <div class="bg-color h-95 border-rad-20">
@@ -94,11 +94,13 @@
         </div>
         <script>
             function generate() {
-                app.allusers="";
+                app.allusers="[";
                 app.users.forEach(user => {
-                    app.allusers+=user.idUser+";";
-                    console.log("ah");
+                    app.allusers+='"' + user.idUser + '",';
                 });
+                app.allusers = app.allusers.slice(0, -1);
+                app.allusers+="]";
+                console.log(app.allusers);
                 let dataToPost = {
                     name: $('#name').val(),
                     height: $('#height').val(),
@@ -130,7 +132,7 @@
                     minePseudo:"",
                     newForm: true,
                     id:"",
-                    allusers:"",
+                    allusers:"[",
                 },
                 methods: {
                     retour: function() {
@@ -180,6 +182,7 @@
                         this.height = parsed_data.height;
                         this.name = parsed_data.name;
                         this.id = parsed_data.id;
+                        console.log(this.users);
                     }
                     if(typeof minePseudo  !== 'undefined') this.minePseudo = minePseudo;
                     if(typeof isNew  !== 'undefined') this.newForm = isNew;
