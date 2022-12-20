@@ -112,7 +112,7 @@ router.post("/:id/update",
     /**
      * Update a canva
      * 
-     * @param {*} req (req.body['height'], req.body['width'], req.body['name'], req.body['users'])
+     * @param {*} req (req.body['height'], req.body['width'], req.body['name'], req.body['users'] like ["vip","toto",...])
      * @param {*} res 
      * 
      * @author Jean-Bernard CAVELIER
