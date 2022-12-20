@@ -10,16 +10,7 @@ router.use('/index.html', function (req, res) {
 	res.redirect('/');
 });
 
-/*router.use("/:lien_erreur", function (req,res, next) {
-	console.log("unknown link accessed");
-	console.log(req);
-	console.log(req.params);
-	console.log(req.params.lien_erreur);
-	console.log(req.params.lien_erreur.length == 0);
-	//res.send("pas ok");
-	//res.redirect('/404');
-	
-});*/
+
 
 router.use('/', function (req, res) {
 	res.redirect('/home');

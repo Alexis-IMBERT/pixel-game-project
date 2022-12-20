@@ -37,11 +37,9 @@ app.use("/404", function(req, res) {
 
 
 const users = require('./routers/users');
-app.use('/users', express.static('../front-end'));
 app.use('/users', users);
 
 const canvas = require('./routers/canvas').router
-app.use('/canvas', express.static('../front-end'));
 app.use('/canvas', canvas)
 
 

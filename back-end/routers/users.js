@@ -31,7 +31,7 @@ function redirectLoggedUsers(req,res) {
     if (usersUtil.isLoggedIn(req)) {
         console.log("already logged in");
         res.redirect('/');
-        exit()
+        return
     }
 }
 

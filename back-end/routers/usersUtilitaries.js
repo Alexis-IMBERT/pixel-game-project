@@ -91,4 +91,37 @@ function isOwner(req,idCanva) {
 
     return isowner;
 }
-module.exports = {isLoggedIn, isVip, isAdmin, isOwner }
+
+function exists(login) {
+    let res = null;
+
+    db.serialize(() => {
+
+        const statement = db.prepare("SELECT count(*) FROM users WHERE login=?;");
+        statement.all([login], function (err, result) {
+            console.log(err);
+            if (err) {
+                console.log(err);
+                res = false;
+                return;
+            }
+
+            if (result) {
+
+                res = result[0]['count(*)'] == 1 ? true : false;
+
+            } else {
+                res = false;
+                return;
+            }
+
+        });
+        statement.finalize();
+    });
+
+    while (res == null)
+        deasync.runLoopOnce();
+
+    return res;
+}
+module.exports = {isLoggedIn, isVip, isAdmin, isOwner, exists }
