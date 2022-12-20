@@ -250,7 +250,7 @@ router.post("/:id/update",
     }
 
 );
-*/
+
 router.use("/:id/edit", 
 
     /**
