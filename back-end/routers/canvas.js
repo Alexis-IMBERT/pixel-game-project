@@ -30,8 +30,6 @@ router.post("/generate",
      */    
     function (req,res) {
 
-        console.log("generate canva method accessed");
-
         let tests = req.query['tests'];
 
         if (!usersUtil.isLoggedIn(req)) {
@@ -121,16 +119,30 @@ router.post("/:id/update",
      */
     function(req,res) {
 
+        let tests = req.query['tests'];
+
         let idCanva = encodeURIComponent(req.params.id);
 
         if (!usersUtil.isLoggedIn(req)) {
-            res.redirect("/users/login")
-            return;
+            if (tests) {
+                res.status(400).send("YOU ARE NOT LOGGED IN")
+                return;
+            } else {
+                res.redirect("/users/login")
+                return;
+            }
+            
         }
 
         if (!usersUtil.isOwner(req, idCanva)) {
-            res.redirect('/canvas');
-            return;
+            if (tests) {
+                res.status(400).send("YOU ARE NOT THE OWNER")
+                return;
+            } else {
+                res.redirect('/canvas');
+                return;
+            }
+            
         }
 
         let height;
@@ -147,6 +159,8 @@ router.post("/:id/update",
         
         let users  = req.body['users']
 
+        users = JSON.parse(users);
+
         for (key in users) {
             users[key] = encodeURIComponent(users[key])
         }
@@ -154,25 +168,32 @@ router.post("/:id/update",
         let ownerInList = false;
         for (key in users) {
             if (!usersUtil.exists(users[key])) {
-                res.status(400).send("USER "+users[key]+"DO NOT EXIST")
+                res.status(400).send("USER "+users[key]+" DOES NOT EXIST")
+                return;
             }
             if (users[key] == req.session.login) {
                 ownerInList = true;
             }
         }
 
+        let name = encodeURIComponent(req.body['name']);
+
         if (!ownerInList) {
             res.status(400).send("OWNER CANNOT BE REMOVED")   ;
+            return;
         }
 
         let usersIn = usersInCanva(idCanva);
 
+        console.log("height="+height+" width="+width+" name="+name)
+
         db.serialize(()=>{
-            db.run("UPDATE canvas SET height=? AND width=? WHERE id=?", [height,width,idCanva], function(err){
+            db.run("UPDATE canvas SET height=? , width=? , name=? WHERE id=?", [height,width,name,idCanva], function(err){
                 if (err) {
+                    console.log(err);
                     // canva doesn't exist
                     res.redirect("/canvas");
-                    exit(0);
+                    return;
                 }
             });
 
@@ -181,7 +202,7 @@ router.post("/:id/update",
             for (key in users){
                 incanva = false;
                 for (key2 in usersIn){
-                    if (users[key]==usersIn[key2]) {
+                    if (users[key]==usersIn[key2].idUser) {
                         incanva = true;
                     }
                 }
@@ -190,7 +211,7 @@ router.post("/:id/update",
                         if (err) {
                             // ne devrait pas arriver
                             res.redirect("/canvas/" + idCanva + "/edit");
-                            exit(0)
+                            return
                         }
                     })
                 }
@@ -201,7 +222,7 @@ router.post("/:id/update",
             for (key2 in usersIn) {
                 inlist = false;
                 for (key in users) {
-                    if (users[key] == usersIn[key2] ) {
+                    if (users[key] == usersIn[key2].idUser ) {
                         inlist = true;
                     }
                 }
@@ -210,7 +231,7 @@ router.post("/:id/update",
                         if (err) {
                             // ne devrait pas arriver
                             res.redirect("/canvas/" + idCanva + "/edit");
-                            exit(0)
+                            return
                         }
                     })
                 }
@@ -219,7 +240,10 @@ router.post("/:id/update",
             
         })
 
-        res.redirect("/canvas");
+        if (tests)
+            res.send("OK")
+        else
+            res.redirect("/canvas");
 
     }
 );
@@ -237,21 +261,36 @@ router.use("/:id/edit",
      */
     function(req,res) {
 
+        let tests = req.query['tests'];
+
         let idCanva = encodeURIComponent(req.params.id);
 
         if (!usersUtil.isLoggedIn(req)) {
-            res.redirect("/users/login")
-            return;
+            if (tests) {
+                res.status(400).send("YOU ARE NOT LOGGED IN")
+            } else {
+                res.redirect("/users/login")
+                return;
+            }
+           
         }
 
         if (!usersUtil.isOwner(req,idCanva)) {
-            res.redirect('/canvas');
-            return;
+            if (tests) {
+                res.status(400).send("YOU ARE NOT THE OWNER")
+            } else {
+                res.redirect('/canvas');
+                return;
+            }
+            
         }
 
-        let info = canvaHeightWidth(idCanva);
+        let info = getCanvaInfos(idCanva);
 
-        res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, canva_infos: {height: info['height'], width: info['width'],users: usersInCanva(idCanva)} })
+        if (tests)
+            res.send(info);
+        else
+            res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, canva_infos: {height: info['height'], width: info['width'],name: info['name'], users: info["users"]} })
 
     }
 )
@@ -278,8 +317,6 @@ router.get("/accessible",
             res.status(400).send("YOU ARE NOT LOGGED IN");
             return;
         }
-
-        console.log(req.session.login)
 
         let canvas = getCanvasUtilisateurs(req.session.login) ;
 
@@ -311,8 +348,6 @@ router.post("/getImage",
      * @author Jean-Bernard CAVELIER
      */
     function(req,res) {
-
-        console.log("get entered")
 
         let data = req.body
 
@@ -418,13 +453,12 @@ function isHexColor(hex) {
 
 
 
-function canvaHeightWidth(idCanva) {
+function getCanvaInfos(idCanva) {
     let res = null;
 
     db.serialize(() => {
-        const statement = db.prepare("SELECT height,width FROM canvas WHERE id=?;");
+        const statement = db.prepare("SELECT height,width,name FROM canvas WHERE id=?;");
         statement.all([idCanva], function (err, result) {
-            console.log(err);
             if (err) {
                 console.log(err);
                 res = false;
@@ -432,8 +466,6 @@ function canvaHeightWidth(idCanva) {
             }
 
             if (result) {
-
-                console.log(result[0])
 
                 res = result[0];
 
@@ -448,6 +480,8 @@ function canvaHeightWidth(idCanva) {
 
     while (res == null)
         deasync.runLoopOnce();
+
+    res['users'] = usersInCanva(idCanva);
 
     return res;
 }
@@ -467,7 +501,6 @@ function usersInCanva(idCanva) {
     db.serialize(()=>{
         const statement = db.prepare("SELECT idUser FROM usersInCanva WHERE idCanva =?;");
         statement.all([idCanva], function (err, result) {
-            console.log(err);
             if (err) {
                 console.log(err);
                 res = false;
@@ -475,8 +508,6 @@ function usersInCanva(idCanva) {
             }
 
             if (result) {
-
-                console.log(result)
 
                 res = result;
 
@@ -626,7 +657,6 @@ function createCanva(idcanva, name, idOwner, height, width, linkOwnerToCanva) {
  * @author Jean-Bernard CAVELIER
  */
 function sendCanva(idCanva, res) {
-    console.log("OK GENERAL");
 
     let reslt = null;
 
@@ -638,10 +668,10 @@ function sendCanva(idCanva, res) {
     db.serialize( ()=>{
         const statement = db.prepare("SELECT height, width FROM canvas WHERE id = ?;");
         statement.all([idCanva], function (err, result) {
-            console.log(err);
             if (err) {
+                console.log(err);
                 res.status(400).send("bad request");
-                exit();
+                return;
             }
 
             if (result) {
@@ -651,7 +681,7 @@ function sendCanva(idCanva, res) {
 
             } else {
                 res.status(400).send("bad request");
-                exit();
+                return;
             }
 
         });
@@ -700,7 +730,6 @@ function sendCanva(idCanva, res) {
             res.status(500).send(error);
         } else {
             res.status(200);
-            console.log(buffer)
             res.set('Content-Type', jimp.MIME_PNG);
             res.set('Content-Length', buffer.length);
             //res.set('Access-Control-Allow-Origin', '*');
@@ -726,7 +755,6 @@ function getCanvasUtilisateurs(login) {
 
         const statement = db.prepare("SELECT u.idCanva, c.owner, c.name FROM usersInCanva u, canvas c WHERE u.idCanva =c.id AND u.idUser=?;");
         statement.all([login], function (err, result) {
-            console.log(err);
             if (err) {
                 console.log(err);
                 res = false;
@@ -734,9 +762,6 @@ function getCanvasUtilisateurs(login) {
             }
 
             if (result) {
-
-                console.log(result)
-
                 res = result;
 
             } else {

@@ -75,44 +75,84 @@
     
     </form>
 
-   <!--
- <div id="painting">
-        <canvas id="canva"></canvas>
-    </div>
-   --> 
-   
-<form method="POST" action="javascript:page_view();">
-
-    <label for="page-view-link">page link</label>
-    <input id="page-view-link" type="text" name="page-view-link" required>
+  
+    <form method="POST" action="javascript:canva_edit_get();">
+    
+        <label for="canva-edit-get-id">canva id</label>
+        <input id="canva-edit-get-id" type="text" name="canva-edit-get-id" required>
+    
+        <label for="canva-edit-get-height">canva height</label>
+        <input id="canva-edit-get-height" type="text" name="canva-edit-get-height" size="5" readonly>
+    
+        <label for="canva-edit-get-width">canva width</label>
+        <input id="canva-edit-get-width" type="text" name="canva-edit-get-width" size="5" readonly>
+    
+        <label for="canva-edit-get-name">canva name</label>
+        <input id="canva-edit-get-name" type="text" name="canva-edit-get-name" readonly>
     
     
-    <input type="submit" value="view page">
-
-    <iframe id="page" title="Inline Frame Example" width="1000" height="800"></iframe>
-
-   
-
-</form>
-
-<form method="POST" action="javascript:canva_get();">
-
-    <label for="canva-get-id">canva id</label>
-    <input id="canva-get-id" type="text" name="canva-get-id" required>
-
-    <label id="canva-get-answer"></label>
-
-    <input type="submit" value="get canva">
-
-
-    <canvas id="canva-get-canva" style="border:1px solid black;"></canvas>
-
+        <label for="canva-edit-get-users">canva users</label>
+        <input id="canva-edit-get-users" type="text" name="canva-edit-get-users" readonly>
     
+    
+        <input type="submit" value="get canva infos">
+    
+        <label id="canva-edit-get-answer"></label>
+    
+    
+    </form>
+    
+    <form method="POST" action="javascript:canva_edit_update();">
+    
+        <label for="canva-edit-update-id">canva id</label>
+        <input id="canva-edit-update-id" type="text" name="canva-get-id" required>
+    
+        <label for="height">height</label>
+        <input id="canva-edit-update-height" type="number" name="height" size="5" required>
+    
+        <label for="width">width</label>
+        <input id="canva-edit-update-width" type="number" name="width" size="5" required>
+    
+        <label for="name">name</label>
+        <input id="canva-edit-update-name" type="text" name="name" required>
+    
+    
+        <label for="canva-edit-update-users">canva users</label>
+        <input id="canva-edit-update-users" type="text" name="canva-edit-update-users" required>
+    
+        <input type="submit" value="update">
+    
+        <label id="canva-edit-update-answer"></label>
+    
+    </form>
 
-
-</form>
-
+    <form method="POST" action="javascript:canva_get();">
+    
+        <label for="canva-get-id">canva id</label>
+        <input id="canva-get-id" type="text" name="canva-get-id" required>
+    
+        <label id="canva-get-answer"></label>
+    
+        <input type="submit" value="get canva">
+    
+    
+        <canvas id="canva-get-canva" style="border:1px solid black;"></canvas>
+    
+    </form>
    
+    <form method="POST" action="javascript:page_view();">
+
+        <label for="page-view-link">page link</label>
+        <input id="page-view-link" type="text" name="page-view-link" required>
+        
+        
+        <input type="submit" value="view page">
+
+        <iframe id="page" title="Inline Frame Example" width="1000" height="800"></iframe>
+
+    </form>
+
+
 
 
 
@@ -321,6 +361,76 @@
             
         }
 
+        function canva_edit_get(){
+            console.log("canva_edit_get entered");
+
+            var dataToPost = {
+
+            };
+
+            console.log(dataToPost);
+
+            let url = '/canvas/' + $("#canva-edit-get-id").val() + "/edit?tests=true";
+
+            console.log(url);
+
+            $.ajax({
+                type: 'GET',
+                url: url,
+                timeout: 3000,
+                data: dataToPost,
+                success: function (data) {
+                    console.log("OK");
+                    console.log(data)
+                    console.log(data.height)
+                    $('#canva-edit-get-height').val(data.height);
+                    $('#canva-edit-get-width').val(data.width);
+                    $('#canva-edit-get-name').val(data.name);
+                    $('#canva-edit-get-users').val(JSON.stringify(data.users));
+                    $('#canva-edit-get-answer').html("OK");
+                },
+                error: function (err) {
+                    console.log(err);
+                    console.log("ERROR");
+                    $('#canva-edit-get-answer').html(err.responseText);
+                }
+            });
+        }
+
+        function canva_edit_update() {
+            console.log("canva_edit_update entered");
+
+            var dataToPost = {
+                height: $("#canva-edit-update-height").val(),
+                width: $('#canva-edit-update-width').val(),
+                name: $("#canva-edit-update-name").val(),
+                users: $("#canva-edit-update-users").val()
+            };
+
+            console.log(dataToPost);
+
+            let url = '/canvas/' + $("#canva-edit-update-id").val() + "/update?tests=true";
+
+            console.log(url);
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                timeout: 3000,
+                data: dataToPost,
+                success: function (data) {
+                    console.log("OK");
+                    console.log(data)
+                    console.log(data.height)
+                    $("canva-edit-update-answer").html(data)
+                },
+                error: function (err) {
+                    console.log(err);
+                    console.log("ERROR");
+                    $('#canva-edit-update-answer').html(err.responseText);
+                }
+            });
+        }
     </script>
 
 </body>
