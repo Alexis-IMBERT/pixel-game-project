@@ -23,7 +23,7 @@ router.post("/generate",
     /**
      * Generate a canvas 
      * 
-     * @param {*} req (req.body["name"] ; req.body['height'] ; req.body['name'] ; req.body['width'])
+     * @param {*} req (req.body["name"] ; req.body['height'] ; req.body['name'] ; req.body['width'] ; req.body['users'])
      * @param {*} res 
      * 
      * @author Jean-Bernard CAVELIER
@@ -82,6 +82,7 @@ router.post("/generate",
         }
 
     }
+
 );
 
 router.use("/generate", 
@@ -104,11 +105,20 @@ router.use("/generate",
             return;
         }
 
-        res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, users: [{idUser: req.session.login}]})
+        res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, type: {edit: false, action: "/canvas/generate"}, canva_infos: { height: 0, width: 0, name: "", users:[{idUser:req.session.login}], id: idCanva }})
     }
+
 );
 
-router.use("/:id/edit", 
+router.post("/:id/update",
+    /**
+     * Update a canva
+     * 
+     * @param {*} req (req.body['height'], req.body['width'], req.body['name'], req.body['users'] like ["vip","toto",...])
+     * @param {*} res 
+     * 
+     * @author Jean-Bernard CAVELIER
+     */
     function(req,res) {
 
         let tests = req.query['tests'];
@@ -238,6 +248,7 @@ router.use("/:id/edit",
             res.redirect("/canvas");
 
     }
+
 );
 
 router.use("/:id/edit", 
@@ -282,9 +293,10 @@ router.use("/:id/edit",
         if (tests)
             res.send(info);
         else
-            res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, canva_infos: {height: info['height'], width: info['width'],name: info['name'], users: info["users"]} })
+            res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, type: { edit: true, action: "/canvas/"+idCanva+"/update" },canva_infos: {height: info['height'], width: info['width'],name: info['name'], users: info["users"], id:idCanva} })
 
     }
+
 )
 
 
