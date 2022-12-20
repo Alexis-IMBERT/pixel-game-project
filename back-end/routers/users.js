@@ -31,8 +31,9 @@ function redirectLoggedUsers(req,res) {
     if (usersUtil.isLoggedIn(req)) {
         console.log("already logged in");
         res.redirect('/');
-        return
+        return true;
     }
+    return false;
 }
 
 
@@ -51,7 +52,8 @@ router.post("/signup",
 
         console.log("signup method accessed");
 
-        redirectLoggedUsers(req, res);
+        if (redirectLoggedUsers(req, res))
+            return;
             
         
         let data = req.body;
@@ -114,13 +116,15 @@ router.post("/signup",
 router.use('/signup', function (req, res, err) {
     console.log("signup page accessed");
     
-    redirectLoggedUsers(req, res);
+    if (redirectLoggedUsers(req, res))
+        return;
         
     renderSignupPage(req,res,null);
 });
 
 function renderSignupPage(req,res,err) {
-    redirectLoggedUsers(req,res);
+    if (redirectLoggedUsers(req,res))
+        return;
     res.render('signup.ejs', { logged: false, login: false, error: err?err:false });
 }
 
