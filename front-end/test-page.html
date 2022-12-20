@@ -328,15 +328,17 @@
 
             console.log("canva_get entered");
 
+            url = "/canvas/"+ $('#canva-get-id').val()+"/getImage"
+
             var dataToPost = {
-                idCanva: $('#canva-get-id').val()
+                 
             };
 
             console.log(dataToPost);
 
             $.ajax({
                 type: 'POST',
-                url: '/canvas/getImage',
+                url: url,
                 data: dataToPost,
                 responseType: 'arraybuffer',
                 cache:false,
@@ -355,6 +357,8 @@
                         var ctx = canvas.getContext('2d');
                         ctx.drawImage(image, 0, 0);
                     }
+
+                    $('#canva-get-answer').html("OK");
 
                 },
                 error: function (err) {

@@ -415,10 +415,11 @@ router.get("/accessible",
         res.end(JSON.stringify(canvas));
 
     }
+
 );
 
 
-router.post("/getImage", 
+router.post("/:id/getImage", 
 
     /**
      * Pour récuperer l'image d'un canva
@@ -437,7 +438,7 @@ router.post("/getImage",
 
         let data = req.body
 
-        let id = data['idCanva'];
+        let id = encodeURIComponent(req.params.id);
 
         let idUser = req.session.login;
 
@@ -461,6 +462,8 @@ router.post("/getImage",
         
     }
 )
+
+router.post("/:id/timer")
 
 
 router.use("/:id", 
