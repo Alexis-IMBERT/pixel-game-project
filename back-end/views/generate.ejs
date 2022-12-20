@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>PixelWAR</title>
+        <script src="/assets/vendor/jquery-3.6.0.js"></script>
+        <script src="/assets/vendor/jquery-ui.js"></script>
+        <link rel="stylesheet" href="/assets/css/styles.css">
+        <link rel="stylesheet" href="/assets/css/loader.css">
+        <script type="text/javascript" src="/assets/js/vue.js"></script>
+        <link rel="stylesheet" href="/assets/js/cute-alert-master/style.css"/>
+        <script src="/assets/js/cute-alert-master/cute-alert.js"></script>
+    </head>
+    <body>
+        <div class="body-container" id="app">
+            <form action="/canvas/generate" onsubmit="return generate()" method="post" role="form" class="flex-1">
+                <div class="column-section center top gap-20 scrollable">
+                    <div class="flex-3">
+                        <div class="bg-color h-95 border-rad-20">
+                            <h1 class="titre-form" style="margin-bottom: 30px;">CREATION D'UN CANVA</h1>
+                            <div class="column-section bg-main" style="max-height:80%; overflow: auto;">
+                                    <div class="row-section">
+                                        <h1 class="soustitre-form flex-1">NOM DU CANVA</h1>
+                                        <input name="name" type="text" id="name" class="input-text flex-2" placeholder="Krusty Krab's Palace">
+                                    </div>
+                                    <div class="row-section">
+                                        <h1 class="soustitre-form flex-1">LARGEUR</h1>
+                                        <input name="height" type="number" id="height" min="10" max="5000" class="input-text flex-2" placeholder="2000">
+                                    </div>
+                                    <div class="row-section">
+                                        <h1 class="soustitre-form flex-1">LONGUEUR</h1>
+                                        <input name="width" type="number" id="width" min="10" max="5000" class="input-text flex-2" placeholder="2000">
+                                    </div>
+                                    <label class="flex-1" id="generate-answer"></label>   
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-2" >
+                        <div class="bg-color h-95 border-rad-20">
+                            <h1 class="titre-form" style="margin-bottom: 30px;">MEMBRES</h1>
+                            <div class="column-section bg-main" style="margin:10px; max-height:80%; overflow: auto;">
+                                    <div class="row-section">
+                                        <h1 class="soustitre-form flex-2">PSEUDO</h1>
+                                        <input name="name" type="text" id="name" class="input-text flex-3" placeholder="Krusty Krab's Palace">
+                                        <button type="button" v-on:click="addMember()" class="btn valid flex-1" style="min-width:20px !important;">+</button>
+                                    </div>
+                                    <label class="flex-1" id="generate-answer"></label>   
+                                    
+                                    
+                                    <div class="w-100 mg-10" style="overflow:hidden; max-height:80%; border-radius:10px"  >
+                                        <div class="top-rounded-box color-sc bottom-border">
+                                            <div class="title-form text-white">Pseudo</div>
+                                        </div>
+                                        <div class="scrollable list-games border-bottom" style="max-height: 200px; overflow: auto">
+                                            <div class="mid-box">
+                                                <% users.forEach(function(item,index){ 
+                                                    if (login == item.idUser) { %>
+                                                        <div class="canva-row blue"><%= login %> (moi)</div>
+                                                    <%} else {%>
+                                                        <div onclick="app.deleteMember('<%=item %>')" class="canva-row redhover"><%= item.idUser %></div>
+                                                <%} }) %>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="login-menu">
+                    <% if (!logged) { %>
+                        <a href="/users/login">Connexion</a>
+                        <a href="/users/signup">Inscription</a>
+                    <% } else { %>
+                        <a href="/perfil">Profil</a>
+                        <a href="/canvas">Canvas</a>
+                        <a href="/logout">Se déconnecter</a>
+                    <% } %>
+                </div>
+                <div class="footer bg-main">
+                    <button type="submit" class="btn valid">CREER<div class="icon unlocked"></div></button>
+                    <!--<button type="button" v-on:click="retour()" class="btn error">RETOUR<div class="icon join"></div></button>-->
+                </div>
+            </form>
+        </div>
+        <script>
+            
+
+            function generate() {
+                let dataToPost = {
+                    name: $('#name').val(),
+                    height: $('#height').val(),
+                    width: $('#width').val()
+                };            
+                if ( dataToPost.name==""|| dataToPost.height=="" || dataToPost.width == "" || (dataToPost.height > 5000 || dataToPost.height < 10 || dataToPost.width > 5000 || dataToPost.width < 10))
+                {
+                    $('#generate-answer').html("Le formulaire n'est pas valide.");
+                    return false
+                }
+                else 
+                {
+                    console.log("true");
+                    return true;
+                }
+            }
+
+
+            const app = new Vue({
+                el:"#app",
+                data: {
+                    isLoading: false
+                },
+                methods: {
+                    retour: function() {
+                        window.location.href += "../";
+                    },
+                    deleteMember: function(member) {
+                        cuteAlert({
+                            type: "question",
+                            title: "Supprimer " + member.name,
+                            message: "Etes-vous sûr(e) ?",
+                            confirmText: "Oui",
+                            cancelText: "Annuler",
+                            img:"question.svg"
+                        }).then((e)=>{
+                             if ( e == ("Oui")){} else {
+                                alert(":-(");
+                            }
+                        })
+                    }
+                    
+                },
+                mounted() {
+                    console.log("chargé");
+                }
+            })
+        </script>
+    </body>
+</html>

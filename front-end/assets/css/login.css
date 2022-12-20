@@ -3,14 +3,6 @@ form {
     text-align: center;
 }
 
-label {
-    width:80%;
-    color:red;
-    display: block;
-    text-align: center;
-    margin-left:10px;
-}
-
 
 
 @media (max-width: 481px) {

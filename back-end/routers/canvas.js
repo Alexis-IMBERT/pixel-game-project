@@ -108,15 +108,7 @@ router.use("/generate",
     }
 );
 
-router.post("/:id/update", 
-    /**
-     * Update a canva
-     * 
-     * @param {*} req (req.body['height'], req.body['width'], req.body['name'], req.body['users'] like ["vip","toto",...])
-     * @param {*} res 
-     * 
-     * @author Jean-Bernard CAVELIER
-     */
+router.use("/:id/edit", 
     function(req,res) {
 
         let tests = req.query['tests'];
@@ -504,20 +496,19 @@ function getCanvaInfos(idCanva) {
 function usersInCanva(idCanva) {
 
     let res = null; 
-
+    console.log("here");
     db.serialize(()=>{
         const statement = db.prepare("SELECT idUser FROM usersInCanva WHERE idCanva =?;");
         statement.all([idCanva], function (err, result) {
             if (err) {
-                console.log(err);
                 res = false;
                 return;
             }
 
             if (result) {
+                console.log(result)
 
                 res = result;
-
             } else {
                 res = false;
                 return;
@@ -551,7 +542,6 @@ function usersInCanva(idCanva) {
  */
 function createCanva(idcanva, name, idOwner, height, width, linkOwnerToCanva) {
     var ok = null;
-
     // create callbacks
 
     let rollback = () => {

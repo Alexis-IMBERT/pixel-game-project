@@ -3,11 +3,11 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>PixelWAR</title>
-        <script src="assets/vendor/jquery-3.6.0.js"></script>
-        <script src="assets/vendor/jquery-ui.js"></script>
-        <link rel="stylesheet" href="assets/css/styles.css">
-        <link rel="stylesheet" href="assets/css/loader.css">
-        <script type="text/javascript" src="assets/js/vue.js"></script>
+        <script src="/assets/vendor/jquery-3.6.0.js"></script>
+        <script src="/assets/vendor/jquery-ui.js"></script>
+        <link rel="stylesheet" href="/assets/css/styles.css">
+        <link rel="stylesheet" href="/assets/css/loader.css">
+        <script type="text/javascript" src="/assets/js/vue.js"></script>
 
     </head>
     <body>
@@ -23,11 +23,15 @@
                     </div>
                     <div class="scrollable list-games border-bottom">
                         <div v-if="isLoading" class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
-                        
-                        <div v-if="!isLoading" class="mid-box color-gc" >
-                            <div v-for="canva in canvas" class="column-section" >
-                                <div class="flex-3 ">{{canva.name}}</div>
-                                <div class="flex-2 ">{{canva.owner}}</div>
+                        <div v-if="!isLoading" class="mid-box" >
+                            <div v-for="canva in canvas">
+                                <div class="column-section canva-row" v-on:click="joinCanva(canva)">
+                                    <div class="flex-3 ">{{canva.name}} 
+                                        <div v-on:click="editCanva(canva)" v-if="owner == canva.owner" class="icon pencil"></div>
+                                        <div v-else class="icon" style="width:30px"></div>
+                                    </div>
+                                    <div class="flex-2 ">{{canva.owner}}</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -39,30 +43,38 @@
                     <a href="/users/login">Connexion</a>
                     <a href="/users/signup">Inscription</a>
                 <% } else { %>
-                    <a href="/users/perfil">Profil</a>
-                    <a href="/users/canvas">Canvas</a>
-                    <a href="/users/logout">Se déconnecter</a>
+                    <a href="/perfil">Profil</a>
+                    <a href="/canvas">Canvas</a>
+                    <a href="/logout">Se déconnecter</a>
                 <% } %>
             </div>
             <div class="footer bg-main">
-                <button onclick="newCanva()" class="btn error">NOUVEAU DESSIN <div class="icon locked"></div></button>
+                <% if (!isVip) { %>
+                    <button class="btn error">NOUVEAU DESSIN <div class="icon locked"></div></button>
+                <% } else { %>
+                    <button onclick="newCanva()" class="btn valid">NOUVEAU DESSIN <div class="icon unlocked"></div></button>
+                <% } %>
             </div>
         </div>
         <script>
-
             function newCanva() {
-                //todo
+                window.location.href += 'generate';
             }
+
             const app = new Vue({
                 el:"#app",
                 data: {
                     isLoading: false,
                     canvas:[],
+                    owner:"",
                 },
                 methods: {
-                    /*joinCanva: function(event,canva) {
-                        window.location.href = '../'+canva.idCanva;
-                    },*/
+                    editCanva: function(canva) {
+                        window.location.href += canva.idCanva + "/edit";
+                    },
+                    joinCanva: function(canva) {
+                        window.location.href += canva.idCanva;
+                    },
                     getCanvas() {
                         this.isLoading = true;
                         $.getJSON("/canvas/accessible", function(data) {
@@ -76,6 +88,7 @@
                     this.getCanvas();
                 }
             })
+            app.owner = '<%= login %>';
         </script>
     </body>
 </html>
