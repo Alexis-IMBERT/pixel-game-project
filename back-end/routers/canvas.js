@@ -126,7 +126,7 @@ router.post("/generate",
             for (key in users) {
                 if (users[key].idUser == idOwner)
                     continue;
-                    
+
                 db.run("INSERT INTO usersInCanva (idCanva,idUser) VALUES (?,?)", [idcanva, users[key].idUser], function (err) {
                     if (err) {
                         console.log(err);
@@ -474,14 +474,52 @@ router.post("/:id/timer",
      * @param {*} res 
      */
     function(req,res) {
-        let id = encodeURIComponent(req.params.id);
+
+        let tempsAccess = unixTimestamp();
+
+        let idCanva = encodeURIComponent(req.params.id);
+        let idUser  = req.session.login;
+
+        if (!usersUtil.isLoggedIn(req)) {
+            res.status(400).end('YOU ARE NOT LOGGED IN');
+            return;
+        }
 
 
+        if (!userCanAccessCanva(idUser, idCanva)) {
+            res.status(400).end("YOU CANNOT ACCESS THIS CANVA")
+            return;
+        }
 
+        console.log(idCanva)
+        console.log(req.params.id);
+        console.log(req.session.login)
 
+        let timerMaxSecondes = 600;
 
-    
-        res.send(10*60)
+        let timerRestantSecondes = 0;
+
+        db.serialize( ()=> {
+            const statement = db.prepare("SELECT dernierePose FROM usersInCanva WHERE idCanva=? AND idUser=?;");
+            statement.all([idCanva,idUser], function(err,result) {
+                if (err) {
+                    console.log(err);
+                    res.status(400).send("bad request");
+                    return;
+                }
+
+                if (result) {
+                    timerRestantSecondes = (result[0].dernierePose === null ? 0 : min(tempsAccess-result[0].dernierePose, timerMaxSecondes)  )
+                    res.send("" + timerRestantSecondes);
+                    
+                } else {
+                    
+                    res.send(""+0);
+                }
+            })
+            statement.finalize();
+
+        });  
     }
 )
 
@@ -559,6 +597,14 @@ function isHexColor(hex) {
 }
 
 
+/**
+ * Returns the current UNIX timestamp.
+ *
+ * @returns {Number}
+ */
+function unixTimestamp() {
+    return Math.floor(Date.now() / 1000)
+}
 
 
 /**
