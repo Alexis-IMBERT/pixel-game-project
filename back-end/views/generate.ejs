@@ -12,14 +12,16 @@
         <script src="/assets/js/cute-alert-master/cute-alert.js"></script>
     </head>
     <body>
-        <% if (error!=false) { %>
+        <% if (error) { %>
+            <script>
             cuteAlert({
                 type: "error",
-                title: Oops...,
-                message:<%=error %>,
+                title: "Oops...",
+                message:'<%=error %>',
                 buttonText: "Ok",
-                img="error.svg",
+                img:"error.svg",
             });
+            </script>
         <% } %>
         <% if (typeof canva_infos !== 'undefined') { %>
             <script>
