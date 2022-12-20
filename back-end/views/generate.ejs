@@ -25,6 +25,8 @@
         <% } %>
         <div class="body-container" id="app">
             <form action="/canvas/generate" onsubmit="return generate()" method="post" role="form" class="flex-1">
+                <input name="id" type="hidden" v-model="id">
+                <input name="allusers" type="hidden" v-model="allusers">
                 <div class="column-section center top gap-20 scrollable">
                     <div class="flex-3">
                         <div class="bg-color h-95 border-rad-20">
@@ -92,11 +94,16 @@
         </div>
         <script>
             function generate() {
+                app.allusers="";
+                app.users.forEach(user => {
+                    app.allusers+=user.idUser+";";
+                    console.log("ah");
+                });
                 let dataToPost = {
                     name: $('#name').val(),
                     height: $('#height').val(),
                     width: $('#width').val(),
-                    users: app.users,
+                    allusers: app.allusers,
                     id: app.id
                 };            
                 if ( dataToPost.name==""|| dataToPost.height=="" || dataToPost.width == "" || (dataToPost.height > 5000 || dataToPost.height < 10 || dataToPost.width > 5000 || dataToPost.width < 10))
@@ -122,6 +129,8 @@
                     width:"",
                     minePseudo:"",
                     newForm: true,
+                    id:"",
+                    allusers:"",
                 },
                 methods: {
                     retour: function() {
@@ -170,6 +179,7 @@
                         this.width = parsed_data.width;
                         this.height = parsed_data.height;
                         this.name = parsed_data.name;
+                        this.id = parsed_data.id;
                     }
                     if(typeof minePseudo  !== 'undefined') this.minePseudo = minePseudo;
                     if(typeof isNew  !== 'undefined') this.newForm = isNew;

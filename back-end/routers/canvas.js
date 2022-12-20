@@ -49,36 +49,145 @@ router.post("/generate",
         }
         
 
-        let data = req.body
 
-        let name = encodeURIComponent(data['name'])
-        let height,width;
-        try {
-            height = data['height']
-            width = data['width']
-        } catch (e) {
-            res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
-            return;
-        }
-        
-        let idOwner  = req.session.login
-        let idcanva = uuid();
 
-        if (height == null || width == null) {
-            res.status(400).send("MISSING DATA");
-            return;
-        }
+        let idCanva = encodeURIComponent(req.params.id);
+        if (req.body['id']!="")
+        {
+            let height;
+            let width;
 
-        // ADD CANVA in CANVAS table + CREATE TABLE CANVA_IDCANVA to store all the pixels + link owner to the table
-        if (!createCanva(idcanva,name,idOwner,height,width, true)){
-            res.status(400).end("Bad request");
-            return;
-        }
+            try {
+                height = parseInt(req.body['height'])
+                width  = parseInt(req.body['width'])
+            } catch (e) {
+                res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
+                return;
+            }
+            
+            
+            let users  = req.body['allusers']
+            console.log(users);
+            /* A REVOIR
+            users = JSON.parse(users);
+            for (key in users) {
+                users[key] = encodeURIComponent(users[key])
+            }
 
-        if (tests) {
-            res.send("CANVA CREATED id=" + idcanva);
+            let ownerInList = false;
+            for (key in users) {
+                if (!usersUtil.exists(users[key])) {
+                    res.status(400).send("USER "+users[key]+" DOES NOT EXIST")
+                    return;
+                }
+                if (users[key] == req.session.login) {
+                    ownerInList = true;
+                }
+            }
+
+            let name = encodeURIComponent(req.body['name']);
+
+            if (!ownerInList) {
+                res.status(400).send("OWNER CANNOT BE REMOVED")   ;
+                return;
+            }
+
+            let usersIn = usersInCanva(idCanva);
+
+            console.log("height="+height+" width="+width+" name="+name)
+
+            db.serialize(()=>{
+                db.run("UPDATE canvas SET height=? , width=? , name=? WHERE id=?", [height,width,name,idCanva], function(err){
+                    if (err) {
+                        console.log(err);
+                        // canva doesn't exist
+                        res.redirect("/canvas");
+                        return;
+                    }
+                });
+
+                let incanva = false;
+                // on ajoute les nouveaux users
+                for (key in users){
+                    incanva = false;
+                    for (key2 in usersIn){
+                        if (users[key]==usersIn[key2].idUser) {
+                            incanva = true;
+                        }
+                    }
+                    if (!incanva) {
+                        db.run("INSERT INTO usersInCanva (idCanva,idUser) VALUES (?,?)", [idCanva,users[key]], function (err) {
+                            if (err) {
+                                // ne devrait pas arriver
+                                res.redirect("/canvas/" + idCanva + "/edit");
+                                return
+                            }
+                        })
+                    }
+                }
+
+                let inlist = false;
+                // on supprime ceux qui ne sont plus dans la liste
+                for (key2 in usersIn) {
+                    inlist = false;
+                    for (key in users) {
+                        if (users[key] == usersIn[key2].idUser ) {
+                            inlist = true;
+                        }
+                    }
+                    if (!inlist) {
+                        db.run("DELETE FROM usersInCanva WHERE idCanva=? AND idUser=?", [idCanva, users[key]], function (err) {
+                            if (err) {
+                                // ne devrait pas arriver
+                                res.redirect("/canvas/" + idCanva + "/edit");
+                                return
+                            }
+                        })
+                    }
+                }
+
+                
+            })
+
+            if (tests)
+                res.send("OK")
+            else
+                res.redirect("/canvas"); */
         } else {
-            res.redirect('/canvas/' + idcanva);
+
+
+
+            let data = req.body
+
+            let name = encodeURIComponent(data['name'])
+            let height,width;
+            try {
+                height = data['height']
+                width = data['width']
+            } catch (e) {
+                res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
+                return;
+            }
+            
+            let idOwner  = req.session.login
+            let idcanva = uuid();
+
+            if (height == null || width == null) {
+                res.status(400).send("MISSING DATA");
+                return;
+            }
+
+            // ADD CANVA in CANVAS table + CREATE TABLE CANVA_IDCANVA to store all the pixels + link owner to the table
+            if (!createCanva(idcanva,name,idOwner,height,width, true)){
+                res.status(400).end("Bad request");
+                return;
+            }
+
+            if (tests) {
+                res.send("CANVA CREATED id=" + idcanva);
+            } else {
+                res.redirect('/canvas/' + idcanva);
+            }
         }
 
     }
@@ -108,7 +217,8 @@ router.use("/generate",
     }
 );
 
-router.use("/:id/edit", 
+/*
+router.post("/:id/edit", 
     function(req,res) {
 
         let tests = req.query['tests'];
@@ -239,7 +349,7 @@ router.use("/:id/edit",
 
     }
 );
-
+*/
 router.use("/:id/edit", 
 
     /**
@@ -282,7 +392,7 @@ router.use("/:id/edit",
         if (tests)
             res.send(info);
         else
-            res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, canva_infos: {height: info['height'], width: info['width'],name: info['name'], users: info["users"]} })
+            res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, canva_infos: {height: info['height'], width: info['width'],name: info['name'], users: info["users"], id:idCanva} })
 
     }
 )

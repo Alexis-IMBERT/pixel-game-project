@@ -58,7 +58,7 @@
         </div>
         <script>
             function newCanva() {
-                window.location.href += 'generate';
+                window.location.href += '/generate';
             }
 
             const app = new Vue({
@@ -70,10 +70,10 @@
                 },
                 methods: {
                     editCanva: function(canva) {
-                        window.location.href += canva.idCanva + "/edit";
+                        window.location.href += "/" + canva.idCanva + "/edit";
                     },
                     joinCanva: function(canva) {
-                        window.location.href += canva.idCanva;
+                        //window.location.href += "/" + canva.idCanva;
                     },
                     getCanvas() {
                         this.isLoading = true;
