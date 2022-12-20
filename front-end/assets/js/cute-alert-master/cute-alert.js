@@ -118,7 +118,7 @@ const cuteAlert = ({
   });
 };
 
-const cuteToast = ({ type, title, message, timer = 5000,  vibrate = [], playSound = null }) => {
+const cuteToast = ({ type, title, message, timer = 5000, img, vibrate = [], playSound = null }) => {
   return new Promise(resolve => {
     const body = document.querySelector('body');
 
@@ -127,6 +127,7 @@ const cuteToast = ({ type, title, message, timer = 5000,  vibrate = [], playSoun
     let src = '';
 
     src="https://www.cssscript.com/demo/alert-confirm-toast-cute/img";
+
 
     let templateContainer = document.querySelector('.toast-container');
 
@@ -145,7 +146,7 @@ const cuteToast = ({ type, title, message, timer = 5000,  vibrate = [], playSoun
       <div>
         <div class="toast-frame">
           <div class="toast-body">
-            <img class="toast-body-img" src="${src}/img/${type}.svg" />'
+            <img class="toast-body-img" src="${src}/${img}" />
             <div class="toast-body-content">
               <span class="toast-title">${title}</span>
               <span class="toast-message">${message}</span>
