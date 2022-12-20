@@ -23,7 +23,7 @@ router.post("/generate",
     /**
      * Generate a canvas 
      * 
-     * @param {*} req (req.body["name"] ; req.body['height'] ; req.body['width'])
+     * @param {*} req (req.body["name"] ; req.body['height'] ; req.body['name'] ; req.body['width'])
      * @param {*} res 
      * 
      * @author Jean-Bernard CAVELIER
@@ -112,7 +112,7 @@ router.post("/:id/update",
     /**
      * Update a canva
      * 
-     * @param {*} req (req.body['height'], req.body['width'], req.body['users'])
+     * @param {*} req (req.body['height'], req.body['width'], req.body['name'], req.body['users'])
      * @param {*} res 
      * 
      * @author Jean-Bernard CAVELIER
@@ -452,7 +452,14 @@ function isHexColor(hex) {
 
 
 
-
+/**
+ * Get all the infos of a canva (height,width, name, users)
+ * 
+ * @param {*} idCanva 
+ * @returns a JSON of all the canva's info
+ * 
+ * @author Jean-Bernard CAVELIER
+ */
 function getCanvaInfos(idCanva) {
     let res = null;
 
