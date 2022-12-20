@@ -12,6 +12,15 @@
         <script src="/assets/js/cute-alert-master/cute-alert.js"></script>
     </head>
     <body>
+        <% if (error!=false) { %>
+            cuteAlert({
+                type: "error",
+                title: Oops...,
+                message:<%=error %>,
+                buttonText: "Ok",
+                img="error.svg",
+            });
+        <% } %>
         <% if (typeof canva_infos !== 'undefined') { %>
             <script>
                 var parsed_data = <%- JSON.stringify(canva_infos) %>;
@@ -96,7 +105,7 @@
             function generate() {
                 app.allusers="[";
                 app.users.forEach(user => {
-                    app.allusers+='"' + user.idUser + '",';
+                    app.allusers+='{"idUser":"' + user.idUser + '"},';
                 });
                 app.allusers = app.allusers.slice(0, -1);
                 app.allusers+="]";
@@ -132,7 +141,7 @@
                     minePseudo:"",
                     newForm: true,
                     id:"",
-                    allusers:"[",
+                    allusers:"[{",
                 },
                 methods: {
                     retour: function() {

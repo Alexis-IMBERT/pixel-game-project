@@ -57,6 +57,7 @@
             </div>
         </div>
         <script>
+            var wantEdit = false;
             function newCanva() {
                 window.location.href += '/generate';
             }
@@ -70,10 +71,13 @@
                 },
                 methods: {
                     editCanva: function(canva) {
+                        wantEdit = true;
                         window.location.href += "/" + canva.idCanva + "/edit";
                     },
                     joinCanva: function(canva) {
-                        //window.location.href += "/" + canva.idCanva;
+                        if(!wantEdit)
+                            window.location.href += "/" + canva.idCanva;
+                        wantEdit = false;
                     },
                     getCanvas() {
                         this.isLoading = true;

@@ -161,6 +161,7 @@ router.post("/:id/update",
         
         let users  = req.body['users']
 
+        console.log(users);
         users = JSON.parse(users);
 
         for (key in users) {
