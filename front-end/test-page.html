@@ -418,11 +418,13 @@
                 url: url,
                 timeout: 3000,
                 data: dataToPost,
-                success: function (data) {
+                success: function (data,e,xhr) {
                     console.log("OK");
                     console.log(data)
                     console.log(data.height)
+                    console.log(xhr.status)
                     $("canva-edit-update-answer").html(data)
+                    
                 },
                 error: function (err) {
                     console.log(err);
