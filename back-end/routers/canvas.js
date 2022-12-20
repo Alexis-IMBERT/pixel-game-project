@@ -52,7 +52,7 @@ router.post("/generate",
 
         let data = req.body
 
-        let name = encodeURIComponent(data['name'])
+        let name = data['name']//encodeURIComponent(data['name'])
         let height,width;
         try {
             height = data['height']
@@ -81,9 +81,9 @@ router.post("/generate",
             return;
         }
 
-        for (key in users) {
+        /*for (key in users) {
             users[key].idUser = encodeURIComponent(users[key].idUser)
-        }
+        }*/
 
         let ownerInList = false;
         for (key in users) {
@@ -211,7 +211,7 @@ router.post("/:id/update",
         let width;
 
         let users = req.body['users']
-        let name = encodeURIComponent(req.body['name']);
+        let name = req.body['name']//encodeURIComponent(req.body['name']);
 
         try {
             height = parseInt(req.body['height'])
@@ -236,9 +236,9 @@ router.post("/:id/update",
             return;
         }
 
-        for (key in users) {
+        /*for (key in users) {
             users[key].idUser = encodeURIComponent(users[key].idUser)
-        }
+        }*/
 
         let ownerInList = false;
         for (key in users) {
