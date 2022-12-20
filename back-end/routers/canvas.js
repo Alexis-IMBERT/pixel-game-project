@@ -124,11 +124,15 @@ router.post("/generate",
         // add users in canva
         db.serialize( ()=> {
             for (key in users) {
+                if (users[key].idUser == idOwner)
+                    continue;
+                    
                 db.run("INSERT INTO usersInCanva (idCanva,idUser) VALUES (?,?)", [idcanva, users[key].idUser], function (err) {
                     if (err) {
+                        console.log(err);
                         // ne devrait pas arriver
                         res.redirect("/canvas/" + idcanva + "/edit");
-                        return
+                        return;
                     }
                 })
             }
@@ -222,8 +226,6 @@ router.post("/:id/update",
             return;
         }
         
-        
-        
 
         try {
             users = JSON.parse(users);
@@ -243,6 +245,7 @@ router.post("/:id/update",
         let ownerInList = false;
         for (key in users) {
             if (!usersUtil.exists(users[key].idUser)) {
+                console.log("user doesn't exist")
                 if (tests)
                     res.status(400).send("USER "+users[key].idUser+" DOES NOT EXIST")
                 else
