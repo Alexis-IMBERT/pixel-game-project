@@ -48,148 +48,39 @@ router.post("/generate",
             return;
         }
         
-
-
-
         let idCanva = encodeURIComponent(req.params.id);
-        if (req.body['id']!="")
-        {
-            let height;
-            let width;
 
-            try {
-                height = parseInt(req.body['height'])
-                width  = parseInt(req.body['width'])
-            } catch (e) {
-                res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
-                return;
-            }
-            
-            
-            let users  = req.body['allusers']
-            console.log(users);
-            /* A REVOIR
-            users = JSON.parse(users);
-            for (key in users) {
-                users[key] = encodeURIComponent(users[key])
-            }
+        let data = req.body
 
-            let ownerInList = false;
-            for (key in users) {
-                if (!usersUtil.exists(users[key])) {
-                    res.status(400).send("USER "+users[key]+" DOES NOT EXIST")
-                    return;
-                }
-                if (users[key] == req.session.login) {
-                    ownerInList = true;
-                }
-            }
+        let name = encodeURIComponent(data['name'])
+        let height,width;
+        try {
+            height = data['height']
+            width = data['width']
+        } catch (e) {
+            res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
+            return;
+        }
+        
+        let idOwner  = req.session.login
+        let idcanva = uuid();
 
-            let name = encodeURIComponent(req.body['name']);
-
-            if (!ownerInList) {
-                res.status(400).send("OWNER CANNOT BE REMOVED")   ;
-                return;
-            }
-
-            let usersIn = usersInCanva(idCanva);
-
-            console.log("height="+height+" width="+width+" name="+name)
-
-            db.serialize(()=>{
-                db.run("UPDATE canvas SET height=? , width=? , name=? WHERE id=?", [height,width,name,idCanva], function(err){
-                    if (err) {
-                        console.log(err);
-                        // canva doesn't exist
-                        res.redirect("/canvas");
-                        return;
-                    }
-                });
-
-                let incanva = false;
-                // on ajoute les nouveaux users
-                for (key in users){
-                    incanva = false;
-                    for (key2 in usersIn){
-                        if (users[key]==usersIn[key2].idUser) {
-                            incanva = true;
-                        }
-                    }
-                    if (!incanva) {
-                        db.run("INSERT INTO usersInCanva (idCanva,idUser) VALUES (?,?)", [idCanva,users[key]], function (err) {
-                            if (err) {
-                                // ne devrait pas arriver
-                                res.redirect("/canvas/" + idCanva + "/edit");
-                                return
-                            }
-                        })
-                    }
-                }
-
-                let inlist = false;
-                // on supprime ceux qui ne sont plus dans la liste
-                for (key2 in usersIn) {
-                    inlist = false;
-                    for (key in users) {
-                        if (users[key] == usersIn[key2].idUser ) {
-                            inlist = true;
-                        }
-                    }
-                    if (!inlist) {
-                        db.run("DELETE FROM usersInCanva WHERE idCanva=? AND idUser=?", [idCanva, users[key]], function (err) {
-                            if (err) {
-                                // ne devrait pas arriver
-                                res.redirect("/canvas/" + idCanva + "/edit");
-                                return
-                            }
-                        })
-                    }
-                }
-
-                
-            })
-
-            if (tests)
-                res.send("OK")
-            else
-                res.redirect("/canvas"); */
-        } else {
-
-
-
-            let data = req.body
-
-            let name = encodeURIComponent(data['name'])
-            let height,width;
-            try {
-                height = data['height']
-                width = data['width']
-            } catch (e) {
-                res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
-                return;
-            }
-            
-            let idOwner  = req.session.login
-            let idcanva = uuid();
-
-            if (height == null || width == null) {
-                res.status(400).send("MISSING DATA");
-                return;
-            }
-
-            // ADD CANVA in CANVAS table + CREATE TABLE CANVA_IDCANVA to store all the pixels + link owner to the table
-            if (!createCanva(idcanva,name,idOwner,height,width, true)){
-                res.status(400).end("Bad request");
-                return;
-            }
-
-            if (tests) {
-                res.send("CANVA CREATED id=" + idcanva);
-            } else {
-                res.redirect('/canvas/' + idcanva);
-            }
+        if (height == null || width == null) {
+            res.status(400).send("MISSING DATA");
+            return;
         }
 
+        // ADD CANVA in CANVAS table + CREATE TABLE CANVA_IDCANVA to store all the pixels + link owner to the table
+        if (!createCanva(idcanva,name,idOwner,height,width, true)){
+            res.status(400).end("Bad request");
+            return;
+        }
+
+        if (tests) {
+            res.send("CANVA CREATED id=" + idcanva);
+        } else {
+            res.redirect('/canvas/' + idcanva);
+        }
     }
 
 );
@@ -214,7 +105,7 @@ router.use("/generate",
             return;
         }
 
-        res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, type: {edit: false, action: "/canvas/generate"}, canva_infos: { height: 0, width: 0, name: "", users:[{idUser:req.session.login}], id: idCanva }})
+        res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, type: {edit: false, action: "/canvas/generate"}, canva_infos: { height: 0, width: 0, name: "", users:[{idUser:req.session.login}], id: "" }})
     }
 
 );
@@ -259,44 +150,50 @@ router.post("/:id/update",
         let height;
         let width;
 
+        let users = req.body['users']
+        let name = encodeURIComponent(req.body['name']);
+
         try {
             height = parseInt(req.body['height'])
             width  = parseInt(req.body['width'])
         } catch (e) {
-            res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
+            //res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
+            renderGeneratePage(req,res,"HEIGHT AND WIDTH SHOULD BE NUMBERS", true, "/canvas/" + idCanva + "/update", idCanva, req.body['height'], req.body['width'], name, users)
             return;
         }
         
         
-        let users  = req.body['users']
+        
 
         users = JSON.parse(users);
 
         for (key in users) {
-            users[key] = encodeURIComponent(users[key])
+            users[key].idUser = encodeURIComponent(users[key].idUser)
         }
 
         let ownerInList = false;
         for (key in users) {
-            if (!usersUtil.exists(users[key])) {
-                res.status(400).send("USER "+users[key]+" DOES NOT EXIST")
+            if (!usersUtil.exists(users[key].idUser)) {
+                if (tests)
+                    res.status(400).send("USER "+users[key].idUser+" DOES NOT EXIST")
+                else
+                    renderGeneratePage(req,res,"USER " + users[key].idUser + " DOES NOT EXIST", true, "/canvas/" + idCanva + "/update", idCanva, req.body['height'], req.body['width'], name, users)
                 return;
             }
-            if (users[key] == req.session.login) {
+            if (users[key].idUser == req.session.login) {
                 ownerInList = true;
             }
         }
 
-        let name = encodeURIComponent(req.body['name']);
-
         if (!ownerInList) {
-            res.status(400).send("OWNER CANNOT BE REMOVED")   ;
+            if (tests)
+                res.status(400).send("OWNER CANNOT BE REMOVED")   ;
+            else
+                renderGeneratePage(req,res,"OWNER "+req.session.login+" CANNOT BE REMOVED", true, "/canvas/" + idCanva + "/update", idCanva, req.body['height'], req.body['width'], name, users)
             return;
         }
 
         let usersIn = usersInCanva(idCanva);
-
-        console.log("height="+height+" width="+width+" name="+name)
 
         db.serialize(()=>{
             db.run("UPDATE canvas SET height=? , width=? , name=? WHERE id=?", [height,width,name,idCanva], function(err){
@@ -313,12 +210,13 @@ router.post("/:id/update",
             for (key in users){
                 incanva = false;
                 for (key2 in usersIn){
-                    if (users[key]==usersIn[key2].idUser) {
+                    if (users[key].idUser==usersIn[key2].idUser) {
                         incanva = true;
                     }
                 }
                 if (!incanva) {
-                    db.run("INSERT INTO usersInCanva (idCanva,idUser) VALUES (?,?)", [idCanva,users[key]], function (err) {
+                    console.log("insert "+users[key].idUser)
+                    db.run("INSERT INTO usersInCanva (idCanva,idUser) VALUES (?,?)", [idCanva,users[key].idUser], function (err) {
                         if (err) {
                             // ne devrait pas arriver
                             res.redirect("/canvas/" + idCanva + "/edit");
@@ -333,12 +231,14 @@ router.post("/:id/update",
             for (key2 in usersIn) {
                 inlist = false;
                 for (key in users) {
-                    if (users[key] == usersIn[key2].idUser ) {
+                    if (users[key].idUser == usersIn[key2].idUser ) {
+                        console.log("in list")
                         inlist = true;
                     }
                 }
                 if (!inlist) {
-                    db.run("DELETE FROM usersInCanva WHERE idCanva=? AND idUser=?", [idCanva, users[key]], function (err) {
+                    console.log("delete "+usersIn[key2].idUser)
+                    db.run("DELETE FROM usersInCanva WHERE idCanva=? AND idUser=?", [idCanva, usersIn[key2].idUser], function (err) {
                         if (err) {
                             // ne devrait pas arriver
                             res.redirect("/canvas/" + idCanva + "/edit");
@@ -359,7 +259,7 @@ router.post("/:id/update",
     }
 
 );
-*/
+
 router.use("/:id/edit", 
 
     /**
@@ -402,13 +302,17 @@ router.use("/:id/edit",
         if (tests)
             res.send(info);
         else
-            res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, type: { edit: true, action: "/canvas/"+idCanva+"/update" },canva_infos: {height: info['height'], width: info['width'],name: info['name'], users: info["users"], id:idCanva} })
+            renderGeneratePage(req,res,false, true, "/canvas/" + idCanva + "/update", idCanva, info['height'], info['width'], info['name'], info['users'])
+            //res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, type: { edit: true, action: "/canvas/"+idCanva+"/update" },canva_infos: {height: info['height'], width: info['width'],name: info['name'], users: info["users"], id:idCanva} })
 
     }
 
 )
 
 
+function renderGeneratePage(req,res,error, edit, action, idCanva, height, width, name, users) {
+    res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: error, type: { edit: edit, action: action }, canva_infos: { height: height, width: width, name: name, users: users, id: idCanva } })
+}
 
 
 
@@ -617,7 +521,6 @@ function getCanvaInfos(idCanva) {
 function usersInCanva(idCanva) {
 
     let res = null; 
-    console.log("here");
     db.serialize(()=>{
         const statement = db.prepare("SELECT idUser FROM usersInCanva WHERE idCanva =?;");
         statement.all([idCanva], function (err, result) {
