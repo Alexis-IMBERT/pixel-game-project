@@ -58,11 +58,56 @@ router.post("/generate",
             height = data['height']
             width = data['width']
         } catch (e) {
-            res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
+            if (tests)
+                res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
+            else {
+                renderGeneratePage(req, res, "HEIGHT AND WIDTH SHOULD BE NUMBERS", false, "/canvas/generate", idCanva, req.body['height'], req.body['width'], name, users)
+            }
+            return;
+        }
+
+        let idOwner = req.session.login
+
+        let users = req.body['users'];
+
+        try {
+            users = JSON.parse(users);
+        } catch (e) {
+            if (tests)
+                res.status(400).send("USERS STRING SHOULD BE LIKE [{'idUser':'id1'},{'idUser':'id2'}]")
+            else {
+                renderGeneratePage(req, res, "USERS IS NOT A JSON OBJECT [{}]", false, "/canvas/generate", idCanva, req.body['height'], req.body['width'], name, users)
+            }
+            return;
+        }
+
+        for (key in users) {
+            users[key].idUser = encodeURIComponent(users[key].idUser)
+        }
+
+        let ownerInList = false;
+        for (key in users) {
+            if (!usersUtil.exists(users[key].idUser)) {
+                if (tests)
+                    res.status(400).send("USER " + users[key].idUser + " DOES NOT EXIST")
+                else
+                    renderGeneratePage(req, res, "USER " + users[key].idUser + " DOES NOT EXIST", false, "/canvas/generate", idCanva, req.body['height'], req.body['width'], name, users)
+                return;
+            }
+            if (users[key].idUser == idOwner) {
+                ownerInList = true;
+            }
+        }
+
+        if (!ownerInList) {
+            if (tests)
+                res.status(400).send("OWNER CANNOT BE REMOVED");
+            else
+                renderGeneratePage(req, res, "OWNER " + idOwner + " CANNOT BE REMOVED", false, "/canvas/generate", "", req.body['height'], req.body['width'], name, users)
             return;
         }
         
-        let idOwner  = req.session.login
+        
         let idcanva = uuid();
 
         if (height == null || width == null) {
@@ -75,6 +120,21 @@ router.post("/generate",
             res.status(400).end("Bad request");
             return;
         }
+
+        // add users in canva
+        db.serialize( ()=> {
+            for (key in users) {
+                db.run("INSERT INTO usersInCanva (idCanva,idUser) VALUES (?,?)", [idcanva, users[key].idUser], function (err) {
+                    if (err) {
+                        // ne devrait pas arriver
+                        res.redirect("/canvas/" + idcanva + "/edit");
+                        return
+                    }
+                })
+            }
+           
+        })
+        
 
         if (tests) {
             res.send("CANVA CREATED id=" + idcanva);
@@ -165,7 +225,16 @@ router.post("/:id/update",
         
         
 
-        users = JSON.parse(users);
+        try {
+            users = JSON.parse(users);
+        } catch (e) {
+            if (tests)
+                res.status(400).send("USERS STRING SHOULD BE LIKE [{'idUser':'id1'},{'idUser':'id2'}]")
+            else {
+                renderGeneratePage(req, res, "USERS IS NOT A JSON OBJECT [{}]", true, "/canvas/" + idCanva + "/update", idCanva, req.body['height'], req.body['width'], name, users)
+            }
+            return;
+        }
 
         for (key in users) {
             users[key].idUser = encodeURIComponent(users[key].idUser)
@@ -774,7 +843,7 @@ function getCanvasUtilisateurs(login) {
 
     db.serialize(() => {
 
-        const statement = db.prepare("SELECT u.idCanva, c.owner, c.name FROM usersInCanva u, canvas c WHERE u.idCanva =c.id AND u.idUser=?;");
+        const statement = db.prepare("SELECT u.idCanva, c.owner, c.name, c.height, c.width FROM usersInCanva u, canvas c WHERE u.idCanva =c.id AND u.idUser=?;");
         statement.all([login], function (err, result) {
             if (err) {
                 console.log(err);

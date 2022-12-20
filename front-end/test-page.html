@@ -59,6 +59,9 @@
         <label for="width">width</label>
         <input id="canva-generation-width" type="number" name="width" required>
 
+        <label for="canva-generation-users">canva users</label>
+        <input id="canva-generation-users" type="text" name="canva-generation-users" required>
+
 
         <input type="submit" value="generation">
     
@@ -75,7 +78,7 @@
     
     </form>
 
-  
+    <label> SEE MY CANVA DETAILS </label>
     <form method="POST" action="javascript:canva_edit_get();">
     
         <label for="canva-edit-get-id">canva id</label>
@@ -102,6 +105,7 @@
     
     </form>
     
+    <label> EDIT MY CANVAS </label>
     <form method="POST" action="javascript:canva_edit_update();">
     
         <label for="canva-edit-update-id">canva id</label>
@@ -126,6 +130,7 @@
     
     </form>
 
+    <label> VIEW MY CANVAS IMAGE </label>
     <form method="POST" action="javascript:canva_get();">
     
         <label for="canva-get-id">canva id</label>
@@ -140,6 +145,7 @@
     
     </form>
    
+    <label> VIEW A PAGE </label>
     <form method="POST" action="javascript:page_view();">
 
         <label for="page-view-link">page link</label>
@@ -254,7 +260,8 @@
             var dataToPost = {
                 name: $('#canva-generation-name').val(),
                 height: $('#canva-generation-height').val(),
-                width: $('#canva-generation-width').val()
+                width: $('#canva-generation-width').val(),
+                users: $("#canva-generation-users").val()
             };
 
             console.log(dataToPost);
