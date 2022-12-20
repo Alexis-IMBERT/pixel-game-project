@@ -52,17 +52,62 @@ router.post("/generate",
 
         let data = req.body
 
-        let name = encodeURIComponent(data['name'])
+        let name = data['name']//encodeURIComponent(data['name'])
         let height,width;
         try {
             height = data['height']
             width = data['width']
         } catch (e) {
-            res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
+            if (tests)
+                res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
+            else {
+                renderGeneratePage(req, res, "HEIGHT AND WIDTH SHOULD BE NUMBERS", false, "/canvas/generate", idCanva, req.body['height'], req.body['width'], name, users)
+            }
+            return;
+        }
+
+        let idOwner = req.session.login
+
+        let users = req.body['users'];
+
+        try {
+            users = JSON.parse(users);
+        } catch (e) {
+            if (tests)
+                res.status(400).send("USERS STRING SHOULD BE LIKE [{'idUser':'id1'},{'idUser':'id2'}]")
+            else {
+                renderGeneratePage(req, res, "USERS IS NOT A JSON OBJECT [{}]", false, "/canvas/generate", idCanva, req.body['height'], req.body['width'], name, users)
+            }
+            return;
+        }
+
+        /*for (key in users) {
+            users[key].idUser = encodeURIComponent(users[key].idUser)
+        }*/
+
+        let ownerInList = false;
+        for (key in users) {
+            if (!usersUtil.exists(users[key].idUser)) {
+                if (tests)
+                    res.status(400).send("USER " + users[key].idUser + " DOES NOT EXIST")
+                else
+                    renderGeneratePage(req, res, "USER " + users[key].idUser + " DOES NOT EXIST", false, "/canvas/generate", idCanva, req.body['height'], req.body['width'], name, users)
+                return;
+            }
+            if (users[key].idUser == idOwner) {
+                ownerInList = true;
+            }
+        }
+
+        if (!ownerInList) {
+            if (tests)
+                res.status(400).send("OWNER CANNOT BE REMOVED");
+            else
+                renderGeneratePage(req, res, "OWNER " + idOwner + " CANNOT BE REMOVED", false, "/canvas/generate", "", req.body['height'], req.body['width'], name, users)
             return;
         }
         
-        let idOwner  = req.session.login
+        
         let idcanva = uuid();
 
         if (height == null || width == null) {
@@ -75,6 +120,21 @@ router.post("/generate",
             res.status(400).end("Bad request");
             return;
         }
+
+        // add users in canva
+        db.serialize( ()=> {
+            for (key in users) {
+                db.run("INSERT INTO usersInCanva (idCanva,idUser) VALUES (?,?)", [idcanva, users[key].idUser], function (err) {
+                    if (err) {
+                        // ne devrait pas arriver
+                        res.redirect("/canvas/" + idcanva + "/edit");
+                        return
+                    }
+                })
+            }
+           
+        })
+        
 
         if (tests) {
             res.send("CANVA CREATED id=" + idcanva);
@@ -150,45 +210,59 @@ router.post("/:id/update",
         let height;
         let width;
 
+        let users = req.body['users']
+        let name = req.body['name']//encodeURIComponent(req.body['name']);
+
         try {
             height = parseInt(req.body['height'])
             width  = parseInt(req.body['width'])
         } catch (e) {
-            res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
+            //res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
+            renderGeneratePage(req,res,"HEIGHT AND WIDTH SHOULD BE NUMBERS", true, "/canvas/" + idCanva + "/update", idCanva, req.body['height'], req.body['width'], name, users)
             return;
         }
         
         
-        let users  = req.body['users']
+        
 
-        console.log(users);
-        users = JSON.parse(users);
-
-        for (key in users) {
-            users[key] = encodeURIComponent(users[key])
+        try {
+            users = JSON.parse(users);
+        } catch (e) {
+            if (tests)
+                res.status(400).send("USERS STRING SHOULD BE LIKE [{'idUser':'id1'},{'idUser':'id2'}]")
+            else {
+                renderGeneratePage(req, res, "USERS IS NOT A JSON OBJECT [{}]", true, "/canvas/" + idCanva + "/update", idCanva, req.body['height'], req.body['width'], name, users)
+            }
+            return;
         }
+
+        /*for (key in users) {
+            users[key].idUser = encodeURIComponent(users[key].idUser)
+        }*/
 
         let ownerInList = false;
         for (key in users) {
-            if (!usersUtil.exists(users[key])) {
-                res.status(400).send("USER "+users[key]+" DOES NOT EXIST")
+            if (!usersUtil.exists(users[key].idUser)) {
+                if (tests)
+                    res.status(400).send("USER "+users[key].idUser+" DOES NOT EXIST")
+                else
+                    renderGeneratePage(req,res,"USER " + users[key].idUser + " DOES NOT EXIST", true, "/canvas/" + idCanva + "/update", idCanva, req.body['height'], req.body['width'], name, users)
                 return;
             }
-            if (users[key] == req.session.login) {
+            if (users[key].idUser == req.session.login) {
                 ownerInList = true;
             }
         }
 
-        let name = encodeURIComponent(req.body['name']);
-
         if (!ownerInList) {
-            res.status(400).send("OWNER CANNOT BE REMOVED")   ;
+            if (tests)
+                res.status(400).send("OWNER CANNOT BE REMOVED")   ;
+            else
+                renderGeneratePage(req,res,"OWNER "+req.session.login+" CANNOT BE REMOVED", true, "/canvas/" + idCanva + "/update", idCanva, req.body['height'], req.body['width'], name, users)
             return;
         }
 
         let usersIn = usersInCanva(idCanva);
-
-        console.log("height="+height+" width="+width+" name="+name)
 
         db.serialize(()=>{
             db.run("UPDATE canvas SET height=? , width=? , name=? WHERE id=?", [height,width,name,idCanva], function(err){
@@ -205,12 +279,13 @@ router.post("/:id/update",
             for (key in users){
                 incanva = false;
                 for (key2 in usersIn){
-                    if (users[key]==usersIn[key2].idUser) {
+                    if (users[key].idUser==usersIn[key2].idUser) {
                         incanva = true;
                     }
                 }
                 if (!incanva) {
-                    db.run("INSERT INTO usersInCanva (idCanva,idUser) VALUES (?,?)", [idCanva,users[key]], function (err) {
+                    console.log("insert "+users[key].idUser)
+                    db.run("INSERT INTO usersInCanva (idCanva,idUser) VALUES (?,?)", [idCanva,users[key].idUser], function (err) {
                         if (err) {
                             // ne devrait pas arriver
                             res.redirect("/canvas/" + idCanva + "/edit");
@@ -225,12 +300,14 @@ router.post("/:id/update",
             for (key2 in usersIn) {
                 inlist = false;
                 for (key in users) {
-                    if (users[key] == usersIn[key2].idUser ) {
+                    if (users[key].idUser == usersIn[key2].idUser ) {
+                        console.log("in list")
                         inlist = true;
                     }
                 }
                 if (!inlist) {
-                    db.run("DELETE FROM usersInCanva WHERE idCanva=? AND idUser=?", [idCanva, users[key]], function (err) {
+                    console.log("delete "+usersIn[key2].idUser)
+                    db.run("DELETE FROM usersInCanva WHERE idCanva=? AND idUser=?", [idCanva, usersIn[key2].idUser], function (err) {
                         if (err) {
                             // ne devrait pas arriver
                             res.redirect("/canvas/" + idCanva + "/edit");
@@ -294,13 +371,17 @@ router.use("/:id/edit",
         if (tests)
             res.send(info);
         else
-            res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, type: { edit: true, action: "/canvas/"+idCanva+"/update" },canva_infos: {height: info['height'], width: info['width'],name: info['name'], users: info["users"], id:idCanva} })
+            renderGeneratePage(req,res,false, true, "/canvas/" + idCanva + "/update", idCanva, info['height'], info['width'], info['name'], info['users'])
+            //res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: false, type: { edit: true, action: "/canvas/"+idCanva+"/update" },canva_infos: {height: info['height'], width: info['width'],name: info['name'], users: info["users"], id:idCanva} })
 
     }
 
 )
 
 
+function renderGeneratePage(req,res,error, edit, action, idCanva, height, width, name, users) {
+    res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: error, type: { edit: edit, action: action }, canva_infos: { height: height, width: width, name: name, users: users, id: idCanva } })
+}
 
 
 
@@ -334,10 +415,11 @@ router.get("/accessible",
         res.end(JSON.stringify(canvas));
 
     }
+
 );
 
 
-router.post("/getImage", 
+router.post("/:id/getImage", 
 
     /**
      * Pour récuperer l'image d'un canva
@@ -356,7 +438,7 @@ router.post("/getImage",
 
         let data = req.body
 
-        let id = data['idCanva'];
+        let id = encodeURIComponent(req.params.id);
 
         let idUser = req.session.login;
 
@@ -378,6 +460,25 @@ router.post("/getImage",
 
         sendCanva(id,res);
         
+    }
+)
+
+router.post("/:id/timer", 
+    /**
+     * Retourne le temps d'attente restant pour poser un pixel sur le canva :id
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     */
+    function(req,res) {
+        let id = encodeURIComponent(req.params.id);
+
+
+
+
+
+    
+        res.send(10*60)
     }
 )
 
@@ -509,7 +610,6 @@ function getCanvaInfos(idCanva) {
 function usersInCanva(idCanva) {
 
     let res = null; 
-    console.log("here");
     db.serialize(()=>{
         const statement = db.prepare("SELECT idUser FROM usersInCanva WHERE idCanva =?;");
         statement.all([idCanva], function (err, result) {
@@ -763,7 +863,7 @@ function getCanvasUtilisateurs(login) {
 
     db.serialize(() => {
 
-        const statement = db.prepare("SELECT u.idCanva, c.owner, c.name FROM usersInCanva u, canvas c WHERE u.idCanva =c.id AND u.idUser=?;");
+        const statement = db.prepare("SELECT u.idCanva, c.owner, c.name, c.height, c.width FROM usersInCanva u, canvas c WHERE u.idCanva =c.id AND u.idUser=?;");
         statement.all([login], function (err, result) {
             if (err) {
                 console.log(err);
