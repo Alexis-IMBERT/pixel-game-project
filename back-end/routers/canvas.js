@@ -463,7 +463,24 @@ router.post("/:id/getImage",
     }
 )
 
-router.post("/:id/timer")
+router.post("/:id/timer", 
+    /**
+     * Retourne le temps d'attente restant pour poser un pixel sur le canva :id
+     * 
+     * @param {*} req 
+     * @param {*} res 
+     */
+    function(req,res) {
+        let id = encodeURIComponent(req.params.id);
+
+
+
+
+
+    
+        res.send(10*60)
+    }
+)
 
 
 router.use("/:id", 
