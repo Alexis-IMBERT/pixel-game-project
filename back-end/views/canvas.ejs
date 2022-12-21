@@ -19,6 +19,7 @@
                         <div class="column-section ">
                             <div class="flex-3 title-form text-white">Nom du salon</div>
                             <div class="flex-2 title-form text-white">Créateur</div>
+                            <div class="flex-1 title-form text-white">Taille</div>
                         </div>
                     </div>
                     <div class="scrollable list-games border-bottom">
@@ -31,6 +32,7 @@
                                         <div v-else class="icon" style="width:30px"></div>
                                     </div>
                                     <div class="flex-2 ">{{canva.owner}}</div>
+                                    <div class="flex-1 ">{{canva.height}}x{{canva.width}}</div>
                                 </div>
                             </div>
                         </div>
@@ -48,7 +50,7 @@
                     <a href="/logout">Se déconnecter</a>
                 <% } %>
             </div>
-            <div class="footer bg-main">
+            <div class="footer bg-color">
                 <% if (!isVip) { %>
                     <button class="btn error">NOUVEAU DESSIN <div class="icon locked"></div></button>
                 <% } else { %>
@@ -57,6 +59,7 @@
             </div>
         </div>
         <script>
+            var wantEdit = false;
             function newCanva() {
                 window.location.href += '/generate';
             }
@@ -70,10 +73,13 @@
                 },
                 methods: {
                     editCanva: function(canva) {
+                        wantEdit = true;
                         window.location.href += "/" + canva.idCanva + "/edit";
                     },
                     joinCanva: function(canva) {
-                        //window.location.href += "/" + canva.idCanva;
+                        if(!wantEdit)
+                            window.location.href += "/" + canva.idCanva;
+                        wantEdit = false;
                     },
                     getCanvas() {
                         this.isLoading = true;

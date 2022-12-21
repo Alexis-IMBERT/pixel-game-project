@@ -31,8 +31,9 @@ function redirectLoggedUsers(req,res) {
     if (usersUtil.isLoggedIn(req)) {
         console.log("already logged in");
         res.redirect('/');
-        return
+        return true;
     }
+    return false;
 }
 
 
@@ -51,7 +52,8 @@ router.post("/signup",
 
         console.log("signup method accessed");
 
-        redirectLoggedUsers(req, res);
+        if (redirectLoggedUsers(req, res))
+            return;
             
         
         let data = req.body;
@@ -111,16 +113,20 @@ router.post("/signup",
     }
 );
 
-router.use('/signup', function (req, res, err) {
-    console.log("signup page accessed");
-    
-    redirectLoggedUsers(req, res);
+router.use('/signup', 
+    function (req, res, err) {
+        console.log("signup page accessed");
         
-    renderSignupPage(req,res,null);
-});
+        if (redirectLoggedUsers(req, res))
+            return;
+            
+        renderSignupPage(req,res,null);
+    }
+);
 
 function renderSignupPage(req,res,err) {
-    redirectLoggedUsers(req,res);
+    if (redirectLoggedUsers(req,res))
+        return;
     res.render('signup.ejs', { logged: false, login: false, error: err?err:false });
 }
 
@@ -131,13 +137,18 @@ router.post('/login',
      */
     function (req, res, next) {
 
+        console.log('cc');
+
         var tests = req.query['tests'];
 
         let data = req.body;
         console.log(data);
 
-        if (!(data['login'] != null && data['login'] != "" && data['password'] != null && data['password'] != "") )
+        if (!(data['login'] != null && data['login'] != "" && data['password'] != null && data['password'] != "") ) {
             res.status(400).send('Bad request!');
+            return;
+        }
+            
         
         db.serialize(() => {
 
@@ -160,11 +171,12 @@ router.post('/login',
                         res.send("CONNECTION ESTABLISHED");
                     else
                         res.redirect('/');
+
                 } else {
                     if (tests)
                         res.send("CONNECTION FAILED, WRONG PASSWORD OR USERNAME");
                     else
-                        renderLoginPage(req,res,true);
+                        renderLoginPage(req,res,"CONNECTION FAILED, WRONG PASSOWRD OR USERNAME");
                 }
                 
             });
@@ -172,25 +184,31 @@ router.post('/login',
 
         });
     }
+
 );
 
-router.use('/login', function (req, res) {
-    renderLoginPage(req,res,false);
-});
+router.use('/login', 
+
+    function (req, res) {
+        renderLoginPage(req,res,false);
+    }
+);
 
 
 function renderLoginPage(req,res,err) {
     res.render('login.ejs', { logged: req.session.loggedin, login: req.session.login, error: err });
 }
 
-router.use('/logout', function (req, res) {
-    req.session.destroy();
+router.use('/logout', 
+    function (req, res) {
+        req.session.destroy();
 
-    if (req.query['tests'])
-        res.send("SESSION DESTROYED");
-    else
-        res.redirect('/users/login');
-});
+        if (req.query['tests'])
+            res.send("SESSION DESTROYED");
+        else
+            res.redirect('/users/login');
+    }
+);
 
 
 
