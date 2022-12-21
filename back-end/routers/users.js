@@ -1,8 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
-var crypto = require('crypto')
-var shasum = crypto.createHash('sha256');
+var crypto = require('crypto');
+const { render } = require('ejs');
+//var shasum = crypto.createHash('sha256');
+
+var usersUtil = require('./usersUtilitaries');
+const { exit } = require('process');
 
 /**
  * hash sha256 of input
@@ -12,26 +16,25 @@ var shasum = crypto.createHash('sha256');
  * @author Jean-Bernard Cavelier
  */
 var sha256 = function(input) {
-    return shasum.update(JSON.stringify(input)).digest('hex');
+    return crypto.createHash('sha256').update(JSON.stringify(input)).digest('hex');
 }
 
 
 // add data to req.body (for POST requests)
 router.use(express.urlencoded({ extended: true }));
 
-const sqlite3 = require('sqlite3').verbose();
 
-/**
- * connecting an existing database (handling errors)
- * @author Jean-Bernard Cavelier
- */
-const db = new sqlite3.Database('./db/pixelwar.sqlite', (err) => {
-    if (err) {
-        console.error(err.message);
+const db = require("./database");
+
+
+function redirectLoggedUsers(req,res) {
+    if (usersUtil.isLoggedIn(req)) {
+        console.log("already logged in");
+        res.redirect('/');
+        return true;
     }
-    console.log('Connected to the database! via users router');
-});
-
+    return false;
+}
 
 
 router.post("/signup",
@@ -44,32 +47,88 @@ router.post("/signup",
      * @author Jean-Bernard Cavelier
      */
     function (req,res) {
-        if (req.session.loggedin) {
-            res.redirect('/');
-        } else {
-            let data = req.body;
-            if (data['login']!= null && data['login']!= ""  &&  data['password']!= null && data['password']!= ""){
-                db.serialize(() => {
-                    // check if the password is okay
-                    const statement = db.prepare("INSERT INTO users VALUES(?,?);");
-                    statement.run(data['login'], sha256(data['password']));
-                    statement.finalize();
-                });
 
-                // once the user is created, redirect to login
-                res.redirect('/login');
-            } else {
-                res.status(400).send('Bad request!');
-            }
+        var tests = req.query['tests'];
+
+        console.log("signup method accessed");
+
+        if (redirectLoggedUsers(req, res))
+            return;
+            
+        
+        let data = req.body;
+
+        console.log(data);
+
+        let username = data['login'];
+
+        let password = data['password'];
+        let password2 = data['password_confirmation'];
+
+        if (!(username != null && username != "" && password != null && password != "" && password2 != null && password2 != "")) {
+            console.log(username)            
+            console.log(password)            
+            console.log(password2)
+            res.status(400).send('Bad request!');
+            return;
         }
+
+        if (password != password2) {
+            if (tests)
+                res.status(400).send("PASSWORD NOT EQUALS");
+            else
+                renderSignupPage(req,res,"PASSWORD NOT EQUALS");
+            return;
+        }
+    
+        db.serialize(() => {
+
+            // CREATE USER
+            db.run("INSERT INTO users(login,password) VALUES(?,?);", [username,sha256(password)], function(err,result){
+                console.log(err);
+                if (!err) {
+
+                    // ADD USER TO DEFAULT CANVA
+                    db.run("INSERT INTO usersInCanva(idCanva, idUser) VALUES(?,?);", ["general",username], function(err,result) {
+                        console.log("ACCOUNT CREATED OK");
+                        if (tests)
+                            res.send("ACCOUNT CREATED")
+                        else
+                            res.redirect('users/login');
+                    })
+                    
+
+                } else {
+                    console.log("ACCOUNT ALREADY IN DB");
+                    if (tests)
+                        res.status(400).send("ALREADY USED")
+                    else
+                        renderSignupPage(req,res,"USERNAME ALREADY IN USE")
+                }
+                    
+            });
+ 
+        });
+        
     }
 );
 
+router.use('/signup', 
+    function (req, res, err) {
+        console.log("signup page accessed");
+        
+        if (redirectLoggedUsers(req, res))
+            return;
+            
+        renderSignupPage(req,res,null);
+    }
+);
 
-
-router.use('/signup', function (req, res) {
-    res.render('signup.ejs', { logged: req.session.loggedin, login: req.session.login, error: false });
-});
+function renderSignupPage(req,res,err) {
+    if (redirectLoggedUsers(req,res))
+        return;
+    res.render('signup.ejs', { logged: false, login: false, error: err?err:false });
+}
 
 router.post('/login', 
     /**
@@ -77,42 +136,81 @@ router.post('/login',
      * @author Jean-Bernard Cavelier
      */
     function (req, res, next) {
+
+        console.log('cc');
+
+        var tests = req.query['tests'];
+
         let data = req.body;
-        if (data['login'] != null && data['login'] != "" && data['password'] != null && data['password'] != "") {
+        console.log(data);
 
-            db.serialize(() => {
-                // check if the password is okay
-                const statement = db.prepare("SELECT login FROM users WHERE login=? and password=?;");
-                statement.get(data['login'], sha256(data['password']), (err, result) => {
-                    if (err) {
-                        next(err);
-                    } else {
-                        if (result) {
-                            req.session.loggedin = true;
-                            req.session.login = result['login'];
-                            next();
-                        } else {
-                            res.render('login.ejs', { logged: false, login: req.session.login, error: true });
-                        }
-                    }
-                });
-                statement.finalize();
-
-            });
-
-        } else {
+        if (!(data['login'] != null && data['login'] != "" && data['password'] != null && data['password'] != "") ) {
             res.status(400).send('Bad request!');
+            return;
         }
+            
+        
+        db.serialize(() => {
+
+            // check if the password is okay
+            const statement = db.prepare("SELECT login FROM users WHERE login=? and password=?;");
+            statement.get(data['login'], sha256(data['password']), (err, result) => {
+                if (err) {
+                    console.log(err);
+                    res.status(400).send("Bad request");
+                    //next(err);
+                    return;
+                } 
+
+                if (result) {
+                    req.session.loggedin = true;
+                    req.session.login = result['LOGIN'];
+                    console.log("LOG IN OK");
+
+                    if (tests)
+                        res.send("CONNECTION ESTABLISHED");
+                    else
+                        res.redirect('/');
+
+                } else {
+                    if (tests)
+                        res.send("CONNECTION FAILED, WRONG PASSWORD OR USERNAME");
+                    else
+                        renderLoginPage(req,res,"CONNECTION FAILED, WRONG PASSOWRD OR USERNAME");
+                }
+                
+            });
+            statement.finalize();
+
+        });
+    }
+
+);
+
+router.use('/login', 
+
+    function (req, res) {
+        renderLoginPage(req,res,false);
     }
 );
 
-router.use('/login', function (req, res) {
-    res.render('login.ejs', { logged: req.session.loggedin, login: req.session.login, error: false });
-});
 
-router.use('/logout', function (req, res) {
-    req.session.destroy();
-    res.redirect('/login');
-});
+function renderLoginPage(req,res,err) {
+    res.render('login.ejs', { logged: req.session.loggedin, login: req.session.login, error: err });
+}
+
+router.use('/logout', 
+    function (req, res) {
+        req.session.destroy();
+
+        if (req.query['tests'])
+            res.send("SESSION DESTROYED");
+        else
+            res.redirect('/users/login');
+    }
+);
+
+
+
 
 module.exports = router;

@@ -1,0 +1,10 @@
+
+form {
+    text-align: center;
+}
+
+@media (max-width: 481px) {
+    form {
+        margin-top: 60px !important;
+    }
+}

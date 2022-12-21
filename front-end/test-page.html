@@ -1,0 +1,539 @@
+<head>
+    <script src="/assets/js/jquery.min.js"> </script>
+    
+</head>
+
+<body>
+
+    <label> SIGNUP TEST</label>
+    <form method="POST" action="javascript:user_signup();">
+
+        <label for="username">username</label>
+        <input id="signup-username" type="text" name="username" required>
+
+        <label for="password">password</label>
+        <input id="signup-password" type="password" name="password" required>
+
+        <label for="password">password confirmation</label>
+        <input id="signup-password-confirmation" type="password" name="password" required>
+
+        <input type="submit" value="signup" >
+
+        <label id="signup-answer"></label>
+
+    </form>
+
+    <label> LOGIN TEST </label>
+    <form method="POST" action="javascript:user_login()">
+
+        <label for="username" >username</label>
+        <input id="login-username" type="text" name="username" required>
+
+        <label for="password">password</label>
+        <input id="login-password" type="text" name="password" required>
+
+        <input type="submit" value="login" >
+
+        <label id="login-answer"></label>
+
+    </form>
+
+    <label> LOG OUT </label>
+    <form method="POST" action="javascript:user_logout();">
+    
+        <input type="submit" value="logout">
+    
+        <label id="logout-answer"></label>
+    
+    </form>
+
+    <label> CANVA CREATION </label>
+    <form method="POST" action="javascript:canva_generation();">
+
+        <label for="name">name</label>
+        <input id="canva-generation-name" type="text" name="name" required>
+
+        <label for="height">height</label>
+        <input id="canva-generation-height" type="number" name="height" required>
+       
+        <label for="width">width</label>
+        <input id="canva-generation-width" type="number" name="width" required>
+
+        <label for="canva-generation-users">canva users</label>
+        <input id="canva-generation-users" type="text" name="canva-generation-users" required>
+
+
+        <input type="submit" value="generation">
+    
+        <label id="canva-generation-answer"></label>
+    
+    </form>
+
+    <label> GET MY CANVAS </label>
+    <form method="GET" action="javascript:canva_getusercanvas();">
+    
+        <input type="submit" value="canva-usercanvas">
+    
+        <label id="canva-usercanvas-answer"></label>
+    
+    </form>
+
+    <label> SEE MY CANVA DETAILS </label>
+    <form method="POST" action="javascript:canva_edit_get();">
+    
+        <label for="canva-edit-get-id">canva id</label>
+        <input id="canva-edit-get-id" type="text" name="canva-edit-get-id" required>
+    
+        <label for="canva-edit-get-height">canva height</label>
+        <input id="canva-edit-get-height" type="text" name="canva-edit-get-height" size="5" readonly>
+    
+        <label for="canva-edit-get-width">canva width</label>
+        <input id="canva-edit-get-width" type="text" name="canva-edit-get-width" size="5" readonly>
+    
+        <label for="canva-edit-get-name">canva name</label>
+        <input id="canva-edit-get-name" type="text" name="canva-edit-get-name" readonly>
+    
+    
+        <label for="canva-edit-get-users">canva users</label>
+        <input id="canva-edit-get-users" type="text" name="canva-edit-get-users" readonly>
+    
+    
+        <input type="submit" value="get canva infos">
+    
+        <label id="canva-edit-get-answer"></label>
+    
+    
+    </form>
+    
+    <label> EDIT MY CANVAS </label>
+    <form method="POST" action="javascript:canva_edit_update();">
+    
+        <label for="canva-edit-update-id">canva id</label>
+        <input id="canva-edit-update-id" type="text" name="canva-edit-update-id" required>
+    
+        <label for="height">height</label>
+        <input id="canva-edit-update-height" type="number" name="height" size="5" required>
+    
+        <label for="width">width</label>
+        <input id="canva-edit-update-width" type="number" name="width" size="5" required>
+    
+        <label for="name">name</label>
+        <input id="canva-edit-update-name" type="text" name="name" required>
+    
+    
+        <label for="canva-edit-update-users">canva users</label>
+        <input id="canva-edit-update-users" type="text" name="canva-edit-update-users" required>
+    
+        <input type="submit" value="update">
+    
+        <label id="canva-edit-update-answer"></label>
+    
+    </form>
+
+
+    <label> CANVAS TIMER </label>
+    <form method="POST" action="javascript:canva_timer();">
+
+        <label for="canva-timer-id">canva id</label>
+        <input id="canva-timer-id" type="text" name="canva-timer-id" required>
+
+        <input type="submit" value="afficher timer">
+
+        <label id="canva-timer-answer"></label>
+
+    </form>
+
+    <label> CANVAS POSE </label>
+    <form method="POST" action="javascript:canva_pose();">
+    
+        <label for="canva-pose-id">canva id</label>
+        <input id="canva-pose-id" type="text" name="canva-pose-id" required>
+
+        <label for="x">canva x</label>
+        <input id="canva-pose-x" type="text" name="x" required>
+
+        <label for="y">canva y</label>
+        <input id="canva-pose-y" type="text" name="y" required>
+
+        <label for="color">canva color</label>
+        <input id="canva-pose-color" type="text" name="color" required>
+    
+        <input type="submit" value="pose">
+    
+        <label id="canva-pose-answer"></label>
+    
+    </form>
+
+
+
+    <label> VIEW MY CANVAS IMAGE </label>
+    <form method="POST" action="javascript:canva_get();">
+    
+        <label for="canva-get-id">canva id</label>
+        <input id="canva-get-id" type="text" name="canva-get-id" required>
+    
+        <label id="canva-get-answer"></label>
+    
+        <input type="submit" value="get canva">
+    
+    
+        <canvas id="canva-get-canva" style="border:1px solid black;"></canvas>
+    
+    </form>
+   
+    <label> VIEW A PAGE </label>
+    <form method="POST" action="javascript:page_view();">
+
+        <label for="page-view-link">page link</label>
+        <input id="page-view-link" type="text" name="page-view-link" required>
+        
+        
+        <input type="submit" value="view page">
+
+        <iframe id="page" title="Inline Frame Example" width="1000" height="800"></iframe>
+
+    </form>
+
+
+
+
+
+   
+
+
+   
+    
+    <script>
+        function user_signup() {
+
+            console.log("signup entered");
+
+            var dataToPost = {
+                login: $('#signup-username').val(),
+                password: $('#signup-password').val(),
+                password_confirmation: $('#signup-password-confirmation').val()
+            };
+
+            console.log(dataToPost);
+
+            $.ajax({
+                type: 'POST',
+                url: '/users/signup?tests=true',
+                timeout: 3000,
+                data: dataToPost,
+                success: function (data) {
+                    console.log("OK");
+                    $('#signup-answer').html(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                    console.log("ERROR");
+                    $('#signup-answer').html(err.responseText);
+                }
+            });
+
+        }
+
+        function user_login() {
+
+            console.log("login entered");
+
+            var dataToPost = {
+                login: $('#login-username').val(),
+                password: $('#login-password').val()
+            };
+
+            console.log(dataToPost);
+
+            $.ajax({
+                type: 'POST',
+                url: '/users/login?tests=true',
+                timeout: 3000,
+                data: dataToPost,
+                success: function (data) {
+                    console.log("OK");
+                    $('#login-answer').html(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                    console.log("ERROR");
+                    $('#login-answer').html(err.responseText);
+                }
+            });
+
+        }
+        
+        function user_logout() {
+
+            console.log("logout entered");
+
+            var dataToPost = {};
+
+            console.log(dataToPost);
+
+            $.ajax({
+                type: 'POST',
+                url: '/users/logout?tests=true',
+                timeout: 3000,
+                data: dataToPost,
+                success: function (data) {
+                    console.log("OK");
+                    $('#logout-answer').html(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                    console.log("ERROR");
+                    $('#logout-answer').html(err.responseText);
+                }
+            });
+
+        }
+
+        function canva_generation() {
+
+            console.log("canva_generation entered");
+
+            var dataToPost = {
+                name: $('#canva-generation-name').val(),
+                height: $('#canva-generation-height').val(),
+                width: $('#canva-generation-width').val(),
+                users: $("#canva-generation-users").val()
+            };
+
+            console.log(dataToPost);
+
+            $.ajax({
+                type: 'POST',
+                url: '/canvas/generate?tests=true',
+                timeout: 3000,
+                data: dataToPost,
+                success: function (data) {
+                    console.log("OK");
+                    $('#canva-generation-answer').html(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                    console.log("ERROR");
+                    $('#canva-generation-answer').html(err.responseText);
+                }
+            });
+
+        }
+
+        function canva_getusercanvas() {
+            console.log("canva_usercanvas entered");
+
+            var dataToPost = {};
+
+            console.log(dataToPost);
+
+            $.ajax({
+                type: 'GET',
+                url: '/canvas/accessible',
+                timeout: 3000,
+                data: dataToPost,
+                success: function (data) {
+                    console.log("OK");
+                    console.log(data)
+                    $('#canva-usercanvas-answer').html(JSON.stringify(data));
+                },
+                error: function (err) {
+                    console.log(err);
+                    console.log("ERROR");
+                    $('#canva-usercanvas-answer').html(err.responseText);
+                }
+            });
+        }
+
+        function page_view() {
+
+            console.log("page_view entered");
+
+            var dataToPost = {
+
+            };
+
+            console.log(dataToPost);
+
+            $('#page').attr('src', $("#page-view-link").val());
+
+        }
+
+
+        function canva_get() {
+
+            console.log("canva_get entered");
+
+            url = "/canvas/"+ $('#canva-get-id').val()+"/getImage"
+
+            var dataToPost = {
+                 
+            };
+
+            console.log(dataToPost);
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: dataToPost,
+                responseType: 'arraybuffer',
+                cache:false,
+                mimeType: 'image/png',
+                success: function (data,status,xhr) {
+                    console.log("OK");
+                    // Create an image object from the response data
+                    var image = new Image();
+                    image.src = "data:image/png;base64,"+data;
+
+                    // Draw the image on the canvas
+                    image.onload = function () {
+                        var canvas = document.getElementById('canva-get-canva');
+                        canvas.width = image.width;
+                        canvas.height = image.height;
+                        var ctx = canvas.getContext('2d');
+                        ctx.drawImage(image, 0, 0);
+                    }
+
+                    $('#canva-get-answer').html("OK");
+
+                },
+                error: function (err) {
+                    console.log("ERROR");
+                    console.log(err);
+                    $('#canva-get-answer').html(err.responseText);
+
+                }
+            });
+
+            
+        }
+
+        function canva_edit_get(){
+            console.log("canva_edit_get entered");
+
+            var dataToPost = {
+
+            };
+
+            console.log(dataToPost);
+
+            let url = '/canvas/' + $("#canva-edit-get-id").val() + "/edit?tests=true";
+
+            console.log(url);
+
+            $.ajax({
+                type: 'GET',
+                url: url,
+                timeout: 3000,
+                data: dataToPost,
+                success: function (data) {
+                    console.log("OK");
+                    console.log(data)
+                    console.log(data.height)
+                    $('#canva-edit-get-height').val(data.height);
+                    $('#canva-edit-get-width').val(data.width);
+                    $('#canva-edit-get-name').val(data.name);
+                    $('#canva-edit-get-users').val(JSON.stringify(data.users));
+                    $('#canva-edit-get-answer').html("OK");
+                },
+                error: function (err) {
+                    console.log(err);
+                    console.log("ERROR");
+                    $('#canva-edit-get-answer').html(err.responseText);
+                }
+            });
+        }
+
+        function canva_edit_update() {
+            console.log("canva_edit_update entered");
+
+            var dataToPost = {
+                height: $("#canva-edit-update-height").val(),
+                width: $('#canva-edit-update-width').val(),
+                name: $("#canva-edit-update-name").val(),
+                users: $("#canva-edit-update-users").val()
+            };
+
+            console.log(dataToPost);
+
+            let url = '/canvas/' + $("#canva-edit-update-id").val() + "/update?tests=true";
+
+            console.log(url);
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                timeout: 3000,
+                data: dataToPost,
+                success: function (data,e,xhr) {
+                    console.log("OK");
+                    console.log(data)
+                    console.log(data.height)
+                    console.log(xhr.status)
+                    $("#canva-edit-update-answer").html(data)
+                    
+                },
+                error: function (err) {
+                    console.log(err);
+                    console.log("ERROR");
+                    $('#canva-edit-update-answer').html(err.responseText);
+                }
+            });
+        }
+    
+    
+        function canva_timer() {
+            console.log("canva_timer entered");
+
+            let url = '/canvas/' + $("#canva-timer-id").val() + "/timer";
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                success: function (data, e, xhr) {
+                    console.log("OK");
+                    $("#canva-timer-answer").html(data + " SECONDES RESTANTES")
+                },
+                error: function (err) {
+                    console.log("ERROR");
+                    $('#canva-timer-answer').html(err.responseText);
+                }
+            });
+        }
+    
+        function canva_pose() {
+                console.log("canva_pose entered");
+
+                let dataToPost = {
+                    x:  $("#canva-pose-x").val(),
+                    y:  $("#canva-pose-y").val(),
+                    color:  $("#canva-pose-color").val()
+                }
+
+                let url = '/canvas/' + $("#canva-pose-id").val() + "/pose";
+
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data : dataToPost,
+                    success: function (data, e, xhr) {
+                        console.log("OK");
+                        $("#canva-pose-answer").html(data)
+                    },
+                    error: function (err) {
+                        console.log("ERROR");
+                        $('#canva-pose-answer').html(err.responseText);
+                    }
+                });
+            }
+    
+    
+    
+    
+    </script>
+
+</body>
+
+<footer>
+    
+</footer>

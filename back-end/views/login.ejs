@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>PixelWAR: Login</title>
+        <script src="/assets/vendor/jquery-3.6.0.js"></script>
+        <script src="/assets/vendor/jquery-ui.js"></script>
+        <link rel="stylesheet" href="/assets/css/styles.css">
+        <link rel="stylesheet" href="/assets/css/login.css">
+    </head>
+    <body>
+        <div class="body-container">
+            <div class="center bg-color" style="text-align: center;">
+                <h1 class="titre-form">Connexion</h1>
+                <form class="center-div" action="/users/login" method="post" role="form" >
+                    <input name="login" type="text" id="login" class="input-text" placeholder="Pseudo">
+                    <input name="password" type="password" id="password" class="input-text" placeholder="Mot de passe">
+                    <% if (error) { %>
+                        <label id="signup-answer">Connexion échouée</label>   
+                    <% } %>
+                    <button type="submit" class="btn valid">ENVOYER</button>
+                    <button type="button" class="btn error" onclick="window.location.href='/home'">RETOUR</button>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
