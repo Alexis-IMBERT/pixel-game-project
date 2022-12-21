@@ -76,6 +76,7 @@
                 var dataToPost = {
                     idCanva: '<%= idCanva %>'
                 };
+
                 $.ajax({
                     type: 'POST',
                     url: '/canvas/' + dataToPost.idCanva +'/getImage',
@@ -95,7 +96,17 @@
                             canvas.height = image.height;
                             var ctx = canvas.getContext('2d');
                             ctx.drawImage(image, 0, 0);
-                            app.isLoading = false;
+                            let urlChrono = '/canvas/' + dataToPost.idCanva + "/timer";
+                            
+                            //Récupération du chrono
+                            $.ajax({
+                                type: 'POST',
+                                url: urlChrono,
+                                success: function (data, e, xhr) {
+                                    enableChrono(data);
+                                    app.isLoading = false;
+                                }
+                            });
                         }
 
                     },
@@ -105,12 +116,7 @@
                     }
                 });
             }
-
             canva_get();
-
-
-
-
         </script>
         <script>
             const canvas = document.getElementById("canva");
@@ -182,7 +188,11 @@
                 app.attente = isWaiting;
                 $('#info-picker').text("(0;0)");
                 $("#send-btn").attr("disabled", true);
-                temps = 3;
+                enableChrono(3);
+            }
+
+            function enableChrono(timing) {
+                let temps = timing;
                 var chrono = setInterval(function () {
                     let minutes = parseInt(temps / 60, 10);
                     let secondes = parseInt(temps % 60, 10);
