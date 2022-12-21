@@ -103,6 +103,7 @@
                                 type: 'POST',
                                 url: urlChrono,
                                 success: function (data, e, xhr) {
+                                    isWaiting = data != 0;
                                     enableChrono(data);
                                     app.isLoading = false;
                                 }
@@ -192,10 +193,12 @@
                 $("#send-btn").attr("disabled", true);
 
                 let dataToPost = {
-                    x:  x,
-                    y:  y,
-                    color:  $(".color-picker").val()
+                    x:  x-1,
+                    y:  y-1,
+                    color:  $(".color-picker").val().replace("#","0x")
                 }
+
+                console.log(dataToPost.color)
 
                 let url = '/canvas/' + '<%= idCanva %>' + "/pose";
 
@@ -204,7 +207,7 @@
                     url: url,
                     data : dataToPost,
                     success: function (data, e, xhr) {
-                        let urlChrono = '/canvas/' + dataToPost.idCanva + "/timer";
+                        let urlChrono = '/canvas/' + '<%= idCanva %>' + "/timer";
                             
                         //Récupération du chrono
                         $.ajax({
