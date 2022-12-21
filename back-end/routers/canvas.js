@@ -953,6 +953,8 @@ function sendCanva(idCanva, res) {
                 console.log(err.message);
             else {
                 // Easy access to row-Entries using row.NAME
+                if (row.pxl_x > height || row.pxl_y > width) 
+                    return;
                 color = parseInt(row.couleur,"16");
                 image.setPixelColor(color,row.pxl_x,row.pxl_y)
             }
