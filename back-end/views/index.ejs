@@ -76,6 +76,7 @@
                 var dataToPost = {
                     idCanva: '<%= idCanva %>'
                 };
+
                 $.ajax({
                     type: 'POST',
                     url: '/canvas/' + dataToPost.idCanva +'/getImage',
@@ -95,7 +96,17 @@
                             canvas.height = image.height;
                             var ctx = canvas.getContext('2d');
                             ctx.drawImage(image, 0, 0);
-                            app.isLoading = false;
+                            let urlChrono = '/canvas/' + dataToPost.idCanva + "/timer";
+                            
+                            //Récupération du chrono
+                            $.ajax({
+                                type: 'POST',
+                                url: urlChrono,
+                                success: function (data, e, xhr) {
+                                    enableChrono(data);
+                                    app.isLoading = false;
+                                }
+                            });
                         }
 
                     },
@@ -105,14 +116,11 @@
                     }
                 });
             }
-
             canva_get();
-
-
-
-
         </script>
         <script>
+            var x = 0;
+            var y = 0;
             const canvas = document.getElementById("canva");
             const painting = $("#painting");
             const ctx = canvas.getContext("2d", {willReadFrequently: true});
@@ -147,8 +155,8 @@
 
             function getCursorPosition(canvas, event) {
                 const rect = canvas.getBoundingClientRect()
-                const x = Math.ceil((event.clientX - rect.left)/(zoomValue*zoomFactor))
-                const y = Math.ceil((event.clientY - rect.top)/(zoomValue*zoomFactor))
+                x = Math.ceil((event.clientX - rect.left)/(zoomValue*zoomFactor))
+                y = Math.ceil((event.clientY - rect.top)/(zoomValue*zoomFactor))
                 if(!isWaiting)
                 {
                     $('#info-picker').text("("+ y + ";" + x + ")");
@@ -182,7 +190,37 @@
                 app.attente = isWaiting;
                 $('#info-picker').text("(0;0)");
                 $("#send-btn").attr("disabled", true);
-                temps = 3;
+
+                let dataToPost = {
+                    x:  x,
+                    y:  y,
+                    color:  $(".color-picker").val()
+                }
+
+                let url = '/canvas/' + '<%= idCanva %>' + "/pose";
+
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data : dataToPost,
+                    success: function (data, e, xhr) {
+                        let urlChrono = '/canvas/' + dataToPost.idCanva + "/timer";
+                            
+                        //Récupération du chrono
+                        $.ajax({
+                            type: 'POST',
+                            url: urlChrono,
+                            success: function (data, e, xhr) {
+                                enableChrono(data);
+                            }
+                        });
+                    },
+                });
+
+            }
+
+            function enableChrono(timing) {
+                let temps = timing;
                 var chrono = setInterval(function () {
                     let minutes = parseInt(temps / 60, 10);
                     let secondes = parseInt(temps % 60, 10);

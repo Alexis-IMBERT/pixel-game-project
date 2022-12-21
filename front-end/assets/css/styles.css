@@ -1,3 +1,4 @@
+@import "utils.css";
 :root {
     --background-color: linear-gradient(#3a3a3a, #1e1e1e);
     --valid-primary-color: rgb(174, 223, 174);
@@ -14,15 +15,6 @@
     margin:0;
 }
 
-@font-face {
-    font-family: "CustomFont";
-    src: url("./BebasNeue-Regular.otf");
-}
-
-.bg-color { background-color: var(--primary-color);}
-.color-sc { background-color: var(--secondary-color);}
-.color-gc { background-color: var(--gray-bg);}
-.text-white { font-family: 'CustomFont', Arial, sans-serif; color:lightgray; font-size:1.4em; }
 
 label:not(is(#chrono)) {
     width:80%;
@@ -34,31 +26,7 @@ label:not(is(#chrono)) {
     font-size: 1.5vw;
 }
 
-.locked:is(.icon) { background-image:url(../imgs/icons/lock.gif);}
-.unlocked:is(.icon) { background-image:url(../imgs/icons/valid.gif);}
-.join:is(.icon) { background-image:url(../imgs/icons/join.gif);}
-.cross:is(.icon) { background-image:url(../imgs/icons/cross.gif);}
-.pencil:is(.icon) { background-image:url(../imgs/icons/pencil.gif); width:30px; transition-duration: 500ms;}
-.pencil:is(.icon):hover {
-    transform: rotate(10deg);
-}
-@keyframes bounce {
-	0%, 100%, 20%, 50%, 80% {
-		-webkit-transform: translateY(0);
-		-ms-transform:     translateY(0);
-		transform:         translateY(0)
-	}
-	40% {
-		-webkit-transform: translateY(-30px);
-		-ms-transform:     translateY(-30px);
-		transform:         translateY(-30px)
-	}
-	60% {
-		-webkit-transform: translateY(-15px);
-		-ms-transform:     translateY(-15px);
-		transform:         translateY(-15px)
-	}
-}
+
 .icon {
     background-size: cover;
     width:20px;
@@ -68,8 +36,9 @@ label:not(is(#chrono)) {
     margin:5px;
     margin-top:8px;
     z-index:1000;
-    cursor: cell;
+    cursor: pointer;
 }
+
 .center {
     position: absolute;
     left: 50%;
@@ -101,46 +70,12 @@ label:not(is(#chrono)) {
     border-radius: 10px;
     width:100%;
 }
-.scrollable {
-    overflow-y: scroll;
-}
-.scrollable::-webkit-scrollbar {
-    display: none;
-  }
 
-/* Hide scrollbar for IE, Edge and Firefox */
-.scrollable {
--ms-overflow-style: none;  /* IE and Edge */
-scrollbar-width: none;  /* Firefox */
-}
-.list-games {
-    /*height:358px;*/
-}
+
 .border-bottom {
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
 }
-.flex-4 { flex: 4; }
-.flex-3 { flex: 3; }
-.flex-2 { flex: 2; }
-.flex-1 { flex: 1; }
-.gap-20 { gap:20px; }
-.no-wrap { flex-flow: nowrap !important;}
-.h-80   { height:80%; }
-.mg-10  { margin:10px;}
-.w-100 { width:100%; }
-.h-100 { height: 100%; }
-.h-95 { height: 95%; }
-.blue { color:var(--secondary-color)}
-.redhover { transition-duration: 400ms;}
-.redhover:hover { color:var(--bad-secondary-color); background-color: var(--bad-primary-color) !important;}
-.border-rad-20 { border-radius: 20px;}
-.flex-gap-10        { column-gap: 10px; row-gap: 10px; }
-.top-rounded-box    { padding: 10px; border-radius: 10px 10px 0px 0px }
-.mid-box            { padding: 10px; border-top: 1px solid gray; }
-.bottom-rounded-box { padding: 10px; border-radius: 0px 0px 10px 10px }
-.no-pad { padding:0 !important;}
-
 
 .body-container {
     position: absolute;
@@ -193,14 +128,11 @@ scrollbar-width: none;  /* Firefox */
 }
 
 
-
-
 .footer {
     width:100%;
     font-family: 'CustomFont', Arial, sans-serif;
     position:absolute;
     bottom:0px;
-    background-color: var(--clear-bg);
     height:80px;
     border-top: 3px solid var(--secondary-color);
     padding:20px;  
@@ -213,14 +145,6 @@ scrollbar-width: none;  /* Firefox */
 .footer-box {
     position: relative;
 }
-
-/*
-.footer-box:not(:has(.icon)) {
-    min-width: 200px;
-    background-color: white;    
-    border-radius: 10px;
-    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
-}*/
 
 .titre-form {
     margin-top:30px;
@@ -289,59 +213,4 @@ scrollbar-width: none;  /* Firefox */
 #canva {
     image-rendering:pixelated;
 }
-/* INPUTS */
-.input-text {
-    width:80%;
-    height:40px;
-    border-radius: 20px;
-    border: 1px solid var(--secondary-color);
-    padding:10px;
-    margin:10px;
-}
 
-.btn {
-    min-width:200px;
-    padding:10px;
-    border-radius: 10px;
-    display: inline-block;
-    font-family: 'CustomFont', Arial, sans-serif;
-    font-size: 2em;
-    transition-duration: 300ms;
-    cursor: pointer;
-}
-
-.valid {
-    background-color: var(--valid-primary-color);
-    border: 1px solid var(--valid-secondary-color);
-    color:var(--valid-secondary-color);
-}
-
-.valid:hover {
-    background-color: var(--valid-secondary-color);
-    border: 1px solid var(--valid-primary-color);
-    color:var(--valid-primary-color);
-}
-
-.valid:disabled {
-    background-color: grey;
-    border: 1px solid var(--clear-bg);
-    color:white;
-}
-
-
-.error {
-    background-color: var(--bad-primary-color);
-    border: 1px solid var(--bad-secondary-color);
-    color:var(--bad-secondary-color);
-}
-
-.error:hover {    
-    background-color: var(--bad-secondary-color);
-    border: 1px solid var(--bad-primary-color);
-    color:var(--bad-primary-color);
-}
-
-/* COLORS */
-.bg-main {
-    background-color: var(--primary-color);
-}
