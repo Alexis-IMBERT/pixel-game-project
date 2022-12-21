@@ -76,7 +76,7 @@ router.post("/generate",
             if (tests)
                 res.status(400).send("USERS STRING SHOULD BE LIKE [{'idUser':'id1'},{'idUser':'id2'}]")
             else {
-                renderGeneratePage(req, res, "USERS IS NOT A JSON OBJECT [{}]", false, "/canvas/generate", idCanva, req.body['height'], req.body['width'], name, users)
+                renderGeneratePage(req, res, "USERS IS NOT A JSON OBJECT [{'idUser':'id1'},{...}]", false, "/canvas/generate", idCanva, req.body['height'], req.body['width'], name, users)
             }
             return;
         }
@@ -84,6 +84,8 @@ router.post("/generate",
         /*for (key in users) {
             users[key].idUser = encodeURIComponent(users[key].idUser)
         }*/
+
+        console.log(users);
 
         let ownerInList = false;
         for (key in users) {
