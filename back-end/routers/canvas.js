@@ -475,8 +475,6 @@ router.post("/:id/timer",
      */
     function(req,res) {
 
-        let tempsAccess = unixTimestamp();
-
         let idCanva = encodeURIComponent(req.params.id);
         let idUser  = req.session.login;
 
@@ -495,34 +493,82 @@ router.post("/:id/timer",
         console.log(req.params.id);
         console.log(req.session.login)
 
-        let timerMaxSecondes = 600;
+        let timerRestantSecondes = tempsRestantPose(idUser,idCanva);
 
-        let timerRestantSecondes = 0;
-
-        db.serialize( ()=> {
-            const statement = db.prepare("SELECT dernierePose FROM usersInCanva WHERE idCanva=? AND idUser=?;");
-            statement.all([idCanva,idUser], function(err,result) {
-                if (err) {
-                    console.log(err);
-                    res.status(400).send("bad request");
-                    return;
-                }
-
-                if (result) {
-                    timerRestantSecondes = (result[0].dernierePose === null ? 0 : min(tempsAccess-result[0].dernierePose, timerMaxSecondes)  )
-                    res.send("" + timerRestantSecondes);
-                    
-                } else {
-                    
-                    res.send(""+0);
-                }
-            })
-            statement.finalize();
-
-        });  
+        res.send("" + timerRestantSecondes);
     }
 )
 
+router.post("/:id/pose",
+    function(req,res) {
+        let idCanva = encodeURIComponent(req.params.id);
+        let idUser = req.session.login;
+
+        let temps = unixTimestamp();
+
+        if (!usersUtil.isLoggedIn(req)) {
+            res.status(400).end('YOU ARE NOT LOGGED IN');
+            return;
+        }
+
+
+        if (!userCanAccessCanva(idUser, idCanva)) {
+            res.status(400).end("YOU CANNOT ACCESS THIS CANVA")
+            return;
+        }
+
+        if (tempsRestantPose(idUser,idCanva) != 0) {
+            res.status(400).end("YOU CANNOT CHANGE A PIXEL, YOU TIMER HAS NOT ENDED YET");
+            return
+        }
+
+
+        let x;
+        let y;
+
+        try {
+            x = parseInt(req.body['x']);
+            y = parseInt(req.body['y']);
+        } catch (e) {
+            res.status(400).send("X AND Y SHOULD BE NUMBERS")
+            return;
+        }
+
+        let color = req.body['color'];
+
+        if (!isHexColor(color)) {
+            res.status(400).send("YOUR COLOR IS NOT A HEXA COLOR BETWEEN 0x000000 AND 0xffffff");
+            return;
+        }
+
+        let canvaInfos = getCanvaInfos(idCanva);
+        console.log(canvaInfos);
+
+        if (x < 0 || x > canvaInfos.height || y < 0 || y > canvaInfos.width) {
+            res.status(400).send("OUT OF BOUNDS POSITION");
+            return;
+        }
+
+        db.serialize( () => {
+            db.run(`INSERT INTO '${idCanva}' (pxl_x,pxl_y,couleur,pose) VALUES (?,?,?,?);`, [x,y,color,temps], function(err,result) {
+                if (err) {
+                    console.log(err)
+                    return;
+                }
+            })
+            db.run("UPDATE usersInCanva SET dernierePose=? WHERE idCanva=? AND idUser=?;", [temps,idCanva,idUser], function(err,result) {
+                if (err) {
+                    console.log(err);
+                    return;
+                }
+            })
+        })
+
+
+        res.send("OK")
+
+    }
+)
 
 router.use("/:id", 
     /**
@@ -536,7 +582,7 @@ router.use("/:id",
      * 
      * @author Jean-Bernard CAVELIER
      */
-    function(req,res, next) {
+    function(req,res) {
 
         let id = encodeURIComponent(req.params.id);
 
@@ -583,6 +629,35 @@ router.use("/",
 
 
 
+function tempsRestantPose(idUser,idCanva, timerMaxSecondes = 600, tempsAccess = unixTimestamp() ) {
+
+    let timerRestantSecondes = null;
+
+    db.serialize(() => {
+        const statement = db.prepare("SELECT dernierePose FROM usersInCanva WHERE idCanva=? AND idUser=?;");
+        statement.all([idCanva, idUser], function (err, result) {
+            if (err) {
+                console.log(err);
+                timerRestantSecondes = timerMaxSecondes;
+            }
+
+            if (result) {
+                timerRestantSecondes = (result[0].dernierePose === null ? 0 : Math.min(timerMaxSecondes - (tempsAccess - result[0].dernierePose), timerMaxSecondes))
+            } else {
+                timerRestantSecondes = timerMaxSecondes;
+            }
+        })
+        statement.finalize();
+
+    });
+
+    while (timerRestantSecondes == null) {
+        deasync.runLoopOnce();
+    }
+
+    return timerRestantSecondes;
+}
+
 
 /**
  * Verifie si un string est une couleur en HEXA
@@ -593,7 +668,7 @@ router.use("/",
  * @author Jean-Bernard CAVELIER
  */
 function isHexColor(hex) { 
-    return typeof hex === 'string' && hex.length === 6 && !isNaN(Number('0x' + hex)) 
+    return typeof hex === 'string' && hex.length === 8 && hex.startsWith("0x") && !isNaN(Number(hex)) 
 }
 
 

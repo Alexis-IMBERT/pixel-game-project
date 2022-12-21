@@ -143,6 +143,27 @@
 
     </form>
 
+    <label> CANVAS POSE </label>
+    <form method="POST" action="javascript:canva_pose();">
+    
+        <label for="canva-pose-id">canva id</label>
+        <input id="canva-pose-id" type="text" name="canva-pose-id" required>
+
+        <label for="x">canva x</label>
+        <input id="canva-pose-x" type="text" name="x" required>
+
+        <label for="y">canva y</label>
+        <input id="canva-pose-y" type="text" name="y" required>
+
+        <label for="color">canva color</label>
+        <input id="canva-pose-color" type="text" name="color" required>
+    
+        <input type="submit" value="update">
+    
+        <label id="canva-pose-answer"></label>
+    
+    </form>
+
 
 
     <label> VIEW MY CANVAS IMAGE </label>
@@ -462,25 +483,49 @@
     
     
         function canva_timer() {
-                console.log("canva_timer entered");
+            console.log("canva_timer entered");
 
-                let url = '/canvas/' + $("#canva-timer-id").val() + "/timer";
+            let url = '/canvas/' + $("#canva-timer-id").val() + "/timer";
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                success: function (data, e, xhr) {
+                    console.log("OK");
+                    $("#canva-timer-answer").html(data)
+                },
+                error: function (err) {
+                    console.log("ERROR");
+                    $('#canva-timer-answer').html(err.responseText);
+                }
+            });
+        }
+    
+        function canva_pose() {
+                console.log("canva_pose entered");
+
+                let dataToPost = {
+                    x:  $("#canva-pose-x").val(),
+                    y:  $("#canva-pose-y").val(),
+                    color:  $("#canva-pose-color").val()
+                }
+
+                let url = '/canvas/' + $("#canva-pose-id").val() + "/pose";
 
                 $.ajax({
                     type: 'POST',
                     url: url,
+                    data : dataToPost,
                     success: function (data, e, xhr) {
                         console.log("OK");
-                        $("#canva-timer-answer").html(data)
+                        $("#canva-pose-answer").html(data)
                     },
                     error: function (err) {
                         console.log("ERROR");
-                        $('#canva-timer-answer').html(err.responseText);
+                        $('#canva-pose-answer').html(err.responseText);
                     }
                 });
             }
-    
-    
     
     
     
