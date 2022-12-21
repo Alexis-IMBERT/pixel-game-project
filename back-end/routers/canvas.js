@@ -636,7 +636,7 @@ router.use("/",
 
 
 
-function tempsRestantPose(idUser,idCanva, timerMaxSecondes = 3, tempsAccess = unixTimestamp() ) {
+function tempsRestantPose(idUser,idCanva, timerMaxSecondes = 10, tempsAccess = unixTimestamp() ) {
 
     let timerRestantSecondes = null;
 
