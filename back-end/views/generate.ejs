@@ -21,13 +21,16 @@
                 buttonText: "Ok",
                 img:"error.svg",
             });
+            console.log("erreur");
+            console.log('<%-canva_infos%>');
             </script>
         <% } %>
-        <% if (typeof canva_infos !== 'undefined') { %>
+        
+        <% if (canva_infos) { %>
             <script>
                 var parsed_data = <%- JSON.stringify(canva_infos) %>;
                 var minePseudo = '<%- login %>';
-                var isNew = "<%- JSON.stringify(canva_infos.height) %>"=="";
+                var isNew = !(<%- JSON.stringify(type.edit) %>);
             </script>
        <% } else { %>
         <script>
@@ -92,9 +95,9 @@
                         <a href="/users/login">Connexion</a>
                         <a href="/users/signup">Inscription</a>
                     <% } else { %>
-                        <a href="/perfil">Profil</a>
+                        <a href="/profile">Profil</a>
                         <a href="/canvas">Canvas</a>
-                        <a href="/logout">Se déconnecter</a>
+                        <a href="/users/logout">Se déconnecter</a>
                     <% } %>
                 </div>
                 <div class="footer bg-main">
@@ -194,9 +197,10 @@
                         this.name = parsed_data.name;
                         this.id = parsed_data.id;
                         console.log(this.users);
+                        console.log("JE SUIS LA");
                     }
-                    if(typeof minePseudo  !== 'undefined') this.minePseudo = minePseudo;
-                    if(typeof isNew  !== 'undefined') this.newForm = isNew;
+                    if( minePseudo ) this.minePseudo = minePseudo;
+                    this.newForm = isNew;
                 }
             })
         </script>

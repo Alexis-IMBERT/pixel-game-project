@@ -8,6 +8,8 @@
         <link rel="stylesheet" href="/assets/css/styles.css">
         <script type="text/javascript" src="/assets/js/vue.js"></script>
         <link rel="stylesheet" href="/assets/css/loader.css">
+        <script src="/assets/js/cute-alert-master/cute-alert.js"></script>
+        <link rel="stylesheet" href="/assets/js/cute-alert-master/style.css"/>
     </head>
     <body>
         <script>
@@ -29,7 +31,7 @@
                     <a href="/users/login">Connexion</a>
                     <a href="/users/signup">Inscription</a>
                 <% } else { %>
-                    <a href="/users/perfil">Profil</a>
+                    <a href="/profile">Profil</a>
                     <a href="/canvas">Canvas</a>
                     <a href="/users/logout">Se déconnecter</a>
                 <% } %>
@@ -210,6 +212,13 @@
                     url: url,
                     data : dataToPost,
                     success: function (data, e, xhr) {
+                        cuteToast({
+                            type: "success", // or 'info', 'error', 'warning'
+                            title:"Bravo " + '<%= login %>' + " !",
+                            message: "Pixel envoyé",
+                            timer: 5000,
+                            img:"success.svg"
+                        });
                         let urlChrono = '/canvas/' + '<%= idCanva %>' + "/timer";
                             
                         //Récupération du chrono
