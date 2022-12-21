@@ -96,18 +96,21 @@
                             canvas.height = image.height;
                             var ctx = canvas.getContext('2d');
                             ctx.drawImage(image, 0, 0);
+                            
+                            app.isLoading = false;
                             let urlChrono = '/canvas/' + dataToPost.idCanva + "/timer";
                             
                             //Récupération du chrono
-                            $.ajax({
-                                type: 'POST',
-                                url: urlChrono,
-                                success: function (data, e, xhr) {
-                                    isWaiting = data != 0;
-                                    enableChrono(data);
-                                    app.isLoading = false;
-                                }
-                            });
+                            if('<%=login%>'!='') {
+                                $.ajax({
+                                    type: 'POST',
+                                    url: urlChrono,
+                                    success: function (data, e, xhr) {
+                                        isWaiting = data != 0;
+                                        enableChrono(data);
+                                    }
+                                });
+                            }
                         }
 
                     },
