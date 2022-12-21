@@ -137,7 +137,7 @@
         <label for="canva-timer-id">canva id</label>
         <input id="canva-timer-id" type="text" name="canva-timer-id" required>
 
-        <input type="submit" value="update">
+        <input type="submit" value="afficher timer">
 
         <label id="canva-timer-answer"></label>
 
@@ -158,7 +158,7 @@
         <label for="color">canva color</label>
         <input id="canva-pose-color" type="text" name="color" required>
     
-        <input type="submit" value="update">
+        <input type="submit" value="pose">
     
         <label id="canva-pose-answer"></label>
     
@@ -492,7 +492,7 @@
                 url: url,
                 success: function (data, e, xhr) {
                     console.log("OK");
-                    $("#canva-timer-answer").html(data)
+                    $("#canva-timer-answer").html(data + " SECONDES RESTANTES")
                 },
                 error: function (err) {
                     console.log("ERROR");

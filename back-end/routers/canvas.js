@@ -541,6 +541,8 @@ router.post("/:id/pose",
             return;
         }
 
+        color += "ff";
+
         let canvaInfos = getCanvaInfos(idCanva);
         console.log(canvaInfos);
 
@@ -552,8 +554,13 @@ router.post("/:id/pose",
         db.serialize( () => {
             db.run(`INSERT INTO '${idCanva}' (pxl_x,pxl_y,couleur,pose) VALUES (?,?,?,?);`, [x,y,color,temps], function(err,result) {
                 if (err) {
-                    console.log(err)
-                    return;
+                    if (err.code == 'SQLITE_CONSTRAINT') {
+                        db.run(`UPDATE '${idCanva}' SET couleur=?,pose=? WHERE pxl_x=? AND pxl_y=?;`, [color,temps,x,y], function(err,result) {
+                            if (err) {
+                                console.log(err);
+                            }
+                        })
+                    }
                 }
             })
             db.run("UPDATE usersInCanva SET dernierePose=? WHERE idCanva=? AND idUser=?;", [temps,idCanva,idUser], function(err,result) {
@@ -629,7 +636,7 @@ router.use("/",
 
 
 
-function tempsRestantPose(idUser,idCanva, timerMaxSecondes = 600, tempsAccess = unixTimestamp() ) {
+function tempsRestantPose(idUser,idCanva, timerMaxSecondes = 3, tempsAccess = unixTimestamp() ) {
 
     let timerRestantSecondes = null;
 
@@ -642,7 +649,7 @@ function tempsRestantPose(idUser,idCanva, timerMaxSecondes = 600, tempsAccess = 
             }
 
             if (result) {
-                timerRestantSecondes = (result[0].dernierePose === null ? 0 : Math.min(timerMaxSecondes - (tempsAccess - result[0].dernierePose), timerMaxSecondes))
+                timerRestantSecondes = (result[0].dernierePose === null ? 0 : Math.min(Math.max(0,timerMaxSecondes - (tempsAccess - result[0].dernierePose)), timerMaxSecondes))
             } else {
                 timerRestantSecondes = timerMaxSecondes;
             }
@@ -944,8 +951,8 @@ function sendCanva(idCanva, res) {
                 console.log(err.message);
             else {
                 // Easy access to row-Entries using row.NAME
-                console.log(row.pxl_x + " | " + row.pxl_y + " | " + row.couleur);
-                image.setPixelColor(parseInt(row.couleur),row.pxl_x,row.pxl_y)
+                color = parseInt(row.couleur,"16");
+                image.setPixelColor(color,row.pxl_x,row.pxl_y)
             }
                 
         });
