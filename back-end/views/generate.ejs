@@ -90,16 +90,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="login-menu">
-                    <% if (!logged) { %>
-                        <a href="/users/login">Connexion</a>
-                        <a href="/users/signup">Inscription</a>
-                    <% } else { %>
-                        <a href="/profile">Profil</a>
-                        <a href="/canvas">Canvas</a>
-                        <a href="/users/logout">Se déconnecter</a>
-                    <% } %>
-                </div>
+                <%- include('menu.ejs', {logged: logged}) %>
                 <div class="footer bg-main">
                     <button type="submit" class="btn valid"><span v-if="newForm">CREER</span><span v-else>SAUVEGARDER</span><div class="icon unlocked"></div></button>
                     <!--<button type="button" v-on:click="retour()" class="btn error">RETOUR<div class="icon join"></div></button>-->

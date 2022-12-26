@@ -40,16 +40,7 @@
                     
                 </div>
             </div>
-            <div class="login-menu">
-                <% if (!logged) { %>
-                    <a href="/users/login">Connexion</a>
-                    <a href="/users/signup">Inscription</a>
-                <% } else { %>
-                    <a href="/profile">Profil</a>
-                    <a href="/canvas">Canvas</a>
-                    <a href="/users/logout">Se déconnecter</a>
-                <% } %>
-            </div>
+            <%- include('menu.ejs', {logged: logged}) %>
             <div class="footer bg-color">
                 <% if (!isVip) { %>
                     <button class="btn error">NOUVEAU DESSIN <div class="icon locked"></div></button>
