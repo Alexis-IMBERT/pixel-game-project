@@ -11,7 +11,7 @@ router.use('/index.html', function (req, res) {
 });
 
 const profile = require('./profile');
-router.use('/profile', profile);
+router.use('/perfil', profile);
 
 
 router.use('/', function (req, res) {
