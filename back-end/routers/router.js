@@ -10,6 +10,8 @@ router.use('/index.html', function (req, res) {
 	res.redirect('/');
 });
 
+const profile = require('./profile');
+router.use('/profile', profile);
 
 
 router.use('/', function (req, res) {
