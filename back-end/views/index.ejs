@@ -56,7 +56,6 @@
                 methods: {
                     
                  isDisabled:function() {
-                    console.log($('#send-btn')[0].disabled)
                     return $('#send-btn')[0].disabled;
                  }
                 },
@@ -83,6 +82,7 @@
                         image.src = "data:image/png;base64,"+data;
 
                         // Draw the image on the canvas
+                     
                         image.onload = function () {
                             var canvas = document.getElementById('canva');
                             canvas.width = image.width;
@@ -248,7 +248,7 @@
             document.addEventListener('mousemove', () => drag = true);
             $("#send-btn").on('click', function(e)  {envoyerPixel(e)});
             $("#print").on("click",  function(e)  { print('#canva', 'html') } ); //to fix
-            canvaJQ.on('mouseup', function(e) { if (!drag) getCursorPosition(canvas, e) });
+            canvaJQ.on('mouseup', function(e) { if (!drag && '<%= logged %>') getCursorPosition(canvas, e) });
 
             /* ZOOM AND DRAG */
             $( function() {
