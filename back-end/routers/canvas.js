@@ -76,7 +76,7 @@ router.post("/generate",
             if (tests)
                 res.status(400).send("USERS STRING SHOULD BE LIKE [{'idUser':'id1'},{'idUser':'id2'}]")
             else {
-                renderGeneratePage(req, res, "USERS IS NOT A JSON OBJECT [{}]", false, "/canvas/generate", idCanva, req.body['height'], req.body['width'], name, users)
+                renderGeneratePage(req, res, "USERS IS NOT A JSON OBJECT [{'idUser':'id1'},{...}]", false, "/canvas/generate", idCanva, req.body['height'], req.body['width'], name, users)
             }
             return;
         }
@@ -84,6 +84,8 @@ router.post("/generate",
         /*for (key in users) {
             users[key].idUser = encodeURIComponent(users[key].idUser)
         }*/
+
+        console.log(users);
 
         let ownerInList = false;
         for (key in users) {
@@ -231,7 +233,7 @@ router.post("/:id/update",
             users = JSON.parse(users);
         } catch (e) {
             if (tests)
-                res.status(400).send("USERS STRING SHOULD BE LIKE [{'idUser':'id1'},{'idUser':'id2'}]")
+                res.status(400).send("USERS STRING SHOULD BE LIKE [{\"idUser\":\"id1\"},{\"idUser\":\"id2\"}]")
             else {
                 renderGeneratePage(req, res, "USERS IS NOT A JSON OBJECT [{}]", true, "/canvas/" + idCanva + "/update", idCanva, req.body['height'], req.body['width'], name, users)
             }
@@ -567,6 +569,13 @@ router.post("/:id/pose",
                 if (err) {
                     console.log(err);
                     return;
+                }
+            })
+
+            db.run(`INSERT INTO history (idCanva,idUser,tempsPose,pxl_x,pxl_y,couleur) VALUES (?,?,?,?,?,?);`, [idCanva,idUser,temps,x, y, color], function (err, result) {
+                if (err) {
+                    console.log("failed to log in history table")
+                    console.log(err);
                 }
             })
         })
@@ -951,6 +960,8 @@ function sendCanva(idCanva, res) {
                 console.log(err.message);
             else {
                 // Easy access to row-Entries using row.NAME
+                if (row.pxl_x > height || row.pxl_y > width) 
+                    return;
                 color = parseInt(row.couleur,"16");
                 image.setPixelColor(color,row.pxl_x,row.pxl_y)
             }
@@ -1037,6 +1048,10 @@ function userCanAccessCanva(idUser, idCanva) {
     }
     return false;
 }
+
+
+const profile = require('./profile');
+router.use('/profile', profile);
 
 
 module.exports = { router, createCanva };

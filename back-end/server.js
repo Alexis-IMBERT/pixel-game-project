@@ -56,7 +56,7 @@ app.listen(port, () => {
 	// callback executed when the server is launched
 	console.log(`Express app listening on port ${port}`);
 
-	//init.initDatabase()
+	init.initDatabase()
 
 	init.initGeneralCanva();
 	
