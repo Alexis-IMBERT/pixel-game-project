@@ -25,7 +25,7 @@
                     <div class="flex-2 title-form text-white">Nombre de pixel posés : </div>
                 </div>
             </div>
-            
+
             <div class="column-section canva-row mid-box">
                 <div class="flex-2">
                     <%= login %>
@@ -37,9 +37,9 @@
                     <%= nb_pixel_pose %>
                 </div>
             </div>
-            
+
             <div style="margin-bottom:100px"></div>
-            
+
             <div class="top-rounded-box color-sc bottom-border">
                 <div class="column-section ">
                     <div class="flex-2 title-form text-white">Nombre de canvas inscrit : </div>
@@ -58,9 +58,6 @@
                     <%= nb_pixel_moyen %>
                 </div>
             </div>
-            <!-- <div class="scrollable list-games border-bottom">
-                    test 
-            </div> -->
         </div>
     </div>
     <%- include('menu.ejs', {logged: logged}) %>
@@ -73,13 +70,3 @@
                 class="imgbtn" id="rules" src="/assets/imgs/book.png"></a>
     </div>
 </div>
-
-<script>
-    const app = new Vue({
-        el: "#app",
-        data: {
-            utilisateur: "",
-        }
-    })
-</script>
-</body>
