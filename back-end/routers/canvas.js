@@ -572,7 +572,7 @@ router.get("/:id/getDerniersPixels",
 
         let temps = unixTimestamp();
 
-        if (id != "general") {
+        if (idCanva != "general") {
             if (usersUtil.redirectNotLoggedUsers(req, res)) {
                 return;
             }
