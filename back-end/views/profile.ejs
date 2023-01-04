@@ -13,60 +13,71 @@
     <link rel="stylesheet" href="/assets/css/loader.css">
 </head>
 
+<body>
+    <div class="body-container" id="app">
+        <div class="center top bg-color" style="padding-bottom:40px;">
+            <h1 class="titre-form">Statistiques</h1>
+            <div class=" mg-10" style="overflow:hidden; max-height:80%; border-radius:10px;">
+                <div class="top-rounded-box color-sc bottom-border">
+                    <div class="column-section ">
+                        <div class="flex-2 title-form text-white">Ton blase</div>
+                        <div class="flex-2 title-form text-white">Couleur que tu dégaines OKLM</div>
+                        <div class="flex-2 title-form text-white">Pixel où tu t'es imposé(e)</div>
+                    </div>
+                </div>
 
-<div class="body-container" id="app">
-    <div class="center top bg-color" style="padding-bottom:40px;">
-        <h1 class="titre-form">Statistiques</h1>
-        <div class=" mg-10" style="overflow:hidden; max-height:80%; border-radius:10px;">
-            <div class="top-rounded-box color-sc bottom-border">
-                <div class="column-section ">
-                    <div class="flex-2 title-form text-white">Pseudo : </div>
-                    <div class="flex-2 title-form text-white">Couleur préféré : </div>
-                    <div class="flex-2 title-form text-white">Nombre de pixel posés : </div>
+                <div class="column-section canva-row mid-box">
+                    <div class="flex-2">
+                        <%= login %>
+                    </div>
+                    <div class="flex-2">
+                        <div class="flex-2" style="border:1px solid black"
+                            v-bind:style="{ 'border-radius':'20px', width:'100%', height:'100%', 'background-color':'<%=couleur_pref%>', color:'lightgrey'}">
+                            <%=couleur_pref%>
+                        </div>
+                    </div>
+                    <div class="flex-2">
+                        <%= nb_pixel_pose %>
+                    </div>
                 </div>
-            </div>
 
-            <div class="column-section canva-row mid-box">
-                <div class="flex-2">
-                    <%= login %>
-                </div>
-                <div class="flex-2">
-                    <%= couleur_pref %>
-                </div>
-                <div class="flex-2">
-                    <%= nb_pixel_pose %>
-                </div>
-            </div>
+                <div style="margin-bottom:100px"></div>
 
-            <div style="margin-bottom:100px"></div>
-
-            <div class="top-rounded-box color-sc bottom-border">
-                <div class="column-section ">
-                    <div class="flex-2 title-form text-white">Nombre de canvas inscrit : </div>
-                    <div class="flex-2 title-form text-white">Canvas ou tu es le plus actif : </div>
-                    <div class="flex-2 title-form text-white">Ratio Pixel/canvas :</div>
+                <div class="top-rounded-box color-sc bottom-border">
+                    <div class="column-section ">
+                        <div class="flex-3 title-form text-white">Les batailles où tu dead-ça chakal</div>
+                        <div class="flex-3 title-form text-white">Canva qui t'a fait perdre le plus de temps</div>
+                        <div class="flex-3 title-form text-white">Ratio pixel dégainés/batailles où tu dead ça</div>
+                    </div>
                 </div>
-            </div>
-            <div class="column-section canva-row mid-box">
-                <div class="flex-2">
-                    <%= nb_canvas %>
-                </div>
-                <div class="flex-2">
-                    <%= canvas_plus_actif %>
-                </div>
-                <div class="flex-2">
-                    <%= nb_pixel_moyen %>
+                <div class="column-section canva-row mid-box">
+                    <div class="flex-2">
+                        <%= nb_canvas %>
+                    </div>
+                    <div class="flex-2">
+                        <%= canvas_plus_actif %>
+                    </div>
+                    <div class="flex-2">
+                        <%= nb_pixel_moyen %>
+                    </div>
                 </div>
             </div>
         </div>
+        <%- include('menu.ejs', {logged: logged}) %>
     </div>
-    <%- include('menu.ejs', {logged: logged}) %>
-</div>
 
-<div class="footer bg-main">
-    <div class="footer-box">
-        <a target="_blank"
-            href="https://www.makeuseof.com/what-is-rplace-reddit-art-experiment/#:~:text=The%20concept%20behind%20r%2FPlace%20is%20pretty%20simple.,or%20tile%20of%20whichever%20color."><img
-                class="imgbtn" id="rules" src="/assets/imgs/book.png"></a>
+    <div class="footer bg-main">
+        <div class="footer-box">
+            <a target="_blank"
+                href="https://www.makeuseof.com/what-is-rplace-reddit-art-experiment/#:~:text=The%20concept%20behind%20r%2FPlace%20is%20pretty%20simple.,or%20tile%20of%20whichever%20color."><img
+                    class="imgbtn" id="rules" src="/assets/imgs/book.png"></a>
+        </div>
     </div>
-</div>
+
+    <script>
+        const app = new Vue({
+            el: "#app",
+            data: {}
+        })
+    </script>
+</body>
