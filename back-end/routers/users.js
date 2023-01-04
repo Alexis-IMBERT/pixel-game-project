@@ -27,14 +27,7 @@ router.use(express.urlencoded({ extended: true }));
 const db = require("./database");
 
 
-function redirectLoggedUsers(req,res) {
-    if (usersUtil.isLoggedIn(req)) {
-        console.log("already logged in");
-        res.redirect('/');
-        return true;
-    }
-    return false;
-}
+
 
 
 router.post("/signup",
@@ -52,7 +45,9 @@ router.post("/signup",
 
         console.log("signup method accessed");
 
-        if (redirectLoggedUsers(req, res))
+        
+
+        if (usersUtil.redirectLoggedUsers(req, res,debug_mode=true))
             return;
             
         
@@ -120,7 +115,7 @@ router.use('/signup',
     function (req, res, err) {
         console.log("signup page accessed");
         
-        if (redirectLoggedUsers(req, res))
+        if (usersUtil.redirectLoggedUsers(req, res))
             return;
             
         renderSignupPage(req,res,null);
@@ -128,7 +123,7 @@ router.use('/signup',
 );
 
 function renderSignupPage(req,res,err) {
-    if (redirectLoggedUsers(req,res))
+    if (usersUtil.redirectLoggedUsers(req,res))
         return;
     res.render('signup.ejs', { logged: false, login: false, error: err?err:false });
 }
