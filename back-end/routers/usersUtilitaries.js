@@ -5,6 +5,20 @@ const db = require('./database');
 const deasync = require('deasync');
 
 
+var crypto = require('crypto');
+
+/**
+ * hash sha256 of input
+ * @param {*} input 
+ * @returns hashed value of input
+ * 
+ * @author Jean-Bernard Cavelier
+ */
+var sha256 = function (input) {
+    return crypto.createHash('sha256').update(JSON.stringify(input)).digest('hex');
+}
+
+
 
 function isLoggedIn(req) {
     //console.log(req.session)
@@ -126,7 +140,7 @@ function exists(login) {
 }
 
 function redirectLoggedUsers(req, res, debug_mode = false) {
-    if (usersUtil.isLoggedIn(req)) {
+    if (isLoggedIn(req)) {
         console.log("already logged in");
         if (debug_mode)
             res.status(400).send("already logged in")
@@ -137,10 +151,10 @@ function redirectLoggedUsers(req, res, debug_mode = false) {
     return false;
 }
 
-function redirectNotLoggedUsers(req,res) {
+function redirectNotLoggedUsers(req,res,debug_mode=false) {
     let tests = req.query['tests'];
-    if (!usersUtil.isLoggedIn(req.session.login)) {
-        if (tests)
+    if (!isLoggedIn(req)) {
+        if (debug_mode)
             res.status(400).send("YOU ARE NOT LOGGED IN");
         else
             res.redirect("/users/login")
@@ -151,4 +165,4 @@ function redirectNotLoggedUsers(req,res) {
 
 
 
-module.exports = {isLoggedIn, isVip, isAdmin, isOwner, exists, redirectLoggedUsers, redirectNotLoggedUsers }
+module.exports = {isLoggedIn, isVip, isAdmin, isOwner, exists, redirectLoggedUsers, redirectNotLoggedUsers,sha256 }

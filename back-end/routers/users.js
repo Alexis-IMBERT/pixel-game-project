@@ -1,23 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
-var crypto = require('crypto');
 const { render } = require('ejs');
-//var shasum = crypto.createHash('sha256');
 
 var usersUtil = require('./usersUtilitaries');
+const sha256 = usersUtil.sha256;
+
 const { exit } = require('process');
 
-/**
- * hash sha256 of input
- * @param {*} input 
- * @returns hashed value of input
- * 
- * @author Jean-Bernard Cavelier
- */
-var sha256 = function(input) {
-    return crypto.createHash('sha256').update(JSON.stringify(input)).digest('hex');
-}
+
 
 
 // add data to req.body (for POST requests)
@@ -45,7 +36,6 @@ router.post("/signup",
 
         console.log("signup method accessed");
 
-        
 
         if (usersUtil.redirectLoggedUsers(req, res,debug_mode=true))
             return;
