@@ -99,6 +99,7 @@
 
 /* Icons */
 .locked:is(.icon)       { background-image:url(../imgs/icons/lock.gif);}
+.sheet:is(.icon)       { background-image:url(../imgs/icons/sheets.png);}
 .unlocked:is(.icon)     { background-image:url(../imgs/icons/valid.gif);}
 .join:is(.icon)         { background-image:url(../imgs/icons/join.gif);}
 .cross:is(.icon)        { background-image:url(../imgs/icons/cross.gif);}

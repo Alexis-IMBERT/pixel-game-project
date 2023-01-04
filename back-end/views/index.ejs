@@ -124,7 +124,10 @@
 
             function afficherUpdateCanva() {
                 $.getJSON('/canvas/' + '<%= idCanva %>' +'/getDerniersPixels', function(data) {
-                    changerCouleurPixelLocal(canvas, data.pxl_x, data.pxl_y, data.couleur);
+                    console.log(data);
+                    data.forEach( pix => { 
+                        ajouterPixelLocal(canvas, pix.pxl_x+1, pix.pxl_y+1, pix.couleur);
+                    })
                 });
             }
 
@@ -175,7 +178,7 @@
                 }
             }
 
-            function changerCouleurPixelLocal(canvas,x,y, color=null) {
+            async function changerCouleurPixelLocal(canvas,x,y, color=null) {
                 if (lastPixelData) 
                     ctx.putImageData(lastPixelData, lastPixelChangedX-1, lastPixelChangedY-1);
                 lastPixelData = ctx.getImageData(x-1,y-1,1,1);
@@ -195,6 +198,19 @@
                 $("#send-btn").removeAttr("disabled");
             }
 
+            async function ajouterPixelLocal(canvas,x,y,color) {
+                let data = ctx.getImageData(x-1,y-1,1,1);
+                color = color.replace("0x", "#");
+                color = color.substr(0,7);
+                r = parseInt(color.substr(1,2), 16)
+                g = parseInt(color.substr(3,2), 16)
+                b = parseInt(color.substr(5,2), 16)
+                data.data[0] = r
+                data.data[1] = g
+                data.data[2] = b 
+                ctx.putImageData(data, x-1, y-1);
+            }
+
 
             function envoyerPixel(e) {
                 e.preventDefault();
@@ -209,8 +225,6 @@
                     y:  y-1,
                     color:  $(".color-picker").val().replace("#","0x")
                 }
-
-                console.log(dataToPost.color)
 
                 let url = '/canvas/' + '<%= idCanva %>' + "/pose";
 
@@ -242,7 +256,6 @@
             }
 
             function enableChrono(timing) {
-                console.log("timing " + timing);
                 let temps = timing;
                 var chrono = setInterval(function () {
                     let minutes = parseInt(temps / 60, 10);
@@ -255,8 +268,6 @@
                     temps -= 1;
                     if (temps < 0) {
                         clearInterval(chrono);
-                        console.log("clear chrono");
-                        console.log($('#info-picker').val())
                         isWaiting = false;
                         app.attente = isWaiting;
                     }
