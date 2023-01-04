@@ -21,13 +21,16 @@
                 buttonText: "Ok",
                 img:"error.svg",
             });
+            console.log("erreur");
+            console.log('<%-canva_infos%>');
             </script>
         <% } %>
-        <% if (typeof canva_infos !== 'undefined') { %>
+        
+        <% if (canva_infos) { %>
             <script>
                 var parsed_data = <%- JSON.stringify(canva_infos) %>;
                 var minePseudo = '<%- login %>';
-                var isNew = "<%- JSON.stringify(canva_infos.height) %>"=="";
+                var isNew = !(<%- JSON.stringify(type.edit) %>);
             </script>
        <% } else { %>
         <script>
@@ -87,16 +90,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="login-menu">
-                    <% if (!logged) { %>
-                        <a href="/users/login">Connexion</a>
-                        <a href="/users/signup">Inscription</a>
-                    <% } else { %>
-                        <a href="/perfil">Profil</a>
-                        <a href="/canvas">Canvas</a>
-                        <a href="/logout">Se déconnecter</a>
-                    <% } %>
-                </div>
+                <%- include('menu.ejs', {logged: logged}) %>
                 <div class="footer bg-main">
                     <button type="submit" class="btn valid"><span v-if="newForm">CREER</span><span v-else>SAUVEGARDER</span><div class="icon unlocked"></div></button>
                     <!--<button type="button" v-on:click="retour()" class="btn error">RETOUR<div class="icon join"></div></button>-->
@@ -194,9 +188,10 @@
                         this.name = parsed_data.name;
                         this.id = parsed_data.id;
                         console.log(this.users);
+                        console.log("JE SUIS LA");
                     }
-                    if(typeof minePseudo  !== 'undefined') this.minePseudo = minePseudo;
-                    if(typeof isNew  !== 'undefined') this.newForm = isNew;
+                    if( minePseudo ) this.minePseudo = minePseudo;
+                    this.newForm = isNew;
                 }
             })
         </script>

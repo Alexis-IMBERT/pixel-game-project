@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PixelWAR</title>
+    <script src="/assets/vendor/jquery-3.6.0.js"></script>
+    <script src="/assets/vendor/jquery-ui.js"></script>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <script type="text/javascript" src="/assets/js/vue.js"></script>
+    <link rel="stylesheet" href="/assets/css/loader.css">
+</head>
+
+
+<body>
+    <%- include('menu.ejs', {logged: logged}) %>
+        <div>
+            <% if(!logged){%>
+                <span>Veuillez vous connecter</span>
+                <%} else{ %>
+                    <div id="app">
+                        <h1>Statistiques</h1>
+                        Pseudo : <%= login %><br/>
+                    </div>
+                    <%}%>
+        </div>
+        <div class="footer bg-main">
+            <div class="footer-box">
+                <a target="_blank"
+                    href="https://www.makeuseof.com/what-is-rplace-reddit-art-experiment/#:~:text=The%20concept%20behind%20r%2FPlace%20is%20pretty%20simple.,or%20tile%20of%20whichever%20color."><img
+                        class="imgbtn" id="rules" src="/assets/imgs/book.png"></a>
+            </div>
+        </div>
+
+        <script>
+            const app = new Vue({
+                el: "#app",
+                data: {
+                    utilisateur: "",
+                }
+            })
+        </script>
+</body>

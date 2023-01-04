@@ -211,6 +211,8 @@ router.use('/logout',
 );
 
 
+const profile = require('./profile');
+router.use('/profile', profile);
 
 
 module.exports = router;
