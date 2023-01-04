@@ -8,5 +8,7 @@
         <a href="/canvas">Canvas</a>
         <a href="/users/logout">Déconnexion</a>
     <% } %>
-    <div class="connexion-info">Connecté en tant que <%= login %></div>
+    <% if (logged) { %>
+        <div class="connexion-info">Connecté en tant que <%= login %></div>
+    <% } %>
 </div>

@@ -124,7 +124,10 @@
 
             function afficherUpdateCanva() {
                 $.getJSON('/canvas/' + '<%= idCanva %>' +'/getDerniersPixels', function(data) {
-                    changerCouleurPixelLocal(canvas, data.pxl_x, data.pxl_y, data.couleur);
+                    console.log(data);
+                    data.forEach( pix => { 
+                        ajouterPixelLocal(canvas, pix.pxl_x+1, pix.pxl_y+1, pix.couleur);
+                    })
                 });
             }
 
@@ -193,6 +196,20 @@
                 data.data[2] = b 
                 ctx.putImageData(data, x-1, y-1);
                 $("#send-btn").removeAttr("disabled");
+            }
+
+            function ajouterPixelLocal(canvas,x,y,color) {
+                let data = ctx.getImageData(x-1,y-1,1,1);
+                color = color.replace("0x", "#");
+                color = color.substr(0,7);
+                r = parseInt(color.substr(1,2), 16)
+                g = parseInt(color.substr(3,2), 16)
+                b = parseInt(color.substr(5,2), 16)
+                console.log("couleur recue : " + color);
+                data.data[0] = r
+                data.data[1] = g
+                data.data[2] = b 
+                ctx.putImageData(data, x-1, y-1);
             }
 
 
