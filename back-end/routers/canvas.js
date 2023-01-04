@@ -572,14 +572,15 @@ router.get("/:id/getDerniersPixels",
 
         let temps = unixTimestamp();
 
-        if (usersUtil.redirectNotLoggedUsers(req, res)) {
-            return;
-        }
+        if (id != "general") {
+            if (usersUtil.redirectNotLoggedUsers(req, res)) {
+                return;
+            }
 
-
-        if (!userCanAccessCanva(idUser, idCanva)) {
-            res.status(400).end("YOU CANNOT ACCESS THIS CANVA")
-            return;
+            if (!userCanAccessCanva(idUser, idCanva)) {
+                res.status(400).end("YOU CANNOT ACCESS THIS CANVA")
+                return;
+            }
         }
 
 
