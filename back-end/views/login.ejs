@@ -1,7 +1,9 @@
+<!-- HTML, CSS ET JS par Pierre LUYPAERT-->
 <!DOCTYPE html>
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="author" content="Pierre LUYPAERT">
         <title>PixelWAR: Login</title>
         <script src="/assets/vendor/jquery-3.6.0.js"></script>
         <script src="/assets/vendor/jquery-ui.js"></script>
@@ -16,9 +18,12 @@
                     <input name="login" type="text" id="login" class="input-text" placeholder="Pseudo">
                     <input name="password" type="password" id="password" class="input-text" placeholder="Mot de passe">
                     <% if (error) { %>
-                        <label id="signup-answer">Connexion échouée</label>   
+                        </br>
+                        <label id="signup-answer" class="color-error">Connexion échouée</label>   
+                        </br>
+                        </br>
                     <% } %>
-                    <button type="submit" class="btn valid">ENVOYER</button>
+                    <button type="submit" class="btn valid">VALIDER</button>
                     <button type="button" class="btn error" onclick="window.location.href='/home'">RETOUR</button>
                 </form>
             </div>
