@@ -69,7 +69,10 @@ router.post("/signup",
             console.log(username)            
             console.log(password)            
             console.log(password2)
-            res.status(400).send('Bad request!');
+            if (tests)
+                res.status(400).send("MISSING VALUES");
+            else
+                renderSignupPage(req, res, "MISSING VALUES");
             return;
         }
 
@@ -145,7 +148,10 @@ router.post('/login',
         console.log(data);
 
         if (!(data['login'] != null && data['login'] != "" && data['password'] != null && data['password'] != "") ) {
-            res.status(400).send('Bad request!');
+            if (tests)
+                res.status(400).send("MISSING VALUES");
+            else
+                renderSignupPage(req, res, "MISSING VALUES");
             return;
         }
             
@@ -157,7 +163,10 @@ router.post('/login',
             statement.get(data['login'], sha256(data['password']), (err, result) => {
                 if (err) {
                     console.log(err);
-                    res.status(400).send("Bad request");
+                    if (tests)
+                        res.status(400).send("ERROR: TRY AGAIN");
+                    else
+                        renderSignupPage(req, res, "PLEASE TRY AGAIN");
                     //next(err);
                     return;
                 } 
@@ -211,6 +220,8 @@ router.use('/logout',
 );
 
 
+const profile = require('./profile');
+router.use('/profile', profile);
 
 
 module.exports = router;

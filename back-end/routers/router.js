@@ -11,7 +11,6 @@ router.use('/index.html', function (req, res) {
 });
 
 
-
 router.use('/', function (req, res) {
 	res.redirect('/home');
 });
