@@ -1,5 +1,5 @@
 // Alert box design by Igor Ferrão de Souza: https://www.linkedin.com/in/igor-ferr%C3%A3o-de-souza-4122407b/
-
+// Reviewed by Pierre LUYPAERT
 const cuteAlert = ({
   type,
   title,
