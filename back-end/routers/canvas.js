@@ -74,9 +74,9 @@ router.post("/generate",
             users = JSON.parse(users);
         } catch (e) {
             if (tests)
-                res.status(400).send("USERS STRING SHOULD BE LIKE [{'idUser':'id1'},{'idUser':'id2'}]")
+                res.status(400).send("USERS STRING SHOULD BE LIKE [{\"idUser\":\"id1\"},{\"idUser\":\"id2\"}]")
             else {
-                renderGeneratePage(req, res, "USERS IS NOT A JSON OBJECT [{'idUser':'id1'},{...}]", false, "/canvas/generate", idCanva, req.body['height'], req.body['width'], name, users)
+                renderGeneratePage(req, res, "USERS IS NOT A JSON OBJECT [{\"idUser\":\"id1\"},{...}]", false, "/canvas/generate", idCanva, req.body['height'], req.body['width'], name, users)
             }
             return;
         }
@@ -129,7 +129,7 @@ router.post("/generate",
                 if (users[key].idUser == idOwner)
                     continue;
 
-                db.run("INSERT INTO usersInCanva (idCanva,idUser) VALUES (?,?)", [idcanva, users[key].idUser], function (err) {
+                db.run("INSERT INTO usersInCanva (idCanva,idUser,derniereDemande) VALUES (?,?,?)", [idcanva, users[key].idUser,0], function (err) {
                     if (err) {
                         console.log(err);
                         // ne devrait pas arriver
@@ -290,7 +290,7 @@ router.post("/:id/update",
                 }
                 if (!incanva) {
                     console.log("insert "+users[key].idUser)
-                    db.run("INSERT INTO usersInCanva (idCanva,idUser) VALUES (?,?)", [idCanva,users[key].idUser], function (err) {
+                    db.run("INSERT INTO usersInCanva (idCanva,idUser,derniereDemande) VALUES (?,?,?)", [idCanva,users[key].idUser,0], function (err) {
                         if (err) {
                             // ne devrait pas arriver
                             res.redirect("/canvas/" + idCanva + "/edit");
@@ -586,6 +586,59 @@ router.post("/:id/pose",
     }
 )
 
+router.get("/:id/getDerniersPixels",
+
+    function (req, res) {
+        let idCanva = encodeURIComponent(req.params.id);
+        let idUser = req.session.login;
+
+        let temps = unixTimestamp();
+
+        if (!usersUtil.isLoggedIn(req)) {
+            res.status(400).end('YOU ARE NOT LOGGED IN');
+            return;
+        }
+
+
+        if (!userCanAccessCanva(idUser, idCanva)) {
+            res.status(400).end("YOU CANNOT ACCESS THIS CANVA")
+            return;
+        }
+
+
+        let canvaInfos = getCanvaInfos(idCanva);
+        console.log(canvaInfos);
+
+        
+
+        db.serialize(() => {
+
+            db.all(`select pxl_x,pxl_y,couleur from '${idCanva}' c, usersInCanva u WHERE u.idUser = ? AND u.idCanva = ? AND c.pose >= u.derniereDemande  `,[idUser,idCanva],function(err,result) {
+                if (err) {
+                    console.log(err)
+                } else {
+                    console.log(result)
+
+                    res.setHeader('Content-Type', 'application/json')
+                    res.end(JSON.stringify(result));
+                }
+               
+            })
+            
+            // UPDATE DERNIERE POSE
+            db.run("UPDATE usersInCanva SET derniereDemande = ? WHERE idCanva = ? AND idUser = ?", [temps, idCanva, idUser], function(err,result) {
+                if (err)
+                    console.log(err);
+            })
+
+        })
+
+
+        
+
+    }
+)
+
 router.use("/:id", 
     /**
      * Acceder à un canva particulier en fournissant l'ID dans le lien (/canvas/:id)
@@ -823,7 +876,7 @@ function createCanva(idcanva, name, idOwner, height, width, linkOwnerToCanva) {
     let addUser = null;
     if (linkOwnerToCanva) {
         addUser = () => {
-            db.run("INSERT INTO usersInCanva(idCanva,idUser) VALUES (?,?)", [idcanva, idOwner], function (err, result) {
+            db.run("INSERT INTO usersInCanva(idCanva,idUser,derniereDemande) VALUES (?,?,?)", [idcanva, idOwner,0], function (err, result) {
                 
                 if (!err) {
                     console.log("USER " + idOwner + " LINKED to " + idcanva);
