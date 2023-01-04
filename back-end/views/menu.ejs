@@ -1,3 +1,4 @@
+<!-- HTML, CSS ET JS par Pierre LUYPAERT-->
 <div class="login-menu">
     <% if (!logged) { %>
         <a href="/users/login">Connexion</a>
@@ -5,6 +6,7 @@
     <% } else { %>
         <a href="/users/profile">Profil</a>
         <a href="/canvas">Canvas</a>
-        <a href="/users/logout">Se déconnecter</a>
+        <a href="/users/logout">Déconnexion</a>
     <% } %>
+    <div class="connexion-info">Connecté en tant que <%= login %></div>
 </div>

@@ -1,6 +1,8 @@
+/* Classes CSS par Pierre LUYPAERT */
+
 @import "utils.css";
 :root {
-    --background-color: linear-gradient(#3a3a3a, #1e1e1e);
+    --background-color: linear-gradient(#686868, #1e1e1e);
     --valid-primary-color: rgb(174, 223, 174);
     --valid-secondary-color: forestgreen;
     --bad-primary-color: rgb(223, 174, 174);
@@ -102,12 +104,11 @@ label:not(is(#chrono)) {
 
 .login-menu > a {
     margin:3px;
-    text-decoration: underline;
-    transition-duration: 200ms;
+    text-decoration: none;
 }
 
 .login-menu > a:hover {
-    color:red;
+    text-decoration: underline;
 }
 
 .mid-box {
@@ -197,7 +198,7 @@ label:not(is(#chrono)) {
     color:var(--bad-secondary-color);
     border: 1px solid var(--bad-secondary-color);
     text-align: center;
-    font-size: 3vw;
+    font-size: 50px;
     border-radius: 10px;
 }
 
@@ -214,3 +215,12 @@ label:not(is(#chrono)) {
     image-rendering:pixelated;
 }
 
+.connexion-info {
+    position:relative;
+    font-size: 10px;
+    height:0px;
+    margin-top:-4px;
+    margin-bottom:2px;
+    margin-left:2px; 
+    color:grey;   
+}
