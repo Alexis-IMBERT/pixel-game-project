@@ -12,7 +12,7 @@ function isLoggedIn(req) {
     return req.session.loggedin;
 }
 
-function isRank(req,rank) {
+function isRank(login,rank) {
 
     rank = rank.toUpperCase();
     
@@ -21,7 +21,7 @@ function isRank(req,rank) {
     db.serialize(() => {
 
         const statement = db.prepare("SELECT rank FROM users WHERE login=?;");
-        statement.get(req.session.login, (err, result) => {
+        statement.get(login, (err, result) => {
             console.log("get");
             if (err) {
                 console.log(err);
@@ -51,15 +51,15 @@ function isRank(req,rank) {
     return isrank;
 }
 
-function isVip(req) {
-    return isRank(req,'VIP');
+function isVip(login) {
+    return isRank(login,'VIP');
 }
 
-function isAdmin(req) {
-    return isRank(req,'ADMIN');
+function isAdmin(login) {
+    return isRank(login,'ADMIN');
 }
 
-function isOwner(req,idCanva) {
+function isOwner(login,idCanva) {
     let isowner = null;
 
     db.serialize(() => {
@@ -73,7 +73,7 @@ function isOwner(req,idCanva) {
             }
             //console.log(result);
             if (result) {
-                isowner = (req.session.login == result['owner']);
+                isowner = (login == result['owner']);
             } else {
                 // if here that means the user doesn't exist
                 // not possible
@@ -124,4 +124,31 @@ function exists(login) {
 
     return res;
 }
-module.exports = {isLoggedIn, isVip, isAdmin, isOwner, exists }
+
+function redirectLoggedUsers(req, res, debug_mode = false) {
+    if (usersUtil.isLoggedIn(req)) {
+        console.log("already logged in");
+        if (debug_mode)
+            res.status(400).send("already logged in")
+        else
+            res.redirect('/');
+        return true;
+    }
+    return false;
+}
+
+function redirectNotLoggedUsers(req,res) {
+    let tests = req.query['tests'];
+    if (!usersUtil.isLoggedIn(req.session.login)) {
+        if (tests)
+            res.status(400).send("YOU ARE NOT LOGGED IN");
+        else
+            res.redirect("/users/login")
+        return true;
+    }
+    return false;
+}
+
+
+
+module.exports = {isLoggedIn, isVip, isAdmin, isOwner, exists, redirectLoggedUsers, redirectNotLoggedUsers }

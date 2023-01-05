@@ -1,7 +1,9 @@
+<!-- HTML, CSS ET JS par Pierre LUYPAERT-->
 <!DOCTYPE html>
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="author" content="Pierre LUYPAERT">
         <title>PixelWAR</title>
         <script src="/assets/vendor/jquery-3.6.0.js"></script>
         <script src="/assets/vendor/jquery-ui.js"></script>
@@ -18,7 +20,7 @@
             var zoomValue = 4;
             var lastPixelChangedX, lastPixelChangedY;
             var lastPixelData, r, g, b;
-            var isWaiting = false;
+            var isWaiting = true;
             var temps = 0;
         </script>
         <div class="body-container" id="app">
@@ -37,7 +39,7 @@
                 </div>
                 <button disabled class="valid btn" id="send-btn">ENVOYER<div :class="{icon:true, locked:attente, join:!attente}"></div></button>
                 <div class="footer-box">
-                    <p id="chrono"><label id="chronotime">10:00</label><label id="min">min</label></p>
+                    <p id="chrono"><label id="chronotime">00:00</label><label id="min">min</label></p>
                 </div>
                 
                 <div class="footer-box">
@@ -56,14 +58,13 @@
                 methods: {
                     
                  isDisabled:function() {
-                    console.log($('#send-btn')[0].disabled)
                     return $('#send-btn')[0].disabled;
                  }
                 },
                 mounted() {
                 }
             })
-            
+
 
             function canva_get() {
                 var dataToPost = {
@@ -83,6 +84,7 @@
                         image.src = "data:image/png;base64,"+data;
 
                         // Draw the image on the canvas
+                     
                         image.onload = function () {
                             var canvas = document.getElementById('canva');
                             canvas.width = image.width;
@@ -99,6 +101,7 @@
                                     type: 'POST',
                                     url: urlChrono,
                                     success: function (data, e, xhr) {
+                                        console.log("data : " + data);
                                         isWaiting = data != 0;
                                         enableChrono(data);
                                     }
@@ -112,8 +115,22 @@
                         console.log(err);
                     }
                 });
+
             }
             canva_get();
+            var updateCanva = setInterval(function () {
+                afficherUpdateCanva();
+            }, 1000);
+
+            function afficherUpdateCanva() {
+                $.getJSON('/canvas/' + '<%= idCanva %>' +'/getDerniersPixels', function(data) {
+                    console.log(data);
+                    data.forEach( pix => { 
+                        ajouterPixelLocal(canvas, pix.pxl_x+1, pix.pxl_y+1, pix.couleur);
+                    })
+                });
+            }
+
         </script>
         <script>
             var x = 0;
@@ -161,14 +178,16 @@
                 }
             }
 
-            function changerCouleurPixelLocal(canvas,x,y) {
+            async function changerCouleurPixelLocal(canvas,x,y, color=null) {
                 if (lastPixelData) 
                     ctx.putImageData(lastPixelData, lastPixelChangedX-1, lastPixelChangedY-1);
                 lastPixelData = ctx.getImageData(x-1,y-1,1,1);
                 lastPixelChangedX = x;
                 lastPixelChangedY = y;
                 let data = ctx.getImageData(x-1,y-1,1,1);
-                color = $(".color-picker").val();
+                if (color==null)
+                    color = $(".color-picker").val();
+
                 r = parseInt(color.substr(1,2), 16)
                 g = parseInt(color.substr(3,2), 16)
                 b = parseInt(color.substr(5,2), 16)
@@ -177,6 +196,19 @@
                 data.data[2] = b 
                 ctx.putImageData(data, x-1, y-1);
                 $("#send-btn").removeAttr("disabled");
+            }
+
+            async function ajouterPixelLocal(canvas,x,y,color) {
+                let data = ctx.getImageData(x-1,y-1,1,1);
+                color = color.replace("0x", "#");
+                color = color.substr(0,7);
+                r = parseInt(color.substr(1,2), 16)
+                g = parseInt(color.substr(3,2), 16)
+                b = parseInt(color.substr(5,2), 16)
+                data.data[0] = r
+                data.data[1] = g
+                data.data[2] = b 
+                ctx.putImageData(data, x-1, y-1);
             }
 
 
@@ -193,8 +225,6 @@
                     y:  y-1,
                     color:  $(".color-picker").val().replace("#","0x")
                 }
-
-                console.log(dataToPost.color)
 
                 let url = '/canvas/' + '<%= idCanva %>' + "/pose";
 
@@ -248,7 +278,7 @@
             document.addEventListener('mousemove', () => drag = true);
             $("#send-btn").on('click', function(e)  {envoyerPixel(e)});
             $("#print").on("click",  function(e)  { print('#canva', 'html') } ); //to fix
-            canvaJQ.on('mouseup', function(e) { if (!drag) getCursorPosition(canvas, e) });
+            canvaJQ.on('mouseup', function(e) { if (!drag && '<%= logged %>') getCursorPosition(canvas, e) });
 
             /* ZOOM AND DRAG */
             $( function() {

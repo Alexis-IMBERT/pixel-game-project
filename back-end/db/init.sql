@@ -24,6 +24,21 @@ CREATE TABLE usersInCanva (
     CONSTRAINT can_us PRIMARY KEY (idCanva, idUser)
 );
 
+CREATE TABLE history (
+
+    idCanva VARCHAR,
+    idUser VARCHAR,
+    tempsPose TIMESTAMP,
+
+    pxl_x INTEGER,
+    pxl_y INTEGER,
+    couleur VARCHAR,
+
+    FOREIGN KEY(idUser) REFERENCES users(login),
+    FOREIGN KEY(idCanva) REFERENCES canvas(id),
+    CONSTRAINT can_us PRIMARY KEY (idCanva, idUser,tempsPose)
+);
+
 --CREATE TABLE idcanva (
 --    pxl_x INTEGER,
 --    pxl_y INTEGER,

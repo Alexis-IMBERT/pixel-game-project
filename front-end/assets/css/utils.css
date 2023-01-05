@@ -1,3 +1,4 @@
+/* Classes CSS par Pierre LUYPAERT */
 
 @font-face {
     font-family: "CustomFont";
@@ -30,7 +31,8 @@
 
 
 /* Colors */
-.blue { color:var(--secondary-color)}
+.blue { color:var(--secondary-color); }
+.color-error { color:red; }
 .redhover { transition-duration: 400ms;}
 .redhover:hover { color:var(--bad-secondary-color); background-color: var(--bad-primary-color) !important;}
 .bg-color { background-color: var(--primary-color);}
@@ -39,15 +41,6 @@
 .text-white { font-family: 'CustomFont', Arial, sans-serif; color:lightgray; font-size:1.4em; }
 .bg-main { background-color: var(--primary-color); }
 
-
-
-/* Icons */
-.locked:is(.icon)       { background-image:url(../imgs/icons/lock.gif);}
-.unlocked:is(.icon)     { background-image:url(../imgs/icons/valid.gif);}
-.join:is(.icon)         { background-image:url(../imgs/icons/join.gif);}
-.cross:is(.icon)        { background-image:url(../imgs/icons/cross.gif);}
-.pencil:is(.icon)       { background-image:url(../imgs/icons/pencil.gif); width:30px; transition-duration: 500ms;}
-.pencil:is(.icon):hover { transform: rotate(10deg); }
 
 
 /* INPUTS */
@@ -100,4 +93,23 @@
     background-color: var(--bad-secondary-color);
     border: 1px solid var(--bad-primary-color);
     color:var(--bad-primary-color);
+}
+
+
+
+/* Icons */
+.locked:is(.icon)       { background-image:url(../imgs/icons/lock.gif);}
+.sheet:is(.icon)       { background-image:url(../imgs/icons/sheets.png);}
+.unlocked:is(.icon)     { background-image:url(../imgs/icons/valid.gif);}
+.join:is(.icon)         { background-image:url(../imgs/icons/join.gif);}
+.cross:is(.icon)        { background-image:url(../imgs/icons/cross.gif);}
+.pencil:is(.icon)       { background-image:url(../imgs/icons/pencil.gif); width:30px; transition-duration: 500ms;}
+.pencil:is(.icon):hover { transform: rotate(10deg); }
+
+
+.join:is(.icon){ animation: bounce 1s ease infinite;}
+@keyframes bounce{
+    0% {transform: translateX(0);}
+    50%{transform: translateX(-3px);}
+    75% {transform: translateX(0);}
 }

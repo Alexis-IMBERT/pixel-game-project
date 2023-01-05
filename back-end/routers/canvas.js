@@ -32,15 +32,11 @@ router.post("/generate",
 
         let tests = req.query['tests'];
 
-        if (!usersUtil.isLoggedIn(req)) {
-            if (tests)
-                res.status(400).send("YOU ARE NOT LOGGED IN");
-            else
-                res.redirect("/users/login")
-            return;
+        if (usersUtil.redirectNotLoggedUsers(req,res)) {
+            return
         }
             
-        if (!usersUtil.isVip(req)) {
+        if (!usersUtil.isVip(req.session.logion)) {
             if (tests)
                 res.status(400).send("YOU ARE NOT A VIP");
             else
@@ -74,9 +70,9 @@ router.post("/generate",
             users = JSON.parse(users);
         } catch (e) {
             if (tests)
-                res.status(400).send("USERS STRING SHOULD BE LIKE [{'idUser':'id1'},{'idUser':'id2'}]")
+                res.status(400).send("USERS STRING SHOULD BE LIKE [{\"idUser\":\"id1\"},{\"idUser\":\"id2\"}]")
             else {
-                renderGeneratePage(req, res, "USERS IS NOT A JSON OBJECT [{}]", false, "/canvas/generate", idCanva, req.body['height'], req.body['width'], name, users)
+                renderGeneratePage(req, res, "USERS IS NOT A JSON OBJECT [{\"idUser\":\"id1\"},{...}]", false, "/canvas/generate", idCanva, req.body['height'], req.body['width'], name, users)
             }
             return;
         }
@@ -84,6 +80,8 @@ router.post("/generate",
         /*for (key in users) {
             users[key].idUser = encodeURIComponent(users[key].idUser)
         }*/
+
+        console.log(users);
 
         let ownerInList = false;
         for (key in users) {
@@ -127,7 +125,7 @@ router.post("/generate",
                 if (users[key].idUser == idOwner)
                     continue;
 
-                db.run("INSERT INTO usersInCanva (idCanva,idUser) VALUES (?,?)", [idcanva, users[key].idUser], function (err) {
+                db.run("INSERT INTO usersInCanva (idCanva,idUser,derniereDemande) VALUES (?,?,?)", [idcanva, users[key].idUser,0], function (err) {
                     if (err) {
                         console.log(err);
                         // ne devrait pas arriver
@@ -159,12 +157,11 @@ router.use("/generate",
      * @author Jean-Bernard CAVELIER
      */
     function(req,res) {
-        if (!usersUtil.isLoggedIn(req)) { 
-            res.redirect("/users/login")
+        if (usersUtil.redirectNotLoggedUsers(req,res)) {
             return;
         }
 
-        if (!usersUtil.isVip(req)) {  
+        if (!usersUtil.isVip(req.session.login)) {  
             res.redirect('/');
             return;
         }
@@ -189,18 +186,11 @@ router.post("/:id/update",
 
         let idCanva = encodeURIComponent(req.params.id);
 
-        if (!usersUtil.isLoggedIn(req)) {
-            if (tests) {
-                res.status(400).send("YOU ARE NOT LOGGED IN")
-                return;
-            } else {
-                res.redirect("/users/login")
-                return;
-            }
-            
+        if (usersUtil.redirectNotLoggedUsers(req,res)) {
+            return;
         }
 
-        if (!usersUtil.isOwner(req, idCanva)) {
+        if (!usersUtil.isOwner(req.session.login, idCanva)) {
             if (tests) {
                 res.status(400).send("YOU ARE NOT THE OWNER")
                 return;
@@ -231,7 +221,7 @@ router.post("/:id/update",
             users = JSON.parse(users);
         } catch (e) {
             if (tests)
-                res.status(400).send("USERS STRING SHOULD BE LIKE [{'idUser':'id1'},{'idUser':'id2'}]")
+                res.status(400).send("USERS STRING SHOULD BE LIKE [{\"idUser\":\"id1\"},{\"idUser\":\"id2\"}]")
             else {
                 renderGeneratePage(req, res, "USERS IS NOT A JSON OBJECT [{}]", true, "/canvas/" + idCanva + "/update", idCanva, req.body['height'], req.body['width'], name, users)
             }
@@ -288,7 +278,7 @@ router.post("/:id/update",
                 }
                 if (!incanva) {
                     console.log("insert "+users[key].idUser)
-                    db.run("INSERT INTO usersInCanva (idCanva,idUser) VALUES (?,?)", [idCanva,users[key].idUser], function (err) {
+                    db.run("INSERT INTO usersInCanva (idCanva,idUser,derniereDemande) VALUES (?,?,?)", [idCanva,users[key].idUser,0], function (err) {
                         if (err) {
                             // ne devrait pas arriver
                             res.redirect("/canvas/" + idCanva + "/edit");
@@ -349,17 +339,11 @@ router.use("/:id/edit",
 
         let idCanva = encodeURIComponent(req.params.id);
 
-        if (!usersUtil.isLoggedIn(req)) {
-            if (tests) {
-                res.status(400).send("YOU ARE NOT LOGGED IN")
-            } else {
-                res.redirect("/users/login")
-                return;
-            }
-           
+        if (usersUtil.redirectNotLoggedUsers(req, res)) {
+            return;
         }
 
-        if (!usersUtil.isOwner(req,idCanva)) {
+        if (!usersUtil.isOwner(req.session.login,idCanva)) {
             if (tests) {
                 res.status(400).send("YOU ARE NOT THE OWNER")
             } else {
@@ -402,8 +386,7 @@ router.get("/accessible",
      */
     function(req,res) {
 
-        if (!usersUtil.isLoggedIn(req)) {
-            res.status(400).send("YOU ARE NOT LOGGED IN");
+        if (usersUtil.redirectNotLoggedUsers(req, res)) {
             return;
         }
 
@@ -450,8 +433,7 @@ router.post("/:id/getImage",
             return;
         }
 
-        if (!usersUtil.isLoggedIn(req)) {
-            res.status(400).end('YOU ARE NOT LOGGED IN');
+        if (usersUtil.redirectNotLoggedUsers(req, res)) {
             return;
         }
 
@@ -478,8 +460,7 @@ router.post("/:id/timer",
         let idCanva = encodeURIComponent(req.params.id);
         let idUser  = req.session.login;
 
-        if (!usersUtil.isLoggedIn(req)) {
-            res.status(400).end('YOU ARE NOT LOGGED IN');
+        if (usersUtil.redirectNotLoggedUsers(req, res)) {
             return;
         }
 
@@ -506,8 +487,7 @@ router.post("/:id/pose",
 
         let temps = unixTimestamp();
 
-        if (!usersUtil.isLoggedIn(req)) {
-            res.status(400).end('YOU ARE NOT LOGGED IN');
+        if (usersUtil.redirectNotLoggedUsers(req, res)) {
             return;
         }
 
@@ -552,10 +532,10 @@ router.post("/:id/pose",
         }
 
         db.serialize( () => {
-            db.run(`INSERT INTO '${idCanva}' (pxl_x,pxl_y,couleur,pose) VALUES (?,?,?,?);`, [x,y,color,temps], function(err,result) {
+            db.run(`INSERT INTO '${encodeURIComponent(idCanva)}' (pxl_x,pxl_y,couleur,pose) VALUES (?,?,?,?);`, [x,y,color,temps], function(err,result) {
                 if (err) {
                     if (err.code == 'SQLITE_CONSTRAINT') {
-                        db.run(`UPDATE '${idCanva}' SET couleur=?,pose=? WHERE pxl_x=? AND pxl_y=?;`, [color,temps,x,y], function(err,result) {
+                        db.run(`UPDATE '${encodeURIComponent(idCanva)}' SET couleur=?,pose=? WHERE pxl_x=? AND pxl_y=?;`, [color,temps,x,y], function(err,result) {
                             if (err) {
                                 console.log(err);
                             }
@@ -569,10 +549,70 @@ router.post("/:id/pose",
                     return;
                 }
             })
+
+            db.run(`INSERT INTO history (idCanva,idUser,tempsPose,pxl_x,pxl_y,couleur) VALUES (?,?,?,?,?,?);`, [idCanva,idUser,temps,x, y, color], function (err, result) {
+                if (err) {
+                    console.log("failed to log in history table")
+                    console.log(err);
+                }
+            })
         })
 
 
         res.send("OK")
+
+    }
+)
+
+router.get("/:id/getDerniersPixels",
+
+    function (req, res) {
+        let idCanva = encodeURIComponent(req.params.id);
+        let idUser = req.session.login;
+
+        let temps = unixTimestamp();
+
+        if (id != "general") {
+            if (usersUtil.redirectNotLoggedUsers(req, res)) {
+                return;
+            }
+
+            if (!userCanAccessCanva(idUser, idCanva)) {
+                res.status(400).end("YOU CANNOT ACCESS THIS CANVA")
+                return;
+            }
+        }
+
+
+        let canvaInfos = getCanvaInfos(idCanva);
+        console.log(canvaInfos);
+
+        
+
+        db.serialize(() => {
+
+            db.all(`select pxl_x,pxl_y,couleur from '${idCanva}' c, usersInCanva u WHERE u.idUser = ? AND u.idCanva = ? AND c.pose >= u.derniereDemande  `,[idUser,idCanva],function(err,result) {
+                if (err) {
+                    console.log(err)
+                } else {
+                    console.log(result)
+
+                    res.setHeader('Content-Type', 'application/json')
+                    res.end(JSON.stringify(result));
+                }
+               
+            })
+            
+            // UPDATE DERNIERE POSE
+            db.run("UPDATE usersInCanva SET derniereDemande = ? WHERE idCanva = ? AND idUser = ?", [temps, idCanva, idUser], function(err,result) {
+                if (err)
+                    console.log(err);
+            })
+
+        })
+
+
+        
 
     }
 )
@@ -626,7 +666,7 @@ router.use("/",
             return;
         }
         
-        res.render('canvas.ejs', { logged: req.session.loggedin, login: req.session.login, isVip: usersUtil.isVip(req), error: false });
+        res.render('canvas.ejs', { logged: req.session.loggedin, login: req.session.login, isVip: usersUtil.isVip(req.session.login), error: false });
 
     }
 );
@@ -636,22 +676,32 @@ router.use("/",
 
 
 
-function tempsRestantPose(idUser,idCanva, timerMaxSecondes = 10, tempsAccess = unixTimestamp() ) {
+function tempsRestantPose(idUser,idCanva, timerMaxSecondes = {'normal':'10','vip':'3','admin':'0'}, tempsAccess = unixTimestamp() ) {
 
     let timerRestantSecondes = null;
+
+    let timerMax = null;
+
+    if      (usersUtil.isAdmin(idUser)) 
+        timerMax = timerMaxSecondes.admin;
+    else if (usersUtil.isVip(idUser)) 
+        timerMax = timerMaxSecondes.vip;
+    else                                
+        timerMax = timerMaxSecondes.normal;
 
     db.serialize(() => {
         const statement = db.prepare("SELECT dernierePose FROM usersInCanva WHERE idCanva=? AND idUser=?;");
         statement.all([idCanva, idUser], function (err, result) {
             if (err) {
                 console.log(err);
-                timerRestantSecondes = timerMaxSecondes;
+                timerRestantSecondes = timerMax;
             }
 
             if (result) {
-                timerRestantSecondes = (result[0].dernierePose === null ? 0 : Math.min(Math.max(0,timerMaxSecondes - (tempsAccess - result[0].dernierePose)), timerMaxSecondes))
+                timerRestantSecondes = (result[0].dernierePose === null ? 0 : Math.min(Math.max(0,timerMax - (tempsAccess - result[0].dernierePose)), timerMax))
             } else {
-                timerRestantSecondes = timerMaxSecondes;
+
+                timerRestantSecondes = timerMax;
             }
         })
         statement.finalize();
@@ -814,7 +864,7 @@ function createCanva(idcanva, name, idOwner, height, width, linkOwnerToCanva) {
     let addUser = null;
     if (linkOwnerToCanva) {
         addUser = () => {
-            db.run("INSERT INTO usersInCanva(idCanva,idUser) VALUES (?,?)", [idcanva, idOwner], function (err, result) {
+            db.run("INSERT INTO usersInCanva(idCanva,idUser,derniereDemande) VALUES (?,?,?)", [idcanva, idOwner,0], function (err, result) {
                 
                 if (!err) {
                     console.log("USER " + idOwner + " LINKED to " + idcanva);
@@ -951,6 +1001,8 @@ function sendCanva(idCanva, res) {
                 console.log(err.message);
             else {
                 // Easy access to row-Entries using row.NAME
+                if (row.pxl_x > height || row.pxl_y > width) 
+                    return;
                 color = parseInt(row.couleur,"16");
                 image.setPixelColor(color,row.pxl_x,row.pxl_y)
             }
@@ -1037,6 +1089,10 @@ function userCanAccessCanva(idUser, idCanva) {
     }
     return false;
 }
+
+
+const profile = require('./profile');
+router.use('/profile', profile);
 
 
 module.exports = { router, createCanva };
