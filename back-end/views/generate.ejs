@@ -34,11 +34,7 @@
                 var minePseudo = '<%- login %>';
                 var isNew = !(<%- JSON.stringify(type.edit) %>);
             </script>
-       <% } else { %>
-        <script>
-            console.log("non");
-        </script>
-        <% } %>
+       <% } %>
         <div class="body-container" id="app">
             <form action="<%= type.action %>" onsubmit="return generate()" method="post" role="form" class="flex-1">
                 <input name="id" type="hidden" v-model="id">
@@ -121,10 +117,7 @@
                     return false
                 }
                 else 
-                {
-                    console.log("true");
                     return true;
-                }
             }
 
 
@@ -190,7 +183,6 @@
                         this.name = parsed_data.name;
                         this.id = parsed_data.id;
                         console.log(this.users);
-                        console.log("JE SUIS LA");
                     }
                     if( minePseudo ) this.minePseudo = minePseudo;
                     this.newForm = isNew;

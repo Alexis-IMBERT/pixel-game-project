@@ -41,18 +41,8 @@ label:not(is(#chrono)) {
     cursor: pointer;
 }
 
-.center {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width:50%;
-    height:50%;
-    -webkit-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-    border-radius: 20px;
-    text-align: center;
-    padding-bottom:10px;
-}
+
+
 
 .top:is(.center) {
     -webkit-transform: translate(-50%, -65%);
@@ -223,4 +213,28 @@ label:not(is(#chrono)) {
     margin-bottom:2px;
     margin-left:2px; 
     color:grey;   
+}
+
+
+
+.center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width:50%;
+    height:50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    border-radius: 20px;
+    text-align: center;
+    padding-bottom:10px;
+}
+
+
+@media (max-width: 800px) {
+    .center {
+        transform: translate(-70%, -70%);
+        width:100%;
+        border-radius: 0px;
+    }
 }

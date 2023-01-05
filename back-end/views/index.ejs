@@ -101,7 +101,6 @@
                                     type: 'POST',
                                     url: urlChrono,
                                     success: function (data, e, xhr) {
-                                        console.log("data : " + data);
                                         isWaiting = data != 0;
                                         enableChrono(data);
                                     }
@@ -111,7 +110,6 @@
 
                     },
                     error: function (err) {
-                        console.log("ERROR");
                         console.log(err);
                     }
                 });
@@ -124,7 +122,6 @@
 
             function afficherUpdateCanva() {
                 $.getJSON('/canvas/' + '<%= idCanva %>' +'/getDerniersPixels', function(data) {
-                    console.log(data);
                     data.forEach( pix => { 
                         ajouterPixelLocal(canvas, pix.pxl_x+1, pix.pxl_y+1, pix.couleur);
                     })

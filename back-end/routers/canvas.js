@@ -81,8 +81,6 @@ router.post("/generate",
             users[key].idUser = encodeURIComponent(users[key].idUser)
         }*/
 
-        console.log(users);
-
         let ownerInList = false;
         for (key in users) {
             if (!usersUtil.exists(users[key].idUser)) {
