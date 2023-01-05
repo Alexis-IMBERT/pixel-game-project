@@ -13,9 +13,9 @@
     </head>
     <body>
         <div class="body-container"  id="app">
-            <div class="center top bg-color" style="padding-bottom:40px; overflow-y: scroll; overflow-x: hidden;">
+            <div class="center top bg-color" style="padding-bottom:40px; overflow: hidden; display:flex; flex-wrap: nowrap; flex-direction: column;">
                 <h1 class="titre-form">GESTIONNAIRE DES CANVAS</h1>
-                <div class=" mg-10" style="overflow:hidden; max-height:80%; border-radius:10px"  >
+                <div class="mg-10 h-95" style="overflow:hidden; border-radius:10px"  >
                     <div class="top-rounded-box color-sc bottom-border">
                         <div class="column-section ">
                             <div class="flex-3 title-form text-white">Nom du salon</div>
@@ -23,9 +23,9 @@
                             <div class="flex-1 title-form text-white">Taille</div>
                         </div>
                     </div>
-                    <div class="scrollable list-games border-bottom">
+                    <div class="scrollable list-games border-bottom h-95">
                         <div v-if="isLoading" class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
-                        <div v-if="!isLoading" class="mid-box" >
+                        <div v-if="!isLoading" class="mid-box border-bottom">
                             <div v-for="canva in canvas">
                                 <div class="column-section canva-row" v-on:click="joinCanva(canva)">
                                     <div class="flex-3 ">
@@ -36,9 +36,10 @@
                                     <div class="flex-2 ">{{canva.owner}}</div>
                                     <a v-bind:href="'/canvas/' + canva.idCanva + '/history'" download="history.csv" class="icon sheet"></a>
                                     <div class="flex-1 ">{{canva.height}}x{{canva.width}}</div>
-
                                 </div>
                             </div>
+                            <div style="height:20px;"></div>
+                            
                         </div>
                     </div>
                     
