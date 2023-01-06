@@ -3,7 +3,7 @@ const router = express.Router();
 
 router.use("/404", function(req, res) {
 	res.status(404);
-	res.render('404.ejs', { logged: req.session.loggedin });
+	res.render('404.ejs', { logged: req.session.loggedin, login: req.session.login });
 });
 
 // home
