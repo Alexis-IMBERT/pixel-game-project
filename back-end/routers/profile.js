@@ -51,7 +51,6 @@ router.use('/', (req, res) => {
                     nombre_canvas = 0;
                 }
                 if (nombre_pixel_pose>0) {
-
                     ratio = nombre_pixel_pose / nombre_canvas;
                     ratio = precise(ratio);
                     const statement_couleur_pref = db.prepare("SELECT couleur, COUNT(*) as count FROM history WHERE idUser = ? GROUP BY couleur ORDER BY count DESC LIMIT 1;")
@@ -72,16 +71,17 @@ router.use('/', (req, res) => {
                                 return;
                             }
                             canvas_plus_actif = result['name']
+                            res.render('profile.ejs', { logged: req.session.loggedin, login: login, couleur_pref: couleur_pref, nb_pixel_pose: nombre_pixel_pose, nb_canvas: nombre_canvas, canvas_plus_actif: canvas_plus_actif, nb_pixel_moyen: ratio });
                         })
-                    })
+                    });
+                } else {
+                    couleur_pref = "Incolore";
+                    nb_pixel_pose = 0;
+                    nb_canvas = 0;
+                    canvas_plus_actif = "LE NEANT";
+                    ratio = "X";
+                    res.render('profile.ejs', { logged: req.session.loggedin, login: login, couleur_pref: couleur_pref, nb_pixel_pose: nombre_pixel_pose, nb_canvas: nombre_canvas, canvas_plus_actif: canvas_plus_actif, nb_pixel_moyen: ratio });
                 }
-                couleur_pref = "Incolore";
-                nb_pixel_pose = 0;
-                nb_canvas = 0;
-                canvas_plus_actif = "LE NEANT";
-                ratio = "X";
-                res.render('profile.ejs', { logged: req.session.loggedin, login: login, couleur_pref: couleur_pref, nb_pixel_pose: nombre_pixel_pose, nb_canvas: nombre_canvas, canvas_plus_actif: canvas_plus_actif, nb_pixel_moyen: ratio });
-
             })
         })
     })

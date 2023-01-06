@@ -25,18 +25,18 @@
                         <div class="flex-2 title-form text-white">Pixel où tu t'es imposé(e)</div>
                     </div>
                 </div>
-
+                <% console.log(couleur_pref) %>
                 <div class="column-section canva-row mid-box">
                     <div class="flex-2">
                         <%= login %>
                     </div>
                     <div class="flex-2">
-                        <div v-if="'<%=couleur_pref%>'!='Incolore'"class="flex-2" style="border:1px solid black"
-                            v-bind:style="{ 'border-radius':'20px', width:'100%', height:'100%', 'background-color':'<%=couleur_pref%>', color:'lightgrey'}">
+                        <div v-if="'<%=couleur_pref%>'!='Incolore'"class="flex-2 text-blink" style="border:1px solid black"
+                            v-bind:style="{ 'border-radius':'20px', width:'100%', height:'100%', 'background-color':'<%=couleur_pref%>'}">
                             <%=couleur_pref%>
                         </div>
-                        <div v-else class="flex-2" style="border:1px solid black"
-                            v-bind:style="{ 'border-radius':'20px', width:'100%', height:'100%', 'background-color':'<%=couleur_pref%>', color:'black'}">
+                        <div v-else class="flex-2 text-blink" style="border:1px solid black"
+                            v-bind:style="{ 'border-radius':'20px', width:'100%', height:'100%', 'background-color':'<%=couleur_pref%>'}">
                             <%=couleur_pref%>
                         </div>
                     </div>

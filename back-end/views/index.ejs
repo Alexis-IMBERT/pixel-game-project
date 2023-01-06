@@ -39,7 +39,11 @@
                 </div>
                 <button disabled class="valid btn" id="send-btn">ENVOYER<div :class="{icon:true, locked:attente, join:!attente}"></div></button>
                 <div class="footer-box">
-                    <p id="chrono"><label id="chronotime">00:00</label><label id="min">min</label></p>
+
+                    <div v-if="isLoading" class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+                    <p  v-else id="chrono">                        
+                        <label id="chronotime">00:00</label><label id="min">min</label>
+                    </p>
                 </div>
                 
                 <div class="footer-box">
