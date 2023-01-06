@@ -45,7 +45,7 @@ router.post("/signup",
 
         console.log(data);
 
-        let username = data['login'];
+        let username = usersUtil.removeScript(data['login']);
 
         let password = data['password'];
         let password2 = data['password_confirmation'];

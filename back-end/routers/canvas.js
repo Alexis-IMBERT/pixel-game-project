@@ -30,64 +30,67 @@ router.post("/generate",
      */    
     function (req,res) {
 
+        console.log("generate entered")
+
+        let link = "/canvas/generate"
+
         let tests = req.query['tests'];
 
         if (usersUtil.redirectNotLoggedUsers(req,res)) {
+            console.log("redirected")
             return
         }
+
+        console.log("connected")
             
-        if (!usersUtil.isVip(req.session.logion)) {
+        if (!usersUtil.isVip(req.session.login)) {
+            console.log("redirect not vip")
             if (tests)
                 res.status(400).send("YOU ARE NOT A VIP");
             else
                 res.redirect('/');
             return;
         }
-        
-        let idCanva = encodeURIComponent(req.params.id);
 
+        
         let data = req.body
 
-        let name = data['name']//encodeURIComponent(data['name'])
-        let height,width;
-        try {
-            height = data['height']
-            width = data['width']
-        } catch (e) {
-            if (tests)
-                res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
-            else {
-                renderGeneratePage(req, res, "HEIGHT AND WIDTH SHOULD BE NUMBERS", false, "/canvas/generate", idCanva, req.body['height'], req.body['width'], name, users)
-            }
-            return;
-        }
+        let name = usersUtil.removeScript(data['name'])//encodeURIComponent(data['name'])
 
         let idOwner = req.session.login
 
-        let users = req.body['users'];
+        let usersPre = req.body['users']
+
+        let idcanva = "";
 
         try {
-            users = JSON.parse(users);
+            usersPre = JSON.parse(usersPre);
         } catch (e) {
             if (tests)
                 res.status(400).send("USERS STRING SHOULD BE LIKE [{\"idUser\":\"id1\"},{\"idUser\":\"id2\"}]")
             else {
-                renderGeneratePage(req, res, "USERS IS NOT A JSON OBJECT [{\"idUser\":\"id1\"},{...}]", false, "/canvas/generate", idCanva, req.body['height'], req.body['width'], name, users)
+                renderGeneratePage(req, res, "USERS IS NOT A JSON OBJECT [{}]", false, link, idcanva, req.body['height'], req.body['width'], name, usersPre)
             }
-            return;
+            return true;
         }
 
-        /*for (key in users) {
-            users[key].idUser = encodeURIComponent(users[key].idUser)
-        }*/
+
+
+        let users = JSON.parse(JSON.stringify(usersPre))
+        console.log(usersPre)
+        console.log(users);
+        for (key in usersPre) {
+            users[key].idUser = usersUtil.removeScript(usersPre[key].idUser)
+        }
+
 
         let ownerInList = false;
         for (key in users) {
             if (!usersUtil.exists(users[key].idUser)) {
                 if (tests)
-                    res.status(400).send("USER " + users[key].idUser + " DOES NOT EXIST")
+                    res.status(400).send("USER " + usersPre[key].idUser + " DOES NOT EXIST")
                 else
-                    renderGeneratePage(req, res, "USER " + users[key].idUser + " DOES NOT EXIST", false, "/canvas/generate", idCanva, req.body['height'], req.body['width'], name, users)
+                    renderGeneratePage(req, res, "USER " + usersPre[key].idUser + " DOES NOT EXIST", false, link, idcanva, req.body['height'], req.body['width'], name, users)
                 return;
             }
             if (users[key].idUser == idOwner) {
@@ -99,23 +102,37 @@ router.post("/generate",
             if (tests)
                 res.status(400).send("OWNER CANNOT BE REMOVED");
             else
-                renderGeneratePage(req, res, "OWNER " + idOwner + " CANNOT BE REMOVED", false, "/canvas/generate", "", req.body['height'], req.body['width'], name, users)
+                renderGeneratePage(req, res, "OWNER " + idOwner + " CANNOT BE REMOVED", false, link, idcanva, req.body['height'], req.body['width'], name, users)
             return;
         }
-        
-        
-        let idcanva = uuid();
 
-        if (height == null || width == null) {
-            res.status(400).send("MISSING DATA");
+        let height, width;
+        try {
+            height = parseInt(req.body['height'])
+            width = parseInt(req.body['width'])
+        } catch (e) {
+            console.log("failed numbers")
+            if (tests)
+                res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
+            else {
+                renderGeneratePage(req, res, "HEIGHT AND WIDTH SHOULD BE NUMBERS", false, link, idcanva, req.body['height'], req.body['width'], name, users)
+            }
             return;
         }
+
+
+
+        idcanva = uuid();
+
+        
 
         // ADD CANVA in CANVAS table + CREATE TABLE CANVA_IDCANVA to store all the pixels + link owner to the table
         if (!createCanva(idcanva,name,idOwner,height,width, true)){
             res.status(400).end("Bad request");
             return;
         }
+
+
 
         // add users in canva
         db.serialize( ()=> {
@@ -134,6 +151,9 @@ router.post("/generate",
             }
            
         })
+
+        console.log("users added ok")
+
         
 
         if (tests) {
@@ -184,6 +204,8 @@ router.post("/:id/update",
 
         let idCanva = encodeURIComponent(req.params.id);
 
+        let link = "/canvas"+idCanva+"/update"
+
         if (usersUtil.redirectNotLoggedUsers(req,res)) {
             return;
         }
@@ -202,43 +224,44 @@ router.post("/:id/update",
         let height;
         let width;
 
-        let users = req.body['users']
-        let name = req.body['name']//encodeURIComponent(req.body['name']);
+        let usersPre = req.body['users']
+        let name = usersUtil.removeScript(req.body['name'])
 
-        try {
-            height = parseInt(req.body['height'])
-            width  = parseInt(req.body['width'])
-        } catch (e) {
-            //res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
-            renderGeneratePage(req,res,"HEIGHT AND WIDTH SHOULD BE NUMBERS", true, "/canvas/" + idCanva + "/update", idCanva, req.body['height'], req.body['width'], name, users)
-            return;
+        if (name == "") {
+            if (tests)
+                res.status(400).send("NAME IS EMPTY")
+            else {
+                renderGeneratePage(req, res, "NAME IS EMPTY", true, link, idCanva, req.body['height'], req.body['width'], name, usersPre)
+            }
+            return true;
         }
-        
 
         try {
-            users = JSON.parse(users);
+            usersPre = JSON.parse(usersPre);
         } catch (e) {
             if (tests)
                 res.status(400).send("USERS STRING SHOULD BE LIKE [{\"idUser\":\"id1\"},{\"idUser\":\"id2\"}]")
             else {
-                renderGeneratePage(req, res, "USERS IS NOT A JSON OBJECT [{}]", true, "/canvas/" + idCanva + "/update", idCanva, req.body['height'], req.body['width'], name, users)
+                renderGeneratePage(req, res, "USERS IS NOT A JSON OBJECT [{}]", true, link, idCanva, req.body['height'], req.body['width'], name, usersPre)
             }
-            return;
+            return true;
         }
 
-        /*for (key in users) {
-            users[key].idUser = encodeURIComponent(users[key].idUser)
-        }*/
+
+        let users = JSON.parse(JSON.stringify(usersPre))
+        for (key in usersPre) {
+            users[key].idUser = usersUtil.removeScript(usersPre[key].idUser)
+        }
 
         let ownerInList = false;
         for (key in users) {
             if (!usersUtil.exists(users[key].idUser)) {
                 console.log("user doesn't exist")
                 if (tests)
-                    res.status(400).send("USER "+users[key].idUser+" DOES NOT EXIST")
+                    res.status(400).send("USER " + usersPre[key].idUser + " DOES NOT EXIST")
                 else
-                    renderGeneratePage(req,res,"USER " + users[key].idUser + " DOES NOT EXIST", true, "/canvas/" + idCanva + "/update", idCanva, req.body['height'], req.body['width'], name, users)
-                return;
+                    renderGeneratePage(req, res, "USER " + usersPre[key].idUser + " DOES NOT EXIST", true, link, idCanva, req.body['height'], req.body['width'], name, users)
+                return true;
             }
             if (users[key].idUser == req.session.login) {
                 ownerInList = true;
@@ -247,11 +270,26 @@ router.post("/:id/update",
 
         if (!ownerInList) {
             if (tests)
-                res.status(400).send("OWNER CANNOT BE REMOVED")   ;
+                res.status(400).send("OWNER CANNOT BE REMOVED");
             else
-                renderGeneratePage(req,res,"OWNER "+req.session.login+" CANNOT BE REMOVED", true, "/canvas/" + idCanva + "/update", idCanva, req.body['height'], req.body['width'], name, users)
-            return;
+                renderGeneratePage(req, res, "OWNER " + req.session.login + " CANNOT BE REMOVED", true, link, idCanva, req.body['height'], req.body['width'], name, users)
+            return true;
         }
+
+
+
+        try {
+            height = parseInt(req.body['height'])
+            width = parseInt(req.body['width'])
+        } catch (e) {
+            if (tests)
+                res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
+            else {
+                renderGeneratePage(req, res, "HEIGHT AND WIDTH SHOULD BE NUMBERS", true, link, idCanva, req.body['height'], req.body['width'], name, users)
+            } 
+            return true;
+        }
+
 
         let usersIn = usersInCanva(idCanva);
 
@@ -714,6 +752,12 @@ router.use("/",
 
     }
 );
+
+
+
+
+
+
 
 
 

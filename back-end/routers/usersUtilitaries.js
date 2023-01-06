@@ -32,6 +32,8 @@ function isRank(login,rank) {
     
     let isrank = null;
 
+    console.log(login)
+
     db.serialize(() => {
 
         const statement = db.prepare("SELECT rank FROM users WHERE login=?;");
@@ -45,9 +47,10 @@ function isRank(login,rank) {
             //console.log(result);
             if (result) {
                 isrank = (result['RANK'] == rank);
+                console.log('ou are vip')
 
             } else {
-
+                console.log("what")
                 // if here that means the user doesn't exist
                 // not possible
                 // or the session is invalid
@@ -164,5 +167,11 @@ function redirectNotLoggedUsers(req,res,debug_mode=false) {
 }
 
 
+function removeScript(text) {
+    var scriptRegex = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
+    return html2 = text.replace(scriptRegex, "");
+}
 
-module.exports = {isLoggedIn, isVip, isAdmin, isOwner, exists, redirectLoggedUsers, redirectNotLoggedUsers,sha256 }
+
+
+module.exports = {isLoggedIn, isVip, isAdmin, isOwner, exists, redirectLoggedUsers, redirectNotLoggedUsers,sha256, removeScript }
