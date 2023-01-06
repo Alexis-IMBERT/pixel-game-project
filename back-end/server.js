@@ -1,3 +1,10 @@
+/**
+ * point d'entrée du serveur
+ * 
+ * @author Jean-Bernard CAVELIER
+ */
+
+
 // import express module and create your express app
 const express = require('express');
 const app = express();
@@ -29,12 +36,6 @@ app.set('view engine', 'ejs');
 
 
 // routers
-app.use("/404", function(req, res) {
-	res.status(404);
-	console.log(req.session)
-	res.render('404.ejs', { logged: req.session.loggedin });
-});
-
 
 const users = require('./routers/users');
 app.use('/users', users);

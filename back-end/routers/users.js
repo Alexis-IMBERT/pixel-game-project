@@ -102,6 +102,15 @@ router.post("/signup",
 );
 
 router.use('/signup', 
+    /**
+     * To render signup page
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} err 
+     * @returns 
+     * 
+     * @author Jean-Bernard CAVELIER
+     */
     function (req, res, err) {
         console.log("signup page accessed");
         
@@ -112,6 +121,14 @@ router.use('/signup',
     }
 );
 
+/**
+ * Render signup page
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} err 
+ * @returns 
+ * @author Jean-Bernard CAVELIER
+ */
 function renderSignupPage(req,res,err) {
     if (usersUtil.redirectLoggedUsers(req,res))
         return;
@@ -125,12 +142,9 @@ router.post('/login',
      */
     function (req, res, next) {
 
-        console.log('cc');
-
         var tests = req.query['tests'];
 
         let data = req.body;
-        console.log(data);
 
         if (!(data['login'] != null && data['login'] != "" && data['password'] != null && data['password'] != "") ) {
             if (tests)
@@ -182,18 +196,39 @@ router.post('/login',
 );
 
 router.use('/login', 
-
+    /**
+     * To render login page
+     * @param {*} req 
+     * @param {*} res 
+     * 
+     * @author Jean-Bernard CAVELIER
+     */
     function (req, res) {
         renderLoginPage(req,res,false);
     }
 );
 
-
+/**
+ * To render login page
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} err 
+ * 
+ * @author Jean-Bernard CAVELIER
+ */
 function renderLoginPage(req,res,err) {
     res.render('login.ejs', { logged: req.session.loggedin, login: req.session.login, error: err });
 }
 
+
 router.use('/logout', 
+    /**
+     * To disconnect a user
+     * @param {*} req 
+     * @param {*} res 
+     * 
+     * @author Jean-Bernard CAVELIER
+     */
     function (req, res) {
         req.session.destroy();
 
@@ -207,6 +242,20 @@ router.use('/logout',
 
 const profile = require('./profile');
 router.use('/profile', profile);
+
+
+router.use("/", 
+    /**
+     * 404 if the link is /users/something
+     * @param {*} req 
+     * @param {*} res 
+     * 
+     * @author Jean-Bernard CAVELIER
+     */
+    function (req, res) {
+        res.redirect('/404')
+    }
+)
 
 
 module.exports = router;

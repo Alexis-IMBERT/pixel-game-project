@@ -19,13 +19,26 @@ var sha256 = function (input) {
 }
 
 
-
+/**
+ * check if login is connected
+ * @param {*} req 
+ * @returns boolean
+ * @author Jean-Bernard CAVELIER
+ */
 function isLoggedIn(req) {
     //console.log(req.session)
     //if (req.session == undefined) return false;
     return req.session.loggedin;
 }
 
+/**
+ * Check if login is rank
+ * @param {*} login 
+ * @param {*} rank 
+ * @returns boolean
+ * 
+ * @author Jean-Bernard CAVELIER
+ */
 function isRank(login,rank) {
 
     rank = rank.toUpperCase();
@@ -68,14 +81,34 @@ function isRank(login,rank) {
     return isrank;
 }
 
+/**
+ * Check if login is vip
+ * @param {*} login 
+ * @returns boolean
+ * @author Jean-Bernard CAVELIER
+ */
 function isVip(login) {
     return isRank(login,'VIP');
 }
 
+/**
+ * Check if login is admin
+ * @param {*} login 
+ * @returns boolean
+ * @author Jean-Bernard CAVELIER
+ */
 function isAdmin(login) {
     return isRank(login,'ADMIN');
 }
 
+/**
+ * Check if login is owner of idcanva
+ * @param {*} login 
+ * @param {*} idCanva 
+ * @returns {boolean} isowner
+ * 
+ * @author Jean-Bernard CAVELIER
+ */
 function isOwner(login,idCanva) {
     let isowner = null;
 
@@ -109,6 +142,14 @@ function isOwner(login,idCanva) {
     return isowner;
 }
 
+/**
+ * Check if user exists in the database
+ * 
+ * @param {*} login 
+ * @returns boolean
+ * 
+ * @author Jean-Bernard CAVELIER
+ */
 function exists(login) {
     let res = null;
 
@@ -142,6 +183,17 @@ function exists(login) {
     return res;
 }
 
+/**
+ * redirect connected user to the root page
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @param {boolean} debug_mode 
+ * @returns {boolean} boolean redirected
+ * 
+ * @author Jean-Bernard CAVELIER
+ * 
+ */
 function redirectLoggedUsers(req, res, debug_mode = false) {
     if (isLoggedIn(req)) {
         console.log("already logged in");
@@ -154,6 +206,16 @@ function redirectLoggedUsers(req, res, debug_mode = false) {
     return false;
 }
 
+/**
+ * redirect a user to the login page if he is not connected
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} debug_mode 
+ * @returns {boolean}
+ * 
+ * @author Jean-Bernard CAVELIER
+ */
 function redirectNotLoggedUsers(req,res,debug_mode=false) {
     let tests = req.query['tests'];
     if (!isLoggedIn(req)) {
@@ -167,6 +229,14 @@ function redirectNotLoggedUsers(req,res,debug_mode=false) {
 }
 
 
+/**
+ * remove a <script></script> tag and its content from a text
+ * 
+ * @param {*} text 
+ * @returns {text} text with <script> </script> tag
+ * 
+ * @author Jean-Bernard CAVELIER
+ */
 function removeScript(text) {
     var scriptRegex = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
     return html2 = text.replace(scriptRegex, "");
