@@ -369,7 +369,7 @@ router.use("/:id/edit",
             return;
         }
 
-        
+
 
         if (!usersUtil.isOwner(req.session.login,idCanva)) {
             if (tests) {
@@ -626,6 +626,8 @@ router.get("/:id/getDerniersPixels",
         let idCanva = encodeURIComponent(req.params.id);
         let idUser = req.session.login;
 
+        let canvaInfos = getCanvaInfos(idCanva);
+
         let temps = unixTimestamp();
 
         if (idCanva != "general") {
@@ -637,33 +639,52 @@ router.get("/:id/getDerniersPixels",
                 res.status(400).end("YOU CANNOT ACCESS THIS CANVA")
                 return;
             }
+
         }
 
-
-        let canvaInfos = getCanvaInfos(idCanva);
-
         
+        
+        if (usersUtil.isLoggedIn(req)) {
+        
+            db.serialize(() => {
 
-        db.serialize(() => {
+                db.all(`select pxl_x,pxl_y,couleur from '${idCanva}' c, usersInCanva u WHERE u.idUser = ? AND u.idCanva = ? AND c.pose >= u.derniereDemande  `, [idUser, idCanva], function (err, result) {
+                    if (err) {
+                        console.log(err)
+                    } else {
 
-            db.all(`select pxl_x,pxl_y,couleur from '${idCanva}' c, usersInCanva u WHERE u.idUser = ? AND u.idCanva = ? AND c.pose >= u.derniereDemande  `,[idUser,idCanva],function(err,result) {
+                        res.setHeader('Content-Type', 'application/json')
+                        res.end(JSON.stringify(result));
+                    }
+
+                })
+
+                // UPDATE DERNIERE POSE
+                db.run("UPDATE usersInCanva SET derniereDemande = ? WHERE idCanva = ? AND idUser = ?", [temps, idCanva, idUser], function (err, result) {
+                    if (err)
+                        console.log(err);
+                })
+
+            })
+            
+        } else { // guest mode
+            db.all(`select pxl_x,pxl_y,couleur from '${idCanva}' c WHERE pose>=?`,[temps-3], function (err, result) {
                 if (err) {
                     console.log(err)
                 } else {
-
                     res.setHeader('Content-Type', 'application/json')
                     res.end(JSON.stringify(result));
                 }
-               
-            })
-            
-            // UPDATE DERNIERE POSE
-            db.run("UPDATE usersInCanva SET derniereDemande = ? WHERE idCanva = ? AND idUser = ?", [temps, idCanva, idUser], function(err,result) {
-                if (err)
-                    console.log(err);
-            })
 
-        })
+            })
+        }
+
+
+        
+
+        
+
+        
 
 
         
