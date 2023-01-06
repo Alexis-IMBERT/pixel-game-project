@@ -39,7 +39,11 @@
                 </div>
                 <button disabled class="valid btn" id="send-btn">ENVOYER<div :class="{icon:true, locked:attente, join:!attente}"></div></button>
                 <div class="footer-box">
-                    <p id="chrono"><label id="chronotime">00:00</label><label id="min">min</label></p>
+
+                    <div v-if="isLoading" class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+                    <p  v-else id="chrono">                        
+                        <label id="chronotime">00:00</label><label id="min">min</label>
+                    </p>
                 </div>
                 
                 <div class="footer-box">
@@ -101,7 +105,6 @@
                                     type: 'POST',
                                     url: urlChrono,
                                     success: function (data, e, xhr) {
-                                        console.log("data : " + data);
                                         isWaiting = data != 0;
                                         enableChrono(data);
                                     }
@@ -111,7 +114,6 @@
 
                     },
                     error: function (err) {
-                        console.log("ERROR");
                         console.log(err);
                     }
                 });
@@ -124,7 +126,6 @@
 
             function afficherUpdateCanva() {
                 $.getJSON('/canvas/' + '<%= idCanva %>' +'/getDerniersPixels', function(data) {
-                    console.log(data);
                     data.forEach( pix => { 
                         ajouterPixelLocal(canvas, pix.pxl_x+1, pix.pxl_y+1, pix.couleur);
                     })
