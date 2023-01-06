@@ -11,10 +11,11 @@ function precise(x) {
     return Math.round(x*1000)/1000;
 }
 
+/**
+ *  @author Alexis IMBERT
+ */
 router.use('/', (req, res) => {
-    /**
-     * @author Alexis IMBERT
-     *  */
+    
     // Si l'utilisater n'est pas connecter alors il est redirigé vers la page de connection
     if (!usersUtil.isLoggedIn(req)) {
         res.redirect("/users/login")

@@ -30,64 +30,62 @@ router.post("/generate",
      */    
     function (req,res) {
 
+
+        let link = "/canvas/generate"
+
         let tests = req.query['tests'];
 
         if (usersUtil.redirectNotLoggedUsers(req,res)) {
             return
         }
+
             
-        if (!usersUtil.isVip(req.session.logion)) {
+        if (!usersUtil.isVip(req.session.login)) {
             if (tests)
                 res.status(400).send("YOU ARE NOT A VIP");
             else
-                res.redirect('/');
+                res.redirect('/404');
             return;
         }
-        
-        let idCanva = encodeURIComponent(req.params.id);
 
+        
         let data = req.body
 
-        let name = data['name']//encodeURIComponent(data['name'])
-        let height,width;
-        try {
-            height = data['height']
-            width = data['width']
-        } catch (e) {
-            if (tests)
-                res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
-            else {
-                renderGeneratePage(req, res, "HEIGHT AND WIDTH SHOULD BE NUMBERS", false, "/canvas/generate", idCanva, req.body['height'], req.body['width'], name, users)
-            }
-            return;
-        }
+        let name = usersUtil.removeScript(data['name'])//encodeURIComponent(data['name'])
 
         let idOwner = req.session.login
 
-        let users = req.body['users'];
+        let usersPre = req.body['users']
+
+        let idcanva = "";
 
         try {
-            users = JSON.parse(users);
+            usersPre = JSON.parse(usersPre);
         } catch (e) {
             if (tests)
                 res.status(400).send("USERS STRING SHOULD BE LIKE [{\"idUser\":\"id1\"},{\"idUser\":\"id2\"}]")
             else {
-                renderGeneratePage(req, res, "USERS IS NOT A JSON OBJECT [{\"idUser\":\"id1\"},{...}]", false, "/canvas/generate", idCanva, req.body['height'], req.body['width'], name, users)
+                renderGeneratePage(req, res, "USERS IS NOT A JSON OBJECT [{}]", false, link, idcanva, req.body['height'], req.body['width'], name, usersPre)
             }
-            return;
+            return true;
         }
 
-        /*for (key in users) {
-            users[key].idUser = encodeURIComponent(users[key].idUser)
-        }*/
+
+
+        let users = JSON.parse(JSON.stringify(usersPre))
+        
+        for (key in usersPre) {
+            users[key].idUser = usersUtil.removeScript(usersPre[key].idUser)
+        }
+
 
         let ownerInList = false;
         for (key in users) {
             if (!usersUtil.exists(users[key].idUser)) {
                 if (tests)
-                    res.status(400).send("USER " + users[key].idUser + " DOES NOT EXIST")
+                    res.status(400).send("USER " + usersPre[key].idUser + " DOES NOT EXIST")
                 else
-                    renderGeneratePage(req, res, "USER " + users[key].idUser + " DOES NOT EXIST", false, "/canvas/generate", idCanva, req.body['height'], req.body['width'], name, users)
+                    renderGeneratePage(req, res, "USER " + usersPre[key].idUser + " DOES NOT EXIST", false, link, idcanva, req.body['height'], req.body['width'], name, users)
                 return;
             }
             if (users[key].idUser == idOwner) {
@@ -99,23 +97,36 @@ router.post("/generate",
             if (tests)
                 res.status(400).send("OWNER CANNOT BE REMOVED");
             else
-                renderGeneratePage(req, res, "OWNER " + idOwner + " CANNOT BE REMOVED", false, "/canvas/generate", "", req.body['height'], req.body['width'], name, users)
+                renderGeneratePage(req, res, "OWNER " + idOwner + " CANNOT BE REMOVED", false, link, idcanva, req.body['height'], req.body['width'], name, users)
             return;
         }
-        
-        
-        let idcanva = uuid();
 
-        if (height == null || width == null) {
-            res.status(400).send("MISSING DATA");
+        let height, width;
+        try {
+            height = parseInt(req.body['height'])
+            width = parseInt(req.body['width'])
+        } catch (e) {
+            if (tests)
+                res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
+            else {
+                renderGeneratePage(req, res, "HEIGHT AND WIDTH SHOULD BE NUMBERS", false, link, idcanva, req.body['height'], req.body['width'], name, users)
+            }
             return;
         }
+
+
+
+        idcanva = uuid();
+
+        
 
         // ADD CANVA in CANVAS table + CREATE TABLE CANVA_IDCANVA to store all the pixels + link owner to the table
         if (!createCanva(idcanva,name,idOwner,height,width, true)){
             res.status(400).end("Bad request");
             return;
         }
+
+
 
         // add users in canva
         db.serialize( ()=> {
@@ -134,6 +145,8 @@ router.post("/generate",
             }
            
         })
+
+
         
 
         if (tests) {
@@ -184,6 +197,8 @@ router.post("/:id/update",
 
         let idCanva = encodeURIComponent(req.params.id);
 
+        let link = "/canvas"+idCanva+"/update"
+
         if (usersUtil.redirectNotLoggedUsers(req,res)) {
             return;
         }
@@ -202,43 +217,43 @@ router.post("/:id/update",
         let height;
         let width;
 
-        let users = req.body['users']
-        let name = req.body['name']//encodeURIComponent(req.body['name']);
+        let usersPre = req.body['users']
+        let name = usersUtil.removeScript(req.body['name'])
 
-        try {
-            height = parseInt(req.body['height'])
-            width  = parseInt(req.body['width'])
-        } catch (e) {
-            //res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
-            renderGeneratePage(req,res,"HEIGHT AND WIDTH SHOULD BE NUMBERS", true, "/canvas/" + idCanva + "/update", idCanva, req.body['height'], req.body['width'], name, users)
-            return;
+        if (name == "") {
+            if (tests)
+                res.status(400).send("NAME IS EMPTY")
+            else {
+                renderGeneratePage(req, res, "NAME IS EMPTY", true, link, idCanva, req.body['height'], req.body['width'], name, usersPre)
+            }
+            return true;
         }
-        
 
         try {
-            users = JSON.parse(users);
+            usersPre = JSON.parse(usersPre);
         } catch (e) {
             if (tests)
                 res.status(400).send("USERS STRING SHOULD BE LIKE [{\"idUser\":\"id1\"},{\"idUser\":\"id2\"}]")
             else {
-                renderGeneratePage(req, res, "USERS IS NOT A JSON OBJECT [{}]", true, "/canvas/" + idCanva + "/update", idCanva, req.body['height'], req.body['width'], name, users)
+                renderGeneratePage(req, res, "USERS IS NOT A JSON OBJECT [{}]", true, link, idCanva, req.body['height'], req.body['width'], name, usersPre)
             }
-            return;
+            return true;
         }
 
-        /*for (key in users) {
-            users[key].idUser = encodeURIComponent(users[key].idUser)
-        }*/
+
+        let users = JSON.parse(JSON.stringify(usersPre))
+        for (key in usersPre) {
+            users[key].idUser = usersUtil.removeScript(usersPre[key].idUser)
+        }
 
         let ownerInList = false;
         for (key in users) {
             if (!usersUtil.exists(users[key].idUser)) {
-                console.log("user doesn't exist")
                 if (tests)
-                    res.status(400).send("USER "+users[key].idUser+" DOES NOT EXIST")
+                    res.status(400).send("USER " + usersPre[key].idUser + " DOES NOT EXIST")
                 else
-                    renderGeneratePage(req,res,"USER " + users[key].idUser + " DOES NOT EXIST", true, "/canvas/" + idCanva + "/update", idCanva, req.body['height'], req.body['width'], name, users)
-                return;
+                    renderGeneratePage(req, res, "USER " + usersPre[key].idUser + " DOES NOT EXIST", true, link, idCanva, req.body['height'], req.body['width'], name, users)
+                return true;
             }
             if (users[key].idUser == req.session.login) {
                 ownerInList = true;
@@ -247,11 +262,26 @@ router.post("/:id/update",
 
         if (!ownerInList) {
             if (tests)
-                res.status(400).send("OWNER CANNOT BE REMOVED")   ;
+                res.status(400).send("OWNER CANNOT BE REMOVED");
             else
-                renderGeneratePage(req,res,"OWNER "+req.session.login+" CANNOT BE REMOVED", true, "/canvas/" + idCanva + "/update", idCanva, req.body['height'], req.body['width'], name, users)
-            return;
+                renderGeneratePage(req, res, "OWNER " + req.session.login + " CANNOT BE REMOVED", true, link, idCanva, req.body['height'], req.body['width'], name, users)
+            return true;
         }
+
+
+
+        try {
+            height = parseInt(req.body['height'])
+            width = parseInt(req.body['width'])
+        } catch (e) {
+            if (tests)
+                res.status(400).send("HEIGHT AND WIDTH SHOULD BE NUMBERS")
+            else {
+                renderGeneratePage(req, res, "HEIGHT AND WIDTH SHOULD BE NUMBERS", true, link, idCanva, req.body['height'], req.body['width'], name, users)
+            } 
+            return true;
+        }
+
 
         let usersIn = usersInCanva(idCanva);
 
@@ -275,7 +305,6 @@ router.post("/:id/update",
                     }
                 }
                 if (!incanva) {
-                    console.log("insert "+users[key].idUser)
                     db.run("INSERT INTO usersInCanva (idCanva,idUser,derniereDemande) VALUES (?,?,?)", [idCanva,users[key].idUser,0], function (err) {
                         if (err) {
                             // ne devrait pas arriver
@@ -292,12 +321,10 @@ router.post("/:id/update",
                 inlist = false;
                 for (key in users) {
                     if (users[key].idUser == usersIn[key2].idUser ) {
-                        console.log("in list")
                         inlist = true;
                     }
                 }
                 if (!inlist) {
-                    console.log("delete "+usersIn[key2].idUser)
                     db.run("DELETE FROM usersInCanva WHERE idCanva=? AND idUser=?", [idCanva, usersIn[key2].idUser], function (err) {
                         if (err) {
                             // ne devrait pas arriver
@@ -338,18 +365,23 @@ router.use("/:id/edit",
         let idCanva = encodeURIComponent(req.params.id);
 
         if (usersUtil.redirectNotLoggedUsers(req, res)) {
+            console.log("redirected not logged")
             return;
         }
+
+
 
         if (!usersUtil.isOwner(req.session.login,idCanva)) {
             if (tests) {
                 res.status(400).send("YOU ARE NOT THE OWNER")
             } else {
-                res.redirect('/canvas');
+                res.redirect('/404');
                 return;
             }
             
         }
+
+        
 
         let info = getCanvaInfos(idCanva);
 
@@ -363,7 +395,21 @@ router.use("/:id/edit",
 
 )
 
-
+/**
+ * to render canva generation page
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} error 
+ * @param {*} edit 
+ * @param {*} action 
+ * @param {*} idCanva 
+ * @param {*} height 
+ * @param {*} width 
+ * @param {*} name 
+ * @param {*} users 
+ * 
+ * @author Jean-Bernard CAVELIER
+ */
 function renderGeneratePage(req,res,error, edit, action, idCanva, height, width, name, users) {
     res.render("generate.ejs", { logged: req.session.loggedin, login: req.session.login, error: error, type: { edit: edit, action: action }, canva_infos: { height: height, width: width, name: name, users: users, id: idCanva } })
 }
@@ -468,9 +514,7 @@ router.post("/:id/timer",
             return;
         }
 
-        console.log(idCanva)
-        console.log(req.params.id);
-        console.log(req.session.login)
+        
 
         let timerRestantSecondes = tempsRestantPose(idUser,idCanva);
 
@@ -479,6 +523,14 @@ router.post("/:id/timer",
 )
 
 router.post("/:id/pose",
+    /**
+     * Pose un pixel sur le canva
+     * @param {*} req 
+     * @param {*} res 
+     * @returns
+     * 
+     * @author Jean-Bernard CAVELIER
+     */
     function(req,res) {
         let idCanva = encodeURIComponent(req.params.id);
         let idUser = req.session.login;
@@ -522,7 +574,6 @@ router.post("/:id/pose",
         color += "ff";
 
         let canvaInfos = getCanvaInfos(idCanva);
-        console.log(canvaInfos);
 
         if (x < 0 || x > canvaInfos.height || y < 0 || y > canvaInfos.width) {
             res.status(400).send("OUT OF BOUNDS POSITION");
@@ -563,10 +614,19 @@ router.post("/:id/pose",
 )
 
 router.get("/:id/getDerniersPixels",
-
+    /**
+     * To get all pixels you didn't got from last request
+     * @param {*} req 
+     * @param {*} res 
+     * @returns 
+     * 
+     * @author Jean-Bernard CAVELIER
+     */
     function (req, res) {
         let idCanva = encodeURIComponent(req.params.id);
         let idUser = req.session.login;
+
+        let canvaInfos = getCanvaInfos(idCanva);
 
         let temps = unixTimestamp();
 
@@ -579,35 +639,52 @@ router.get("/:id/getDerniersPixels",
                 res.status(400).end("YOU CANNOT ACCESS THIS CANVA")
                 return;
             }
+
         }
 
-
-        let canvaInfos = getCanvaInfos(idCanva);
-        console.log(canvaInfos);
-
         
+        
+        if (usersUtil.isLoggedIn(req)) {
+        
+            db.serialize(() => {
 
-        db.serialize(() => {
+                db.all(`select pxl_x,pxl_y,couleur from '${idCanva}' c, usersInCanva u WHERE u.idUser = ? AND u.idCanva = ? AND c.pose >= u.derniereDemande  `, [idUser, idCanva], function (err, result) {
+                    if (err) {
+                        console.log(err)
+                    } else {
 
-            db.all(`select pxl_x,pxl_y,couleur from '${idCanva}' c, usersInCanva u WHERE u.idUser = ? AND u.idCanva = ? AND c.pose >= u.derniereDemande  `,[idUser,idCanva],function(err,result) {
+                        res.setHeader('Content-Type', 'application/json')
+                        res.end(JSON.stringify(result));
+                    }
+
+                })
+
+                // UPDATE DERNIERE POSE
+                db.run("UPDATE usersInCanva SET derniereDemande = ? WHERE idCanva = ? AND idUser = ?", [temps, idCanva, idUser], function (err, result) {
+                    if (err)
+                        console.log(err);
+                })
+
+            })
+            
+        } else { // guest mode
+            db.all(`select pxl_x,pxl_y,couleur from '${idCanva}' c WHERE pose>=?`,[temps-3], function (err, result) {
                 if (err) {
                     console.log(err)
                 } else {
-                    console.log(result)
-
                     res.setHeader('Content-Type', 'application/json')
                     res.end(JSON.stringify(result));
                 }
-               
-            })
-            
-            // UPDATE DERNIERE POSE
-            db.run("UPDATE usersInCanva SET derniereDemande = ? WHERE idCanva = ? AND idUser = ?", [temps, idCanva, idUser], function(err,result) {
-                if (err)
-                    console.log(err);
-            })
 
-        })
+            })
+        }
+
+
+        
+
+        
+
+        
 
 
         
@@ -616,6 +693,14 @@ router.get("/:id/getDerniersPixels",
 )
 
 router.use("/:id/history",
+    /**
+     * To get a complete history of a canva
+     * @param {*} req 
+     * @param {*} res 
+     * @returns content of a canva
+     * 
+     * @author Jean-Bernard CAVELIER
+     */
     function(req,res) {
 
 
@@ -634,8 +719,6 @@ router.use("/:id/history",
         }
 
 
-        console.log("accessed history for "+idCanva)
-
         let content = "";
 
         db.serialize(() => {
@@ -644,7 +727,6 @@ router.use("/:id/history",
                 if (err) {
                     console.log(err)
                 } else {
-                    console.log(result)
                     content += "temps unix,x,y,couleur,user \n"
                     for (key in result) {
                         let line = result[key]
@@ -680,7 +762,7 @@ router.use("/:id",
         let accessible = userCanAccessCanva(req.session.login,id);
 
         if (!accessible) {
-            res.redirect("/canvas")
+            res.redirect("/404") // canva not accessible or doesn't exist
             return;
         }
 
@@ -705,7 +787,6 @@ router.use("/",
 
 
         if (!usersUtil.isLoggedIn(req)) {
-            console.log("not logged")
             res.redirect('/');
             return;
         }
@@ -720,6 +801,21 @@ router.use("/",
 
 
 
+
+
+
+
+
+/**
+ * Retourne le temps restant pour poser un pixel
+ * @param {*} idUser 
+ * @param {*} idCanva 
+ * @param {*} timerMaxSecondes 
+ * @param {*} tempsAccess 
+ * @returns timestamp
+ * 
+ * @author Jean-Bernard CAVELIER
+ */
 function tempsRestantPose(idUser,idCanva, timerMaxSecondes = {'normal':'10','vip':'3','admin':'0'}, tempsAccess = unixTimestamp() ) {
 
     let timerRestantSecondes = null;
@@ -777,6 +873,8 @@ function isHexColor(hex) {
  * Returns the current UNIX timestamp.
  *
  * @returns {Number}
+ * 
+ * @author Jean-Bernard CAVELIER
  */
 function unixTimestamp() {
     return Math.floor(Date.now() / 1000)
@@ -844,7 +942,6 @@ function usersInCanva(idCanva) {
             }
 
             if (result) {
-                console.log(result)
 
                 res = result;
             } else {
@@ -935,7 +1032,7 @@ function createCanva(idcanva, name, idOwner, height, width, linkOwnerToCanva) {
                     
             } else {
                 //console.log(err);
-                console.log("CANVA ALREADY IN DB");
+                console.log("CANVA "+idcanva+" ALREADY IN DB");
                 rollback();
             }
 
@@ -978,7 +1075,6 @@ function createCanva(idcanva, name, idOwner, height, width, linkOwnerToCanva) {
         deasync.runLoopOnce();
     }
 
-    console.log('finished');
     return ok;
 
 }
@@ -1133,10 +1229,6 @@ function userCanAccessCanva(idUser, idCanva) {
     }
     return false;
 }
-
-
-const profile = require('./profile');
-router.use('/profile', profile);
 
 
 module.exports = { router, createCanva };

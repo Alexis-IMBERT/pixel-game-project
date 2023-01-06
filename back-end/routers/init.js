@@ -6,6 +6,11 @@ const crypto = require('crypto');
 
 const createCanva  = require("./canvas").createCanva;
 
+/**
+ * initialise la base de données par défaut
+ * 
+ * @author Jean-Bernard CAVELIER
+ */
 function initDatabase() {
 
     db.serialize(() => {
@@ -44,6 +49,11 @@ function initDatabase() {
 
 }
 
+/**
+ * initialise le canva général
+ * 
+ * @author Jean-Bernard CAVELIER
+ */
 function initGeneralCanva() {
 
     if (!createCanva("general","general","serveur",1000,1000,false)) {
