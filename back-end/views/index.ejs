@@ -16,19 +16,22 @@
     <body>
         <%- include('background.ejs') %>
         <script>
-            let drag = false;
-            let zoomFactor = 0.15
-            var zoomValue = 4;
-            var lastPixelChangedX, lastPixelChangedY;
-            var lastPixelData, r, g, b;
-            var isWaiting = true;
-            var temps = 0;
+            //Définition des variables du canva
+            let drag = false; // s'il est actuellement en train de drag
+            let zoomFactor = 0.15 // changement d'un zoom à l'autre
+            var zoomValue = 4; // zoom par défaut
+            var lastPixelChangedX, lastPixelChangedY; //dernier pixel changer (pour le remettre si on décide de placer le pixel ailleurs avant envoi)
+            var lastPixelData, r, g, b; // pour réecrire les couleurs si on change de pixel
+            var isWaiting = true; // savoir si on attend la fin du chrono
+            var temps = 0; // temps restant
         </script>
         <div class="body-container" id="app">
             <div v-if="isLoading" class="lds-ellipsis center"><div></div><div></div><div></div><div></div></div>
+            <!-- Notre canva -->
             <div id="painting">
-                <canvas id="canva"></canvas>
+                <canvas style="border: 3px solid black;" id="canva"></canvas>
             </div>
+            <!-- Fin de notre canva -->
             <%- include('menu.ejs', {logged: logged}) %>
             <div class="footer bg-main" style="overflow-x: scroll; overflow-y:hidden;">
                 <div class="footer-box">
@@ -61,21 +64,21 @@
                     isLoading: true,
                 },
                 methods: {
-                    
-                 isDisabled:function() {
-                    return $('#send-btn')[0].disabled;
-                 }
+                    //savoir si le bouton est disabled
+                    isDisabled:function() {
+                        return $('#send-btn')[0].disabled;
+                    }
                 },
                 mounted() {
                 }
             })
 
-
+            // récupération du canva
             function canva_get() {
                 var dataToPost = {
                     idCanva: '<%= idCanva %>'
                 };
-
+                //On récupère l'image entière du canva quand on accède au canva
                 $.ajax({
                     type: 'POST',
                     url: '/canvas/' + dataToPost.idCanva +'/getImage',
@@ -121,12 +124,15 @@
 
             }
             canva_get();
+            //Puis on demande l'update toutes les secondes du canva
             var updateCanva = setInterval(function () {
                 afficherUpdateCanva();
             }, 1000);
 
             function afficherUpdateCanva() {
+                //Récupération des derniers pixels posés depuis la dernière update
                 $.getJSON('/canvas/' + '<%= idCanva %>' +'/getDerniersPixels', function(data) {
+                    //Pour chaque pixel, on l'affiche sur le canva
                     data.forEach( pix => { 
                         ajouterPixelLocal(canvas, pix.pxl_x+1, pix.pxl_y+1, pix.couleur);
                     })
@@ -137,6 +143,7 @@
         <script>
             var x = 0;
             var y = 0;
+            // récupération de l'élement canva et painting
             const canvas = document.getElementById("canva");
             const painting = $("#painting");
             const ctx = canvas.getContext("2d", {willReadFrequently: true});
@@ -144,42 +151,45 @@
             ctx.mozImageSmoothingEnabled = false;
             ctx.imageSmoothingEnabled = false;
 
+            /* Cette partie du code n'est pas la mienne */
             const image = new Image(100, 100); // Using optional size for image
             image.onload = drawImageActualSize; // Draw when image has loaded
 
-            // Load an image of intrinsic size 300x227 in CSS pixels
-            /*image.src = "../../assets/imgs/img.jpg";*/
-
             function drawImageActualSize() {
-            // Use the intrinsic size of image in CSS pixels for the canvas element
-            canvas.width = this.naturalWidth;
-            canvas.height = this.naturalHeight;
+                // Use the intrinsic size of image in CSS pixels for the canvas element
+                canvas.width = this.naturalWidth;
+                canvas.height = this.naturalHeight;
 
-            // Will draw the image as 300x227, ignoring the custom size of 60x45
-            // given in the constructor
-            ctx.drawImage(this, 0, 0);
+                // Will draw the image as 300x227, ignoring the custom size of 60x45
+                // given in the constructor
+                ctx.drawImage(this, 0, 0);
 
-            // To use the custom size we'll have to specify the scale parameters
-            // using the element's width and height properties - lets draw one
-            // on top in the corner:
-            ctx.drawImage(this, 0, 0, this.width, this.height);
+                // To use the custom size we'll have to specify the scale parameters
+                // using the element's width and height properties - lets draw one
+                // on top in the corner:
+                ctx.drawImage(this, 0, 0, this.width, this.height);
             }
 
+            /* Fin de la partie du code provenant d'un site extérieur */
 
             const canvaJQ = $("#canva")
+            // On applique le zoom par défaut
             $('#canva').css('transform', 'scale(' + zoomValue * zoomFactor + ')');
 
+            //Fonction qui récupère la position du clic relatif à l'élement canva.
             function getCursorPosition(canvas, event) {
                 const rect = canvas.getBoundingClientRect()
                 x = Math.ceil((event.clientX - rect.left)/(zoomValue*zoomFactor))
                 y = Math.ceil((event.clientY - rect.top)/(zoomValue*zoomFactor))
                 if(!isWaiting)
                 {
+                    // Si le chrono est terminé, on laisse l'utilisateur choisir son pixel.
                     $('#info-picker').text("("+ y + ";" + x + ")");
                     changerCouleurPixelLocal(canvas,x,y);
                 }
             }
 
+            //Fonction qui modifie la couleur des pixels avant envoi
             async function changerCouleurPixelLocal(canvas,x,y, color=null) {
                 if (lastPixelData) 
                     ctx.putImageData(lastPixelData, lastPixelChangedX-1, lastPixelChangedY-1);
@@ -200,6 +210,7 @@
                 $("#send-btn").removeAttr("disabled");
             }
 
+            //Ajouter un pixel sans remplacer le dernier posé
             async function ajouterPixelLocal(canvas,x,y,color) {
                 let data = ctx.getImageData(x-1,y-1,1,1);
                 color = color.replace("0x", "#");
@@ -213,7 +224,7 @@
                 ctx.putImageData(data, x-1, y-1);
             }
 
-
+            //Envoi d'un pixel
             function envoyerPixel(e) {
                 e.preventDefault();
                 lastPixelData = undefined;
@@ -228,6 +239,7 @@
                     color:  $(".color-picker").val().replace("#","0x")
                 }
 
+                //URL AJAX
                 let url = '/canvas/' + '<%= idCanva %>' + "/pose";
 
                 $.ajax({
@@ -256,7 +268,7 @@
                 });
 
             }
-
+            //Affichage du chrono dans la page
             function enableChrono(timing) {
                 let temps = timing;
                 var chrono = setInterval(function () {

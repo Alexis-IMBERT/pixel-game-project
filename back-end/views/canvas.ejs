@@ -18,6 +18,7 @@
                 <h1 class="titre-form">GESTIONNAIRE DES CANVAS</h1>
                 <div class="mg-10 h-95" style="overflow:hidden; border-radius:10px"  >
                     <div class="top-rounded-box color-sc bottom-border">
+                        <!-- Header du tableau -->
                         <div class="column-section ">
                             <div class="flex-3 title-form text-white">Nom du salon</div>
                             <div class="flex-2 title-form text-white">Créateur</div>
@@ -27,6 +28,7 @@
                     <div class="scrollable list-games border-bottom h-95">
                         <div v-if="isLoading" class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
                         <div v-if="!isLoading" class="mid-box border-bottom">
+                            <!-- Liste des canvas -->
                             <div v-for="canva in canvas">
                                 <div class="column-section canva-row" v-on:click="joinCanva(canva)">
                                     <div class="flex-3 ">
@@ -56,6 +58,8 @@
         </div>
         <script>
             var wantEdit = false;
+
+            //Fonction pour créer un nouveau canva
             function newCanva() {
                 window.location.href += '/generate';
             }
@@ -68,15 +72,18 @@
                     owner:"",
                 },
                 methods: {
+                    //Fonction pour edit un canva
                     editCanva: function(canva) {
                         wantEdit = true;
                         window.location.href += "/" + canva.idCanva + "/edit";
                     },
+                    //Fonction pour join un canva
                     joinCanva: function(canva) {
                         if(!wantEdit)
                             window.location.href += "/" + canva.idCanva;
                         wantEdit = false;
                     },
+                    //Fonction pour récupérer les canvas accessibles
                     getCanvas() {
                         this.isLoading = true;
                         $.getJSON("/canvas/accessible", function(data) {
@@ -87,6 +94,7 @@
                     }
                 },
                 mounted() {
+                    //Récupérer les canvas accessibles dès le chargement
                     this.getCanvas();
                 }
             })
