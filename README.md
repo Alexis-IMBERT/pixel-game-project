@@ -64,3 +64,8 @@ Si l'utilisateur est VIP il peut créer un nouveau canvas, en précisant : le no
 
 ## Dans un canva :
 Vous pouvez visualiser le canva dans sa globalité, selectionner la couleur nouvelle couleur et un pixel. Si le minuteur est à zero on peut cliquer pour envoyer la soumission au serveur et ainsi qu'aux autres utilisateur.
+
+## Si vous voulez tester les VIP :
+Afin de tester un compte VIP vous pouvez vous connecter au compte : 
+ - pseudo : vip 
+ - mot de passe : vipvip
