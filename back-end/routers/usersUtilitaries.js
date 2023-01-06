@@ -51,7 +51,6 @@ function isRank(login,rank) {
 
         const statement = db.prepare("SELECT rank FROM users WHERE login=?;");
         statement.get(login, (err, result) => {
-            console.log("get");
             if (err) {
                 console.log(err);
                 isrank = false;
@@ -60,7 +59,6 @@ function isRank(login,rank) {
             //console.log(result);
             if (result) {
                 isrank = (result['RANK'] == rank);
-                console.log('ou are vip')
 
             } else {
                 console.log("what")
@@ -121,14 +119,11 @@ function isOwner(login,idCanva) {
                 isowner = false;
                 //next(err);
             }
-            //console.log(result);
             if (result) {
                 isowner = (login == result['owner']);
             } else {
-                // if here that means the user doesn't exist
-                // not possible
-                // or the session is invalid
-                //req.session.destroy();
+                isowner = false;
+                
             }
 
         });

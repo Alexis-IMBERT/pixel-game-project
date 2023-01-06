@@ -78,11 +78,12 @@ router.post("/signup",
 
                     // ADD USER TO DEFAULT CANVA
                     db.run("INSERT INTO usersInCanva(idCanva, idUser) VALUES(?,?);", ["general",username], function(err,result) {
+                        connectUser(req,username);
                         console.log("ACCOUNT CREATED OK");
                         if (tests)
                             res.send("ACCOUNT CREATED")
                         else
-                            res.redirect('users/login');
+                            res.redirect('/');
                     })
                     
 
@@ -171,8 +172,7 @@ router.post('/login',
                 } 
 
                 if (result) {
-                    req.session.loggedin = true;
-                    req.session.login = result['LOGIN'];
+                    connectUser(req,result['LOGIN']);
                     console.log("LOG IN OK");
 
                     if (tests)
@@ -197,7 +197,7 @@ router.post('/login',
 
 router.use('/login', 
     /**
-     * To render login page
+     * To access login page
      * @param {*} req 
      * @param {*} res 
      * 
@@ -241,6 +241,7 @@ router.use('/logout',
 
 
 const profile = require('./profile');
+const { connect } = require('http2');
 router.use('/profile', profile);
 
 
@@ -256,6 +257,12 @@ router.use("/",
         res.redirect('/404')
     }
 )
+
+
+function connectUser(req,idUser) {
+    req.session.loggedin = true;
+    req.session.login = idUser;
+}
 
 
 module.exports = router;

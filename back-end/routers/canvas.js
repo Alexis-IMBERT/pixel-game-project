@@ -44,7 +44,7 @@ router.post("/generate",
             if (tests)
                 res.status(400).send("YOU ARE NOT A VIP");
             else
-                res.redirect('/');
+                res.redirect('/404');
             return;
         }
 
@@ -365,18 +365,23 @@ router.use("/:id/edit",
         let idCanva = encodeURIComponent(req.params.id);
 
         if (usersUtil.redirectNotLoggedUsers(req, res)) {
+            console.log("redirected not logged")
             return;
         }
+
+        
 
         if (!usersUtil.isOwner(req.session.login,idCanva)) {
             if (tests) {
                 res.status(400).send("YOU ARE NOT THE OWNER")
             } else {
-                res.redirect('/canvas');
+                res.redirect('/404');
                 return;
             }
             
         }
+
+        
 
         let info = getCanvaInfos(idCanva);
 
