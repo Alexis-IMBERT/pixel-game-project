@@ -50,29 +50,38 @@ router.use('/', (req, res) => {
                 } else {
                     nombre_canvas = 0;
                 }
-                ratio = nombre_pixel_pose / nombre_canvas;
-                ratio = precise(ratio);
-                const statement_couleur_pref = db.prepare("SELECT couleur, COUNT(*) as count FROM history WHERE idUser = ? GROUP BY couleur ORDER BY count DESC LIMIT 1;")
-                statement_couleur_pref.get(login, (err, result) => {
-                    if (err) {
-                        console.log(err);
-                        res.status(400).send("Bad request");
-                        return;
-                    }
-                    couleur_pref = result['couleur'];
-                    couleur_pref = couleur_pref.substr(2);
-                    couleur_pref = "#" + couleur_pref;
-                    const statement_canvas_plus_utilise = db.prepare("SELECT canvas.name, COUNT(*) as count FROM history INNER JOIN canvas ON history.idCanva = canvas.id WHERE history.idUser = ? GROUP BY canvas.name ORDER BY count DESC LIMIT 1;");
-                    statement_canvas_plus_utilise.get(login, (err, result) => {
+                if (nombre_pixel_pose>0) {
+
+                    ratio = nombre_pixel_pose / nombre_canvas;
+                    ratio = precise(ratio);
+                    const statement_couleur_pref = db.prepare("SELECT couleur, COUNT(*) as count FROM history WHERE idUser = ? GROUP BY couleur ORDER BY count DESC LIMIT 1;")
+                    statement_couleur_pref.get(login, (err, result) => {
                         if (err) {
                             console.log(err);
                             res.status(400).send("Bad request");
                             return;
                         }
-                        canvas_plus_actif = result['name']
-                        res.render('profile.ejs', { logged: req.session.loggedin, login: login, couleur_pref: couleur_pref, nb_pixel_pose: nombre_pixel_pose, nb_canvas: nombre_canvas, canvas_plus_actif: canvas_plus_actif, nb_pixel_moyen: ratio });
+                        couleur_pref = result['couleur'];
+                        couleur_pref = couleur_pref.substr(2);
+                        couleur_pref = "#" + couleur_pref;
+                        const statement_canvas_plus_utilise = db.prepare("SELECT canvas.name, COUNT(*) as count FROM history INNER JOIN canvas ON history.idCanva = canvas.id WHERE history.idUser = ? GROUP BY canvas.name ORDER BY count DESC LIMIT 1;");
+                        statement_canvas_plus_utilise.get(login, (err, result) => {
+                            if (err) {
+                                console.log(err);
+                                res.status(400).send("Bad request");
+                                return;
+                            }
+                            canvas_plus_actif = result['name']
+                        })
                     })
-                })
+                }
+                couleur_pref = "Incolore";
+                nb_pixel_pose = 0;
+                nb_canvas = 0;
+                canvas_plus_actif = "LE NEANT";
+                ratio = "X";
+                res.render('profile.ejs', { logged: req.session.loggedin, login: login, couleur_pref: couleur_pref, nb_pixel_pose: nombre_pixel_pose, nb_canvas: nombre_canvas, canvas_plus_actif: canvas_plus_actif, nb_pixel_moyen: ratio });
+
             })
         })
     })

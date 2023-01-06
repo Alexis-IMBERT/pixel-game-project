@@ -13,26 +13,7 @@
     <script type="text/javascript" src="/assets/js/vue.js"></script>
     <link rel="stylesheet" href="/assets/css/loader.css">
 </head>
-
 <body>
-    <%- include('menu.ejs', {logged: logged}) %>
-        <div>
-            <% if(!logged){%>
-                <span>Veuillez vous connecter</span>
-                <%} else{ %>
-                    <!-- Alexis IMBERT -->
-                    <div id="app">
-                        <h1>Statistiques</h1>
-                        Pseudo : <%= login %><br/>
-                    </div>
-                    <!-- Fin de la partie de Alexis IMBERT -->
-                    <%}%>
-        </div>
-        <div class="footer bg-main">
-            <div class="footer-box">
-                <a target="_blank"
-                    href="https://www.makeuseof.com/what-is-rplace-reddit-art-experiment/#:~:text=The%20concept%20behind%20r%2FPlace%20is%20pretty%20simple.,or%20tile%20of%20whichever%20color."><img
-                        class="imgbtn" id="rules" src="/assets/imgs/book.png"></a>
     <div class="body-container" id="app">
         <div class="center top bg-color" style="padding-bottom:40px;">
             <h1 class="titre-form">Statistiques</h1>
@@ -50,8 +31,12 @@
                         <%= login %>
                     </div>
                     <div class="flex-2">
-                        <div class="flex-2" style="border:1px solid black"
+                        <div v-if="'<%=couleur_pref%>'!='Incolore'"class="flex-2" style="border:1px solid black"
                             v-bind:style="{ 'border-radius':'20px', width:'100%', height:'100%', 'background-color':'<%=couleur_pref%>', color:'lightgrey'}">
+                            <%=couleur_pref%>
+                        </div>
+                        <div v-else class="flex-2" style="border:1px solid black"
+                            v-bind:style="{ 'border-radius':'20px', width:'100%', height:'100%', 'background-color':'<%=couleur_pref%>', color:'black'}">
                             <%=couleur_pref%>
                         </div>
                     </div>
