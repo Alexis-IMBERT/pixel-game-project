@@ -32,7 +32,7 @@ app.set('view engine', 'ejs');
 app.use("/404", function(req, res) {
 	res.status(404);
 	console.log(req.session)
-	res.render('404.ejs', { logged: req.session.loggedin });
+	res.render('404.ejs', { logged: req.session.loggedin, login: req.session.login });
 });
 
 

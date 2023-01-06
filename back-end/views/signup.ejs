@@ -12,6 +12,7 @@
     </head>
     <body>
         <div class="body-container">
+            <%- include('background.ejs') %>
             <div class="center bg-color">
                 <h1 class="titre-form">Inscription</h1>
                 <form class="center-div" action="/users/signup" onsubmit="return user_signup()" method="post" role="form" >

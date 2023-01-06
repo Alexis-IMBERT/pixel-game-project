@@ -13,11 +13,12 @@
     <script type="text/javascript" src="/assets/js/vue.js"></script>
     <link rel="stylesheet" href="/assets/css/loader.css">
 </head>
-<body>
+<body style="overflow: hidden;">
     <div class="body-container" id="app">
+        <%- include('background.ejs') %>
         <div class="center top bg-color" style="padding-bottom:40px;">
             <h1 class="titre-form">Statistiques</h1>
-            <div class=" mg-10" style="overflow:hidden; max-height:80%; border-radius:10px;">
+            <div class=" mg-10 scrollable" style="max-height:80%; border-radius:10px;">
                 <div class="top-rounded-box color-sc bottom-border">
                     <div class="column-section ">
                         <div class="flex-2 title-form text-white">Ton blase</div>
@@ -26,12 +27,12 @@
                     </div>
                 </div>
                 <% console.log(couleur_pref) %>
-                <div class="column-section canva-row mid-box">
+                <div class="column-section canva-row mid-box border-bottom">
                     <div class="flex-2">
                         <%= login %>
                     </div>
                     <div class="flex-2">
-                        <div v-if="'<%=couleur_pref%>'!='Incolore'"class="flex-2 text-blink" style="border:1px solid black"
+                        <div v-if="'<%=couleur_pref%>'!='Incolore'"class="flex-2 multicolor" style="border:1px solid black"
                             v-bind:style="{ 'border-radius':'20px', width:'100%', height:'100%', 'background-color':'<%=couleur_pref%>'}">
                             <%=couleur_pref%>
                         </div>
@@ -54,7 +55,7 @@
                         <div class="flex-3 title-form text-white">Ratio pixel dégainés/batailles où tu dead ça</div>
                     </div>
                 </div>
-                <div class="column-section canva-row mid-box">
+                <div class="column-section canva-row mid-box  border-bottom">
                     <div class="flex-2">
                         <%= nb_canvas %>
                     </div>

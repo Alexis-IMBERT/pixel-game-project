@@ -1,1 +1,29 @@
-oups 404 ;(
+<!-- @author Pierre LUYPAERT-->
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="author" content="Pierre LUYPAERT">
+        <title>PixelWAR: Goulag</title>
+        <script src="/assets/vendor/jquery-3.6.0.js"></script>
+        <script src="/assets/vendor/jquery-ui.js"></script>
+        <link rel="stylesheet" href="/assets/css/styles.css">
+        <script type="text/javascript" src="/assets/js/vue.js"></script>
+        <link rel="stylesheet" href="/assets/css/loader.css">
+    </head>
+    <body style="overflow: hidden;">
+        <div class="body-container" id="app">
+            <%- include('background.ejs') %>
+            <div class="center top bg-color" style="height:auto;">
+                <h1 class="titre-form color-error">Welcome to the Goulag</h1>
+                <h1 class="soustitre-form color-error">La page que tu cherches n'existe pas !</h1>
+            </div>
+            <%- include('menu.ejs', {logged: logged}) %>
+        </div>
+
+        <div class="footer bg-main">
+            <button class="btn error" onclick="window.location.href='/home'">RETOUR A LA MAISON<div class="icon join"></div></button>
+        </div>
+    </body>
+</html>

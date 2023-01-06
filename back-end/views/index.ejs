@@ -14,6 +14,7 @@
         <link rel="stylesheet" href="/assets/js/cute-alert-master/style.css"/>
     </head>
     <body>
+        <%- include('background.ejs') %>
         <script>
             let drag = false;
             let zoomFactor = 0.15
@@ -29,7 +30,7 @@
                 <canvas id="canva"></canvas>
             </div>
             <%- include('menu.ejs', {logged: logged}) %>
-            <div class="footer bg-main">
+            <div class="footer bg-main" style="overflow-x: scroll; overflow-y:hidden;">
                 <div class="footer-box">
                     <a target="_blank" href="https://www.makeuseof.com/what-is-rplace-reddit-art-experiment/#:~:text=The%20concept%20behind%20r%2FPlace%20is%20pretty%20simple.,or%20tile%20of%20whichever%20color."><img class="imgbtn" id="rules" src="/assets/imgs/book.png"></a>
                 </div>
