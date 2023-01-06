@@ -45,8 +45,6 @@ function isRank(login,rank) {
     
     let isrank = null;
 
-    console.log(login)
-
     db.serialize(() => {
 
         const statement = db.prepare("SELECT rank FROM users WHERE login=?;");
