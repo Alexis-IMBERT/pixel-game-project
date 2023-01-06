@@ -668,7 +668,7 @@ router.get("/:id/getDerniersPixels",
             })
             
         } else { // guest mode
-            db.all(`select pxl_x,pxl_y,couleur from '${idCanva}' c WHERE pose>=?`,[temps-6], function (err, result) {
+            db.all(`select pxl_x,pxl_y,couleur from '${idCanva}' c WHERE pose>=?`,[temps-3], function (err, result) {
                 if (err) {
                     console.log(err)
                 } else {
@@ -705,6 +705,7 @@ router.use("/:id/history",
 
 
         if (usersUtil.redirectNotLoggedUsers(req,res,debug_mode=true)) {
+            
             return
         }
 
