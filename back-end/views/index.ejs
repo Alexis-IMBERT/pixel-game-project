@@ -242,6 +242,7 @@
                 //URL AJAX
                 let url = '/canvas/' + '<%= idCanva %>' + "/pose";
 
+                let urlChrono = '/canvas/' + '<%= idCanva %>' + "/timer";
                 $.ajax({
                     type: 'POST',
                     url: url,
@@ -254,8 +255,25 @@
                             timer: 5000,
                             img:"success.svg"
                         });
-                        let urlChrono = '/canvas/' + '<%= idCanva %>' + "/timer";
-                            
+                                                    
+                        //Récupération du chrono
+                        $.ajax({
+                            type: 'POST',
+                            url: urlChrono,
+                            success: function (data, e, xhr) {
+                                enableChrono(data);
+                            }
+                        });
+
+                    },
+                    error: function (err) {
+                        cuteToast({
+                            type: "error", // or 'info', 'error', 'warning'
+                            title:"Oops...",
+                            message: "Vous avez déjà posé un pixel récemment",
+                            timer: 5000,
+                            img:"error.svg"
+                        });                
                         //Récupération du chrono
                         $.ajax({
                             type: 'POST',
@@ -266,6 +284,7 @@
                         });
                     },
                 });
+                
 
             }
             //Affichage du chrono dans la page
