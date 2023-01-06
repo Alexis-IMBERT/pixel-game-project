@@ -2,7 +2,7 @@
 
 @import "utils.css";
 :root {
-    --background-color: linear-gradient(#686868, #1e1e1e);
+    --background-color: /*linear-gradient(#686868, #1e1e1e);*/ #ffffff00;
     --valid-primary-color: rgb(174, 223, 174);
     --valid-secondary-color: forestgreen;
     --bad-primary-color: rgb(223, 174, 174);
@@ -64,17 +64,14 @@ label:not(is(#chrono)) {
 }
 
 
-.border-bottom {
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-}
 
 .body-container {
     position: absolute;
     background-image: var(--background-color);
     width:100%;
     height:100%;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 .login-menu {
@@ -140,7 +137,6 @@ label:not(is(#chrono)) {
 .titre-form {
     margin-top:30px;
     color: var(--secondary-color);
-
     font-family: 'CustomFont', Arial, sans-serif;
     font-size:3em;
 }
@@ -148,9 +144,11 @@ label:not(is(#chrono)) {
 .soustitre-form {
     margin-top:20px;
     color: var(--secondary-color);
-    text-decoration:underline;
     font-family: 'CustomFont', Arial, sans-serif;
     font-size:2em;
+}
+.soustitre-form:not(.color-error){
+    text-decoration:underline;
 }
 
 .imgbtn {
@@ -238,3 +236,10 @@ label:not(is(#chrono)) {
         border-radius: 0px;
     }
 }
+
+
+
+
+
+
+

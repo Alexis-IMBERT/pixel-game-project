@@ -79,7 +79,7 @@ router.use('/', (req, res) => {
                     couleur_pref = "Incolore";
                     nb_pixel_pose = 0;
                     nb_canvas = 0;
-                    canvas_plus_actif = "LE NEANT";
+                    canvas_plus_actif = "LES TP DE WEB";
                     ratio = "X";
                     res.render('profile.ejs', { logged: req.session.loggedin, login: login, couleur_pref: couleur_pref, nb_pixel_pose: nombre_pixel_pose, nb_canvas: nombre_canvas, canvas_plus_actif: canvas_plus_actif, nb_pixel_moyen: ratio });
                 }

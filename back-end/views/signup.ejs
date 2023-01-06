@@ -12,6 +12,7 @@
     </head>
     <body>
         <div class="body-container">
+            <%- include('background.ejs') %>
             <div class="center bg-color">
                 <h1 class="titre-form">Inscription</h1>
                 <form class="center-div" action="/users/signup" onsubmit="return user_signup()" method="post" role="form" >
@@ -19,11 +20,11 @@
                     <input name="password" type="password" id="signup-password" class="input-text" placeholder="Mot de passe">
                     <input name="password_confirmation" type="password" id="signup-password-confirmation" class="input-text" placeholder="Répéter le mot de passe">
                     </br>
-                    <label id="signup-answer"></label>  
+                    <label id="signup-answer" class="color-error"><% if (error != false) { %><%= error %><% } %></label>  
                     </br>
                     </br> 
                     <button type="submit" class="btn valid">VALIDER</button>
-                    <button type="button" onclick="window.location.href='/home'" class="btn error">RETOUR</button>
+                    <button type="button" onclick="window.location.href='/'" class="btn error">RETOUR</button>
                 </form>
             </div>
         </div>
@@ -34,6 +35,7 @@
                 password: $('#signup-password').val(),
                 password_confirmation: $('#signup-password-confirmation').val()
             };           
+            //On vérifie si les mots de passe correspondent et si la taille > 6
             if ( dataToPost.password == dataToPost.password_confirmation)
             {
                 if ( dataToPost.password.length >= 6 )
