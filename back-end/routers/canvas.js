@@ -570,7 +570,7 @@ router.get("/:id/getDerniersPixels",
 
         let temps = unixTimestamp();
 
-        if (id != "general") {
+        if (idCanva != "general") {
             if (usersUtil.redirectNotLoggedUsers(req, res)) {
                 return;
             }
@@ -612,6 +612,52 @@ router.get("/:id/getDerniersPixels",
 
         
 
+    }
+)
+
+router.use("/:id/history",
+    function(req,res) {
+
+
+        if (usersUtil.redirectNotLoggedUsers(req,res,debug_mode=true)) {
+            return
+        }
+
+        let idUser = req.session.login
+
+
+        let idCanva = encodeURIComponent(req.params.id);
+
+        if (!userCanAccessCanva(idUser, idCanva)) {
+            res.status(400).end("YOU CANNOT ACCESS THIS CANVA")
+            return;
+        }
+
+
+        console.log("accessed history for "+idCanva)
+
+        let content = "";
+
+        db.serialize(() => {
+
+            db.all(`select pxl_x,pxl_y,couleur,idUser,tempsPose from history h WHERE h.idCanva = ? ;`, [idCanva], function (err, result) {
+                if (err) {
+                    console.log(err)
+                } else {
+                    console.log(result)
+                    content += "temps unix,x,y,couleur,user \n"
+                    for (key in result) {
+                        let line = result[key]
+                        content += ""+line.tempsPose+","+line.pxl_x+","+line.pxl_y+","+line.couleur+","+usersUtil.sha256(line.idUser)+"\n"
+                    }
+                        
+
+                    res.setHeader('Content-Type', 'application/json')
+                    res.end(content);
+                }
+            })
+
+        })
     }
 )
 

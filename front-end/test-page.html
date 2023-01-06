@@ -178,6 +178,22 @@
     </form>
 
 
+    <label> CANVAS DOWNLOAD </label>
+    <form method="GET" action="javascript:canva_generate_download();">
+    
+        <label for="canva-download-id">canva id</label>
+        <input id="canva-download-id" type="text" name="canva-download-id" required>
+        
+        <input type="submit" value="generate-download">
+
+        <a id='canva-download'  download="history.csv"></a>
+
+        <label id="canva-download-answer"></label>
+
+    
+    </form>
+
+
     <label> VIEW MY CANVAS IMAGE </label>
     <form method="POST" action="javascript:canva_get();">
     
@@ -566,7 +582,12 @@
                 });
             }
     
-    
+        function canva_generate_download() {
+            const link = "/canvas/" + $("#canva-download-id").val() + "/history"
+            console.log(link)
+            $("#canva-download").attr('href', link) 
+            $("#canva-download").text( "DOWNLOAD " + $("#canva-download-id").val() )
+        }
     </script>
 
 </body>
